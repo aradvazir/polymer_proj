@@ -1,47 +1,95 @@
+:root{
+
+}
+
+
+@font-face {
+  font-family: 'B Nazanin';
+  src: url('\\fonts\\Nazaninb.ttf') format('truetype'); /* Path relative to the public directory */
+  font-weight: normal; /* or bold, depending on the font weight */
+  font-style: normal; /* or italic, if applicable */
+}
+
+#root {
+  font-family: 'B Nazanin', sans-serif;
+  font-size: 16px;
+  margin-bottom: 10vh;
+}
+
+h1 {
+  font-size: 40px;
+}
+
 .form-container {
-  max-width: 600px;
-  margin: 50px auto;
+  width: 90vw;
   padding: 20px;
-  background-color: #f4f4f4;
-  border-radius: 8px;
+  background-color: #222222;
+  border-radius: 30px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   direction: rtl; /* Set the direction to RTL */
+  color: #fff;
+  
 }
 
 form {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 20px;
 }
 
-h2 {
+form h2 {
   text-align: center;
-  color: #333;
+  width: 100%;
   direction: rtl; /* RTL direction for heading */
 }
 
 .input-group {
+  width: 100%;
   margin-bottom: 20px;
+  position: relative;
 }
 
-label {
+.input-group.date {
+  width: 40vw;
+}
+
+.input-group.time {
+  width: 40vw;
+}
+
+.input-group.auto {
+  width: 30%;
+}
+
+.auto-container {
+  width: 100%;
+  display: flex;
+}
+
+
+form label {
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
-  color: #555;
   direction: rtl; /* RTL direction for labels */
   text-align: right; /* Align the text to the right */
 }
 
-input, textarea {
-  width: 100%;
+form input, form textarea, select {
+  width: 80%;
   padding: 10px;
+  margin: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-  font-size: 16px;
   outline: none;
   transition: border-color 0.3s ease;
   direction: rtl; /* Set the text inside input fields to RTL */
   text-align: right; /* Align text inside inputs to the right */
+}
+
+select {
+  width: calc(80% + 22px);
 }
 
 input:focus, textarea:focus {
@@ -54,13 +102,16 @@ textarea {
 }
 
 .submit-btn {
-  padding: 10px 20px;
+  width: 100%;
   background-color: #007bff;
-  color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 30px;
   cursor: pointer;
-  font-size: 16px;
+  font-family: 'B Nazanin', sans-serif;
+  font-size: 24px;
+  color: #fff;
+  
+  
 }
 
 .submit-btn:hover {

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import moment from 'moment-jalaali'; // For Persian dates
 import './Form.css';
 
+const baseUrl = "/";
+
 const Form = () => {
   const [formData, setFormData] = useState({
     date: '',
@@ -17,14 +19,15 @@ const Form = () => {
     comment: ''
   });
 
-  const productOptions = [
-    { name: 'Product A', mixCode: 'MX100', cpe: '10%', wax: '5%' },
-    { name: 'Product B', mixCode: 'MX200', cpe: '15%', wax: '6%' },
-    { name: 'Product C', mixCode: 'MX300', cpe: '12%', wax: '7%' },
-  ];
-
+  const [productOptions, setProductOptions] = useState([]); // Use state for product options
+  
   // Automatically set date and time on component load
   useEffect(() => {
+    async function fetchProduct() {
+      const products = await loadProducts();
+      setProductOptions(products); // Update state with fetched products
+    }
+    fetchProduct();
     moment.loadPersian({ dialect: 'persian-modern' }); // Load Persian settings
     const currentDate = moment().format('jYYYY/jMM/jDD'); // Persian date
     const currentTime = moment().format('HH:mm'); // 24-hour time
@@ -34,6 +37,11 @@ const Form = () => {
       time: currentTime,
     }));
   }, []);
+
+  const loadProducts = async () => {
+    const response = await fetch(baseUrl + "products");
+    return await response.json(); // Return the fetched products
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -47,16 +55,18 @@ const Form = () => {
     const selectedProduct = productOptions.find(
       (product) => product.name === e.target.value
     );
-    setFormData({
-      ...formData,
-      productName: selectedProduct.name,
-      mixCode: selectedProduct.mixCode,
-      cpe: selectedProduct.cpe,
-      wax: selectedProduct.wax
-    });
+    if (selectedProduct) {
+      setFormData({
+        ...formData,
+        productName: selectedProduct.name,
+        mixCode: selectedProduct.mixCode,
+        cpe: selectedProduct.cpe,
+        wax: selectedProduct.wax
+      });
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     alert(`Form Submitted:
     \nDate: ${formData.date}
@@ -70,6 +80,46 @@ const Form = () => {
     \nCPE: ${formData.cpe} (Auto-filled)
     \nWax: ${formData.wax} (Auto-filled)
     \nComment: ${formData.comment}`);
+    await fetch(baseUrl + "/send", {
+      method: "POST",
+      body: JSON.stringify({
+        date: formData.date,
+        time: formData.time,
+        workerName: formData.name,
+        shift: formData.shift,
+        line: formData.line,
+        amount: formData.productionAmount,
+        prodName: formData.productName,
+        mixCode: formData.mixCode,
+        comment: formData.comment,
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+  };
+
+  const renderIngredients = () => {
+    if (formData.productName) {
+      return (
+        <div className="auto-container">
+          <div className="input-group auto">
+            <label htmlFor="mixCode">کد میکس</label>
+            <p id="mixCode">{formData.mixCode}</p>
+          </div>
+
+          <div className="input-group auto">
+            <label htmlFor="cpe">CPE</label>
+            <p id="cpe">{formData.cpe}</p>
+          </div>
+
+          <div className="input-group auto">
+            <label htmlFor="wax">واکس</label>
+            <p id="wax">{formData.wax}</p>
+          </div>
+        </div>
+      );
+    }
   };
 
   return (
@@ -77,26 +127,14 @@ const Form = () => {
       <form onSubmit={handleSubmit}>
         <h2>اطلاعات تولید</h2>
 
-        <div className="input-group">
+        <div className="input-group date">
           <label htmlFor="date">تاریخ</label>
-          <input
-            type="text"
-            id="date"
-            name="date"
-            value={formData.date}
-            readOnly
-          />
+          <p id="date">{formData.date}</p>
         </div>
 
-        <div className="input-group">
+        <div className="input-group time">
           <label htmlFor="time">زمان</label>
-          <input
-            type="text"
-            id="time"
-            name="time"
-            value={formData.time}
-            readOnly
-          />
+          <p id="time">{formData.time}</p>
         </div>
 
         {/* Manually entered fields */}
@@ -166,43 +204,9 @@ const Form = () => {
             ))}
           </select>
         </div>
-
-        <div className="input-group">
-          <label htmlFor="mixCode">کد میکس</label>
-          <input
-            type="text"
-            id="mixCode"
-            name="mixCode"
-            value={formData.mixCode}
-            readOnly
-            placeholder="(پر کردن اتوماتیک)"
-          />
-        </div>
-
-        <div className="input-group">
-          <label htmlFor="cpe">CPE</label>
-          <input
-            type="text"
-            id="cpe"
-            name="cpe"
-            value={formData.cpe}
-            readOnly
-            placeholder="(پر کردن اتوماتیک)"
-          />
-        </div>
-
-        <div className="input-group">
-          <label htmlFor="wax">واکس</label>
-          <input
-            type="text"
-            id="wax"
-            name="wax"
-            value={formData.wax}
-            readOnly
-            placeholder="(پر کردن اتوماتیک)"
-          />
-        </div>
-
+        
+        {renderIngredients()}
+        
         <div className="input-group">
           <label htmlFor="comment">توضیحات</label>
           <textarea
