@@ -13,11 +13,12 @@ const Form = () => {
     line: '',
     productionAmount: '',
     productName: '',
-    mixCode: '',
+    mixName: '',
     comment: ''
   });
 
   const [productOptions, setProductOptions] = useState([]); // Use state for product options
+  const [mixOptions, setMixOptions] = useState([]); // Use state for product options
   const [ingredients, setIngredients] = useState();
   // Automatically set date and time on component load
   useEffect(() => {
@@ -26,6 +27,11 @@ const Form = () => {
       setProductOptions(products); // Update state with fetched products
     }
     fetchProduct();
+    async function fetchMix() {
+      const mix = await loadMix();
+      setMixOptions(mix); // Update state with fetched products
+    }
+    fetchMix();
     moment.loadPersian({ dialect: 'persian-modern' }); // Load Persian settings
     const currentDate = moment().format('jYYYY/jMM/jDD'); // Persian date
     const currentTime = moment().format('HH:mm'); // 24-hour time
@@ -40,17 +46,21 @@ const Form = () => {
     const response = await fetch(baseUrl + "products");
     return await response.json(); // Return the fetched products
   };
-
+  const loadMix = async () => {
+    const response = await fetch(baseUrl + "mixes");
+    return await response.json(); // Return the fetched products
+  };
+  
   const handleChange = async (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
-    if(e.target.name === "mixCode"){
+    if(e.target.name === "mixName"){
       const ingred = await renderIngredients(e.target.value);
       setIngredients(ingred);
     }
-    console.log("Materials: " + e.target.name + " : " + e.target.value)
+    console.log("mix: " + e.target.name + " : " + e.target.value)
   };
 
   // When product name is selected, update corresponding fields
@@ -67,14 +77,14 @@ const Form = () => {
     // });
   };
 
-  const renderIngredients =  async (mixCode) => {
+  const renderIngredients =  async (mixName) => {
     let ans = (<div className="input-group auto">
-        هیچ کد میکسی انتخاب نشده است.
+        هیچ میکسی انتخاب نشده است.
       </div>);
-    if (mixCode) {
+    if (mixName) {
       let mix_ingreds = null;
       try{
-        mix_ingreds = await (await fetch(baseUrl + "mix/" + mixCode)).json();
+        mix_ingreds = await (await fetch(baseUrl + "mix/" + mixName)).json();
       }catch(err){return ans;}
       setFormData((prevData) => ({
         ...prevData,
@@ -186,17 +196,23 @@ const Form = () => {
         </div>
         
         <div className="input-group">
-          <label htmlFor="mixCode">کد میکس</label>
-          <input
-            type="text"
-            id="mixCode"
-            name="mixCode"
-            value={formData.mixCode}
+          <label htmlFor="mixName">نام میکس</label>
+          <select
+            id="mixName"
+            name="mixName"
+            value={formData.mixName}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">انتخاب کنید</option>
+            {mixOptions.map((mix) => (
+              <option key={mix} value={mix}>
+                {mix}
+              </option>
+            ))}
+          </select>
         </div>
-
+        
         {ingredients}
         
         <div className="input-group">
