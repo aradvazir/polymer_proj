@@ -14,13 +14,11 @@ const Form = () => {
     productionAmount: '',
     productName: '',
     mixCode: '',
-    cpe: '',
-    wax: '',
     comment: ''
   });
 
   const [productOptions, setProductOptions] = useState([]); // Use state for product options
-  
+  const [ingredients, setIngredients] = useState();
   // Automatically set date and time on component load
   useEffect(() => {
     async function fetchProduct() {
@@ -43,82 +41,64 @@ const Form = () => {
     return await response.json(); // Return the fetched products
   };
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    if(e.target.name === "mixCode"){
+      const ingred = await renderIngredients(e.target.value);
+      setIngredients(ingred);
+    }
+    console.log("Materials: " + e.target.name + " : " + e.target.value)
   };
 
   // When product name is selected, update corresponding fields
-  const handleProductChange = (e) => {
-    const selectedProduct = productOptions.find(
-      (product) => product.name === e.target.value
-    );
-    if (selectedProduct) {
-      setFormData({
-        ...formData,
-        productName: selectedProduct.name,
-        mixCode: selectedProduct.mixCode,
-        cpe: selectedProduct.cpe,
-        wax: selectedProduct.wax
-      });
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     alert(`Form Submitted:
-    \nDate: ${formData.date}
-    \nTime: ${formData.time}
-    \nName: ${formData.name}
-    \nShift: ${formData.shift}
-    \nLine: ${formData.line}
-    \nAmount of Production: ${formData.productionAmount}
-    \nProduct Name: ${formData.productName} (Auto-filled)
-    \nMix Code: ${formData.mixCode} (Auto-filled)
-    \nCPE: ${formData.cpe} (Auto-filled)
-    \nWax: ${formData.wax} (Auto-filled)
-    \nComment: ${formData.comment}`);
-    await fetch(baseUrl + "/send", {
-      method: "POST",
-      body: JSON.stringify({
-        date: formData.date,
-        time: formData.time,
-        workerName: formData.name,
-        shift: formData.shift,
-        line: formData.line,
-        amount: formData.productionAmount,
-        prodName: formData.productName,
-        mixCode: formData.mixCode,
-        comment: formData.comment,
-      }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    });
+    ${JSON.stringify(formData, null, 4)}`);
+    // await fetch(baseUrl + "/send", {
+    //   method: "POST",
+    //   body: JSON.stringify(formData),
+    //   headers: {
+    //     'Content-Type': 'application/json'
+    //   }
+    // });
   };
 
-  const renderIngredients = () => {
-    if (formData.productName) {
+  const renderIngredients =  async (mixCode) => {
+    let ans = (<div className="input-group auto">
+        هیچ کد میکسی انتخاب نشده است.
+      </div>);
+    if (mixCode) {
+      let mix_ingreds = null;
+      try{
+        mix_ingreds = await (await fetch(baseUrl + "mix/" + mixCode)).json();
+      }catch(err){return ans;}
+      setFormData((prevData) => ({
+        ...prevData,
+        ...mix_ingreds
+      }));
       return (
         <div className="auto-container">
-          <div className="input-group auto">
-            <label htmlFor="mixCode">کد میکس</label>
-            <p id="mixCode">{formData.mixCode}</p>
-          </div>
-
-          <div className="input-group auto">
-            <label htmlFor="cpe">CPE</label>
-            <p id="cpe">{formData.cpe}</p>
-          </div>
-
-          <div className="input-group auto">
-            <label htmlFor="wax">واکس</label>
-            <p id="wax">{formData.wax}</p>
-          </div>
+          {Object.keys(mix_ingreds).map((key) => (
+            <div className="input-group auto">
+              <label>{key}</label>
+              <input
+                type="text"
+                name={key}
+                value={mix_ingreds[key]}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          ))}
+          
         </div>
       );
+    }else{
+      return ans;
     }
   };
 
@@ -193,19 +173,31 @@ const Form = () => {
             id="productName"
             name="productName"
             value={formData.productName}
-            onChange={handleProductChange}
+            onChange={handleChange}
             required
           >
             <option value="">انتخاب کنید</option>
             {productOptions.map((product) => (
-              <option key={product.name} value={product.name}>
-                {product.name}
+              <option key={product} value={product}>
+                {product}
               </option>
             ))}
           </select>
         </div>
         
-        {renderIngredients()}
+        <div className="input-group">
+          <label htmlFor="mixCode">کد میکس</label>
+          <input
+            type="text"
+            id="mixCode"
+            name="mixCode"
+            value={formData.mixCode}
+            onChange={handleChange}
+            required
+          />
+        </div>
+
+        {ingredients}
         
         <div className="input-group">
           <label htmlFor="comment">توضیحات</label>
