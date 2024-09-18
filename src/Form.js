@@ -1,24 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import moment from 'moment-jalaali'; // For Persian dates
-import './Form.css';
+import React, { useState, useEffect } from "react";
+import moment from "moment-jalaali"; // For Persian dates
+import "./Form.css";
 
 const baseUrl = "/";
 
 const Form = () => {
   const [formData, setFormData] = useState({
-    date: '',
-    time: '',
-    name: '',
-    shift: '',
-    line: '',
-    productionAmount: '',
-    productName: '',
-    mixName: '',
-    comment: ''
+    date: "",
+    time: "",
+    operator: "",
+    shift: "",
+    line_id: "",
+    productionAmount: "",
+    product_id: "",
+    recipe_code: "",
+    description: "",
+    fitting: "",
   });
 
-  const [productOptions, setProductOptions] = useState([]); // Use state for product options
-  const [mixOptions, setMixOptions] = useState([]); // Use state for product options
+  const [productOptions, setProductOptions] = useState({}); // Use state for product options
+  const [mixOptions, setMixOptions] = useState({}); // Use state for mix options
+  const [operatorOptions, setOperatorOptions] = useState({}); // Use state for mix options
+  const [lineOptions, setLineOptions] = useState({}); // Use state for mix options
   const [ingredients, setIngredients] = useState();
   // Automatically set date and time on component load
   useEffect(() => {
@@ -32,9 +35,19 @@ const Form = () => {
       setMixOptions(mix); // Update state with fetched products
     }
     fetchMix();
-    moment.loadPersian({ dialect: 'persian-modern' }); // Load Persian settings
-    const currentDate = moment().format('jYYYY/jMM/jDD'); // Persian date
-    const currentTime = moment().format('HH:mm'); // 24-hour time
+    async function fetchOperator() {
+      const mix = await loadOperator();
+      setMixOptions(mix); // Update state with fetched products
+    }
+    fetchOperator();
+    async function fetchLine() {
+      const mix = await loadLine();
+      setMixOptions(mix); // Update state with fetched products
+    }
+    fetchLine();
+    moment.loadPersian({ dialect: "persian-modern" }); // Load Persian settings
+    const currentDate = moment().format("jYYYY/jMM/jDD"); // Persian date
+    const currentTime = moment().format("HH:mm"); // 24-hour time
     setFormData((prevData) => ({
       ...prevData,
       date: currentDate,
@@ -50,17 +63,25 @@ const Form = () => {
     const response = await fetch(baseUrl + "mixes");
     return await response.json(); // Return the fetched products
   };
-  
+  const loadOperator = async () => {
+    const response = await fetch(baseUrl + "Operator");
+    return await response.json(); // Return the fetched products
+  };
+  const loadLine = async () => {
+    const response = await fetch(baseUrl + "Line");
+    return await response.json(); // Return the fetched products
+  };
+
   const handleChange = async (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
-    if(e.target.name === "mixName"){
+    if (e.target.name === "mixName") {
       const ingred = await renderIngredients(e.target.value);
       setIngredients(ingred);
     }
-    console.log("mix: " + e.target.name + " : " + e.target.value)
+    console.log("mix: " + e.target.name + " : " + e.target.value);
   };
 
   // When product name is selected, update corresponding fields
@@ -77,18 +98,20 @@ const Form = () => {
     // });
   };
 
-  const renderIngredients =  async (mixName) => {
-    let ans = (<div className="input-group auto">
-        هیچ میکسی انتخاب نشده است.
-      </div>);
+  const renderIngredients = async (mixName) => {
+    let ans = (
+      <div className="input-group auto">هیچ میکسی انتخاب نشده است.</div>
+    );
     if (mixName) {
       let mix_ingreds = null;
-      try{
+      try {
         mix_ingreds = await (await fetch(baseUrl + "mix/" + mixName)).json();
-      }catch(err){return ans;}
+      } catch (err) {
+        return ans;
+      }
       setFormData((prevData) => ({
         ...prevData,
-        ...mix_ingreds
+        ...mix_ingreds,
       }));
       return (
         <div className="auto-container">
@@ -104,10 +127,9 @@ const Form = () => {
               />
             </div>
           ))}
-          
         </div>
       );
-    }else{
+    } else {
       return ans;
     }
   };
@@ -127,41 +149,59 @@ const Form = () => {
           <p id="time">{formData.time}</p>
         </div>
 
-        {/* Manually entered fields */}
+        {/* Operator selection dropdown */}
         <div className="input-group">
           <label htmlFor="name">نام اپراتور</label>
-          <input
-            type="text"
+          <select
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">انتخاب کنید</option>
+            {Object.keys(operatorOptions).map((operatorId) => (
+              <option key={operatorId} value={operatorId}>
+                {operatorOptions[operatorId]}
+              </option>
+            ))}
+          </select>
         </div>
 
+        {/* Shift selection dropdown */}
         <div className="input-group">
           <label htmlFor="shift">شیفت</label>
-          <input
-            type="text"
+          <select
             id="shift"
             name="shift"
             value={formData.shift}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">انتخاب کنید</option>
+            <option value="morning">صبح</option>
+            <option value="afternoon">ظهر</option>
+            <option value="night">شب</option>
+          </select>
         </div>
-
+        
+        {/* Line selection dropdown */}
         <div className="input-group">
           <label htmlFor="line">خط تولید</label>
-          <input
-            type="text"
+          <select
             id="line"
             name="line"
             value={formData.line}
             onChange={handleChange}
             required
-          />
+          >
+            <option value="">انتخاب کنید</option>
+            {Object.keys(lineOptions).map((lineId) => (
+              <option key={lineId} value={lineId}>
+                {lineOptions[lineId]}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="input-group">
@@ -187,14 +227,14 @@ const Form = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            {productOptions.map((product) => (
-              <option key={product} value={product}>
-                {product}
+            {Object.keys(productOptions).map((productId) => (
+              <option key={productId} value={productId}>
+                {productOptions[productId]}
               </option>
             ))}
           </select>
         </div>
-        
+
         <div className="input-group">
           <label htmlFor="mixName">نام میکس</label>
           <select
@@ -205,16 +245,16 @@ const Form = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            {mixOptions.map((mix) => (
-              <option key={mix} value={mix}>
-                {mix}
+            {Object.keys(mixOptions).map((mixId) => (
+              <option key={mixId} value={mixId}>
+                {mixOptions[mixId]}
               </option>
             ))}
           </select>
         </div>
-        
+
         {ingredients}
-        
+
         <div className="input-group">
           <label htmlFor="comment">توضیحات</label>
           <textarea
@@ -226,7 +266,9 @@ const Form = () => {
           ></textarea>
         </div>
 
-        <button type="submit" className="submit-btn">ثبت</button>
+        <button type="submit" className="submit-btn">
+          ثبت
+        </button>
       </form>
     </div>
   );
