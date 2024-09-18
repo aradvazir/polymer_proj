@@ -37,12 +37,12 @@ const Form = () => {
     fetchMix();
     async function fetchOperator() {
       const mix = await loadOperator();
-      setMixOptions(mix); // Update state with fetched products
+      setOperatorOptions(mix); // Update state with fetched products
     }
     fetchOperator();
     async function fetchLine() {
       const mix = await loadLine();
-      setMixOptions(mix); // Update state with fetched products
+      setLineOptions(mix); // Update state with fetched products
     }
     fetchLine();
     moment.loadPersian({ dialect: "persian-modern" }); // Load Persian settings
