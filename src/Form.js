@@ -22,7 +22,7 @@ const Form = () => {
     fitting: "",
   });
 
-  const [isFitting, setFitting] = useState("");
+  const [isFitting, setFitting] = useState("False");
   const [manualTimeChange, setManualTimeChange] = useState(false); // New state to track manual time change
   const [productOptions, setProductOptions] = useState([]); // Use state for product options
   const [mixOptions, setMixOptions] = useState([]); // Use state for mix options
@@ -82,7 +82,8 @@ const Form = () => {
   }, [manualTimeChange]);
 
   const loadProducts = async () => {
-    const response = await fetch(baseUrl + "products/" + isFitting);
+    console.log(baseUrl + "product/" + isFitting)
+    const response = await fetch(baseUrl + "product/" + isFitting);
     return await response.json(); // Return the fetched products
   };
   const loadMix = async () => {
