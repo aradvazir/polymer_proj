@@ -85,12 +85,6 @@ form h2 {
   padding: 12px; /* Adjusted padding for larger text */
 }
 
-.input-group.date label, .input-group.time label {
-  font-size: 40px; /* Increased font size for labels */
-  margin-bottom: 8px; /* Space below the label */
-  text-align: right; /* Right-aligned text */
-}
-
 .input-group.auto, .input-group.desc {
   width: calc(100% - 15px);
   font-size: 20px;
@@ -241,4 +235,107 @@ input:focus, textarea:focus {
 
 form div {
   font-size: 20px;
+}
+
+/* General styling adjustments for better alignment and appearance */
+.clock-container {
+  display: flex;
+  justify-content: center; /* Center the clock display */
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+  font-size: 25px;
+  color: var(--text-color);
+}
+
+/* Adjust the clock display styling */
+.clock-display {
+  background-color: rgba(129, 164, 173, 0.323); /* Semi-transparent background */
+  border-radius: 15px;
+  padding: 15px 30px;
+  text-align: center;
+  cursor: pointer; /* Pointer for clickability */
+  transition: background-color 0.3s ease;
+  font-size: 20px; /* Increase font size for time display */
+  color: var(--text-color);
+}
+
+/* Time display hover effect */
+.clock-display:hover {
+  background-color: rgba(255, 255, 255, 0.3); /* Light hover effect */
+}
+
+/* Manual time input styling */
+.time-input {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border: 2px solid var(--border-color);
+  border-radius: 10px;
+  font-size: 22px; /* Slightly larger input size */
+  padding: 10px;
+  width: 180px; /* Wider input to match clock display */
+  text-align: center;
+  box-sizing: border-box;
+}
+
+/* Button styling */
+button {
+  background-color: var(--submit-color);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 15px;
+  margin: 10px;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Button hover effect */
+button:hover {
+  background-color: var(--submit-hover-color);
+}
+
+/* Adjusting the label to match RTL layout */
+
+form label[for="date"] {
+  font-size: 35px;
+  text-align: right;
+  margin-right: 15px;
+  display: block;
+  color: var(--text-color);
+  right: 200px;
+  top: 350px;
+  position: absolute;
+}
+
+form label[for="time"] {
+  font-size: 35px;
+  text-align: right;
+  margin-right: 15px;
+  display: block;
+  color: var(--text-color);
+  left: 200px;
+  top: 350px;
+  position: absolute;
+}
+
+
+
+/* Time and date alignment */
+.input-group.time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.input-group.date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Ensure proper spacing around elements */
+.form-container {
+  padding: 20px;
 }

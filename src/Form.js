@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import moment from "moment-jalaali";
 import Calendar from "react-calendar";
-// import TimePicker from "react-time-picker";
-import "react-calendar/dist/Calendar.css"; // Import calendar styles
-import "react-clock/dist/Clock.css"; // Import clock styles
+import "react-calendar/dist/Calendar.css";
 import "./Form.css";
 
 const baseUrl = "/";
@@ -22,81 +20,65 @@ const Form = () => {
     fitting: "",
   });
 
-  const [isFitting, setFitting] = useState("False");
-  const [manualTimeChange, setManualTimeChange] = useState(false); // New state to track manual time change
-  const [productOptions, setProductOptions] = useState([]); // Use state for product options
-  const [mixOptions, setMixOptions] = useState([]); // Use state for mix options
-  const [operatorOptions, setOperatorOptions] = useState([]); // Use state for mix options
-  const [lineOptions, setLineOptions] = useState([]); // Use state for mix options
+  const [isFitting, setFitting] = useState("True");
+  const [manualTimeChange, setManualTimeChange] = useState(false);
+  const [productOptions, setProductOptions] = useState([]);
+  const [mixOptions, setMixOptions] = useState([]);
+  const [operatorOptions, setOperatorOptions] = useState([]);
+  const [lineOptions, setLineOptions] = useState([]);
   const [ingredients, setIngredients] = useState();
-  const [selectedDate, setSelectedDate] = useState(new Date()); // State for the selected
-  const [selectedTime, setSelectedTime] = useState("10:00"); // State for the selected
-  const [hasChanged, setHasChanged] = useState(true); // At first it is on other
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [timeInput, setTimeInput] = useState(moment().format('HH:mm'));
+
   // Automatically set date and time on component load
   useEffect(() => {
-    async function fetchProduct() {
+    const fetchOptions = async () => {
       const products = await loadProducts();
-      setProductOptions(products); // Update state with fetched products
-    }
-    async function fetchMix() {
+      setProductOptions(products);
       const mix = await loadMix();
-      setMixOptions(mix); // Update state with fetched products
-    }
-    async function fetchOperator() {
+      setMixOptions(mix);
       const operators = await loadOperator();
-      setOperatorOptions(operators); // Update state with fetched operators
-    }
-    async function fetchLine() {
+      setOperatorOptions(operators);
       const lines = await loadLine();
-      setLineOptions(lines); // Update state with fetched lines
-    }
-  
-    // Fetch all data
-    fetchProduct();
-    fetchMix();
-    fetchOperator();
-    fetchLine();
-  
-    // Load Persian settings for moment.js
+      setLineOptions(lines);
+    };
+
+    fetchOptions();
+
     moment.loadPersian({ dialect: "persian-modern" });
-  
-    // Set the current date and time
-    const currentDate = moment().format("jYYYY-jMM-jDD"); // Persian date
-    const currentTime = moment().format("HH:mm"); // 24-hour time
+
+    const interval = setInterval(() => {
+      setTimeInput(moment().format('HH:mm'));
+    }, 60000);
+
+    const currentDate = moment().format("jYYYY-jMM-jDD");
     setFormData((prevData) => ({
       ...prevData,
       date: currentDate,
-      time: currentTime,
+      time: moment().format('HH:mm'),
     }));
-  
-    // Automatically update time every minute unless manually changed
-    const interval = setInterval(() => {
-      const updatedTime = moment().format("HH:mm");
-      setFormData((prevData) => ({
-        ...prevData,
-        time: updatedTime,
-      }));
-    }, 60000); // Update every minute
-  
-    return () => clearInterval(interval); // Clean up the interval on component unmount
-  }, [manualTimeChange]);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const loadProducts = async () => {
-    console.log(baseUrl + "product/" + isFitting)
-    const response = await fetch(baseUrl + "product/" + isFitting);
-    return await response.json(); // Return the fetched products
+    const response = await fetch(`${baseUrl}product/${isFitting}`);
+    return await response.json();
   };
+
   const loadMix = async () => {
-    const response = await fetch(baseUrl + "materials");
-    return await response.json(); // Return the fetched products
+    const response = await fetch(`${baseUrl}materials`);
+    return await response.json();
   };
+
   const loadOperator = async () => {
-    const response = await fetch(baseUrl + "operator");
-    return await response.json(); // Return the fetched products
+    const response = await fetch(`${baseUrl}operator/${isFitting}`);
+    return await response.json();
   };
+
   const loadLine = async () => {
-    const response = await fetch(baseUrl + "machine");
-    return await response.json(); // Return the fetched products
+    const response = await fetch(`${baseUrl}machine/${isFitting}`);
+    return await response.json();
   };
 
   const handleChange = async (e) => {
@@ -104,31 +86,21 @@ const Form = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+
     if (e.target.name === "recipe_code") {
       const ingred = await renderIngredients(e.target.value);
-      if (ingred !== "other") {
-        setHasChanged(true);
-      }
       setIngredients(ingred);
     }
-    console.log("mix: " + e.target.name + " : " + e.target.value);
   };
 
-  const handleChangeMaterial = async (e) => {
-    setHasChanged(true);
-    await handleChange(e);
-  };
-
-  // Handle date change using the calendar
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    const formattedDate = moment(date).format("jYYYY-jMM-jDD"); // Convert to Jalali date
+    const formattedDate = moment(date).format("jYYYY-jMM-jDD");
     setFormData((prevData) => ({
       ...prevData,
       date: formattedDate,
     }));
-    
-    // Hide the calendar and show the selected date
+
     document.getElementsByClassName("react-calendar")[0].classList.add("no");
     document
       .getElementsByClassName("date")[0]
@@ -136,86 +108,70 @@ const Form = () => {
       .classList.remove("no");
   };
 
-  // Handle manual time change
-  const handleTimeChange = (e) => {
-    const newTime = e.target.value;
-    setSelectedTime(newTime);
+  const handleTimeInputChange = (e) => {
+    setTimeInput(e.target.value);
+  };
+
+  const handleSaveTime = () => {
     setFormData((prevData) => ({
       ...prevData,
-      time: newTime,
+      time: timeInput,
     }));
-    setManualTimeChange(true); // Set the flag to prevent auto-updating
+    setManualTimeChange(false);
+  };
 
-    // Hide the time picker and show the selected time
-    document.getElementsByClassName("time-picker")[0].classList.add("no");
-    document
-      .getElementsByClassName("time")[0]
-      .getElementsByTagName("p")[0]
-      .classList.remove("no");
+  const handleToggleManualTime = () => {
+    setManualTimeChange(!manualTimeChange);
   };
 
   const handleProductToggle = (isfit) => {
     setFitting(isfit);
-    formData.fitting = isfit;
-
+    setFormData((prevData) => ({
+      ...prevData,
+      fitting: isfit,
+    }));
   };
 
-  // When product name is selected, update corresponding fields
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if(hasChanged){
-      let finalForm = {"recipe": []}; // it contains all the default keys, and rawmats are in the `recipe`
-      Object.keys(formData).forEach(key => {
-        if(key === "recipe_code"){
-          
-        }else if(key.startsWith("recipe_") && formData[key] != 0){
-          finalForm.recipe[key.slice(7)] = formData[key];
-        }else{
-          finalForm[key] = formData[key];
-        }
-      })
-      console.log("Final Form: " + JSON.stringify(finalForm, null, 4));
+    const finalForm = {};
+    Object.keys(formData).forEach((key) => {
+      if (key !== "recipe_code" && key.startsWith("recipe_")) {
+        // Skip recipe_code and recipe_ fields if not changed
+      } else {
+        finalForm[key] = formData[key];
+      }
+    });
 
+    console.log("Final Form: " + JSON.stringify(finalForm, null, 4));
 
-      // post to different endpoints
-    }else{
-      let finalForm = {}; // it contains all the default keys, and rawmats are in the `recipe`
-      Object.keys(formData).forEach(key => {
-        if(key != "recipe_code" && key.startsWith("recipe_")){
-          
-        }else{
-          finalForm[key] = formData[key];
-        }
-      })
-      console.log("Final Form: " + JSON.stringify(finalForm, null, 4));
-
-      // await fetch(baseUrl + "/mixentry", {
-      //   method: "POST",
-      //   body: JSON.stringify(formData),
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
-    }
-    
+    // Add your submit logic here
   };
 
-
-
-
   const renderIngredients = async (mixCode) => {
-    let ans = (
-      <div className="input-group auto">هیچ میکسی انتخاب نشده است.</div>
-    );
+    let ans = <div className="input-group auto">هیچ میکسی انتخاب نشده است.</div>;
     if (mixCode) {
       let mix_ingreds = null;
       try {
-        mix_ingreds = await (
-          await fetch(baseUrl + "material/" + mixCode)
-        ).json();
+        mix_ingreds = await (await fetch(`${baseUrl}material/${mixCode}`)).json();
       } catch (err) {
         return ans;
       }
+      function addSubstringToKeys(obj, substring) {
+        const newObj = {};
+        
+        for (const key in obj) {
+            if (obj.hasOwnProperty(key)) {
+                // Create a new key by appending the substring
+                const newKey = key + substring;
+                // Assign the value to the new key in the new object
+                newObj[newKey] = obj[key];
+            }
+        }
+        
+        return newObj;
+      }
+      addSubstringToKeys(mix_ingreds, "recipe");
       setFormData((prevData) => ({
         ...prevData,
         ...mix_ingreds,
@@ -223,13 +179,13 @@ const Form = () => {
       return (
         <div className="auto-container">
           {mix_ingreds.map((ingred) => (
-            <div className="input-group auto">
+            <div className="input-group auto" key={ingred.rawmaterial.rawmaterial}>
               <label>{ingred.rawmaterial.rawmaterial}</label>
               <input
                 type="text"
                 name={"recipe_" + ingred.rawmaterial.rawmaterial}
                 value={ingred.weight}
-                onChange={handleChangeMaterial}
+                onChange={handleChange}
                 required
               />
             </div>
@@ -269,31 +225,28 @@ const Form = () => {
           </p>
         </div>
 
-        <div className="input-group time">
-          <label htmlFor="time">زمان</label>
-          <p
-            onClick={() => {
-              document
-                .getElementsByClassName("time-picker")[0]
-                .classList.remove("no");
-              document
-                .getElementsByClassName("time")[0]
-                .getElementsByTagName("p")[0]
-                .classList.add("no");
-            }}
-          >
-            {formData.time}
-          </p>
-          <input
-            aria-label="Time"
-            type="time"
-            className="time-picker no"
-            value={selectedTime}
-            onChange={handleTimeChange}
-          />
+        <label htmlFor="time">زمان</label>
+        <div className="clock-container">
+          <div className="clock-display">
+            {manualTimeChange ? (
+              <>
+                <input
+                  type="time"
+                  value={timeInput}
+                  onChange={handleTimeInputChange}
+                  className="time-input"
+                />
+                <button type="button" onClick={handleSaveTime}>ذخیره</button>
+                <button type="button" onClick={handleToggleManualTime}>لغو</button>
+              </>
+            ) : (
+              <>
+                <p onClick={handleToggleManualTime}>{moment(timeInput, 'HH:mm').format('HH:mm')}</p>
+              </>
+            )}
+          </div>
         </div>
 
-        {/* Product Toggle Buttons */}
         <div className="input-group single-row">
           <label>محصول تولیدی</label>
           <div className="toggle-buttons">
@@ -312,7 +265,6 @@ const Form = () => {
           </div>
         </div>
 
-        {/* Operator selection dropdown */}
         <div className="input-group">
           <label htmlFor="operator_id">نام اپراتور</label>
           <select
@@ -331,7 +283,6 @@ const Form = () => {
           </select>
         </div>
 
-        {/* Shift selection dropdown */}
         <div className="input-group">
           <label htmlFor="shift">شیفت</label>
           <select
@@ -348,7 +299,6 @@ const Form = () => {
           </select>
         </div>
 
-        {/* Line selection dropdown */}
         <div className="input-group">
           <label htmlFor="line_id">خط تولید</label>
           <select
@@ -379,7 +329,6 @@ const Form = () => {
           />
         </div>
 
-        {/* Product selection dropdown */}
         <div className="input-group">
           <label htmlFor="product_id">نام محصول</label>
           <select
@@ -394,7 +343,6 @@ const Form = () => {
               <option key={product.code} value={product.code}>
                 {product.name}
               </option>
-
             ))}
           </select>
         </div>
