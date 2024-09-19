@@ -48,7 +48,13 @@ const Form = () => {
     moment.loadPersian({ dialect: "persian-modern" });
 
     const interval = setInterval(() => {
-      setTimeInput(moment().format('HH:mm'));
+      if (!manualTimeChange) {
+        setTimeInput(moment().format('HH:mm'));
+        setFormData((prevData) => ({
+          ...prevData,
+          time: moment().format('HH:mm'),
+        }));
+      }
     }, 60000);
 
     const currentDate = moment().format("jYYYY-jMM-jDD");
@@ -59,7 +65,7 @@ const Form = () => {
     }));
 
     return () => clearInterval(interval);
-  }, []);
+  }, [manualTimeChange]);
 
   const loadProducts = async () => {
     const response = await fetch(`${baseUrl}product/${isFitting}`);
@@ -162,9 +168,7 @@ const Form = () => {
         
         for (const key in obj) {
             if (obj.hasOwnProperty(key)) {
-                // Create a new key by appending the substring
                 const newKey = key + substring;
-                // Assign the value to the new key in the new object
                 newObj[newKey] = obj[key];
             }
         }
@@ -225,9 +229,9 @@ const Form = () => {
           </p>
         </div>
 
-        <label htmlFor="time">زمان</label>
         <div className="clock-container">
-          <div className="clock-display">
+          <label htmlFor="">زمان</label>
+          <div className="clock-display" onClick={handleToggleManualTime}>
             {manualTimeChange ? (
               <>
                 <input
@@ -241,7 +245,7 @@ const Form = () => {
               </>
             ) : (
               <>
-                <p onClick={handleToggleManualTime}>{moment(timeInput, 'HH:mm').format('HH:mm')}</p>
+                <p>{moment(timeInput, 'HH:mm').format('HH:mm')}</p>
               </>
             )}
           </div>
@@ -293,14 +297,13 @@ const Form = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            <option value="1">صبح</option>
-            <option value="2">ظهر</option>
-            <option value="3">شب</option>
+            <option value="1">روز</option>
+            <option value="2">شب</option>
           </select>
         </div>
 
         <div className="input-group">
-          <label htmlFor="line_id">خط تولید</label>
+          <label htmlFor="line_id">خط</label>
           <select
             id="line_id"
             name="line_id"
@@ -311,7 +314,7 @@ const Form = () => {
             <option value="">انتخاب کنید</option>
             {lineOptions.map((line) => (
               <option key={line.id} value={line.id}>
-                {line.machine}
+                {line.name}
               </option>
             ))}
           </select>
@@ -330,7 +333,7 @@ const Form = () => {
         </div>
 
         <div className="input-group">
-          <label htmlFor="product_id">نام محصول</label>
+          <label htmlFor="product_id">محصول</label>
           <select
             id="product_id"
             name="product_id"
@@ -340,7 +343,7 @@ const Form = () => {
           >
             <option value="">انتخاب کنید</option>
             {productOptions.map((product) => (
-              <option key={product.code} value={product.code}>
+              <option key={product.id} value={product.id}>
                 {product.name}
               </option>
             ))}
