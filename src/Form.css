@@ -23,10 +23,10 @@
 }
 
 h1 {
-  font-size: 55px; /* Adjusted size for headings */
+  font-size: 45px; /* Adjusted size for headings */
   color: var(--background-color);
   text-align: center;
-  margin-bottom: 20px; /* Space below the heading */
+  margin-bottom: 15px; /* Space below the heading */
 }
 
 form p {
@@ -34,20 +34,20 @@ form p {
   margin-bottom: 5px; /* Slightly less space between label and input */
   font-weight: bold;
   text-align: center; /* Right-aligned text */
-  font-size: 28px;
+  font-size: 25px;
 }
 
 .form-container {
-  width: 60vw; /* Adjusted width for better balance */
-  max-width: 850px; /* Maximum width for larger screens */
-  padding: 20px;
-  font-size: 0.9rem;
+  width: 55vw; /* Adjusted width for better balance */
+  max-width: 800px; /* Maximum width for larger screens */
+  padding: 15px;
+  font-size: 0.85rem;
   background: var(--background-gradient);
   border-radius: 35px; /* Softer rounded corners */
-  box-shadow: 0 4px 8px rgba(5, 2, 15, 30); /* Softer shadow */
+  box-shadow: 2px 5px 10px rgba(5, 2, 15, 30); /* Softer shadow */
   direction: rtl; /* Right-to-left direction */
   color: var(--text-color);
-  margin: 5vh auto; /* Center horizontally and add vertical spacing */
+  margin: 4vh auto; /* Center horizontally and add vertical spacing */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,14 +56,14 @@ form p {
 form {
   display: flex;
   flex-wrap: wrap;
-  gap: 25px; /* Space between input groups */
-  width: 100%;
+  gap: 20px; /* Space between input groups */
+  width: 95%;
   justify-content: center;
 }
 
 form h2 {
   text-align: center;
-  width: 100%;
+  width: 95%;
   font-size: 40px; /* Adjusted size for section headings */
 }
 
@@ -81,19 +81,19 @@ form h2 {
 }
 
 .input-group.date input, .input-group.time input {
-  font-size: 25px; /* Increased font size for date and time */
-  padding: 15px; /* Adjusted padding for larger text */
+  font-size: 20px; /* Increased font size for date and time */
+  padding: 12px; /* Adjusted padding for larger text */
 }
 
 .input-group.date label, .input-group.time label {
-  font-size: 45px; /* Increased font size for labels */
-  margin-bottom: 10px; /* Space below the label */
+  font-size: 40px; /* Increased font size for labels */
+  margin-bottom: 8px; /* Space below the label */
   text-align: right; /* Right-aligned text */
 }
 
 .input-group.auto, .input-group.desc {
   width: calc(100% - 15px);
-  font-size: 22px;
+  font-size: 20px;
   text-align: left;
   direction: rtl;
 }
@@ -107,19 +107,20 @@ form h2 {
 
 form label {
   display: block;
-  margin-bottom: 4px; /* Slightly less space between label and input */
+  margin-bottom: 2px; /* Slightly less space between label and input */
   font-weight: bold;
   text-align: right; /* Right-aligned text */
-  font-size: 24px; /* Slightly larger font size for labels */
+  font-size: 22px; /* Slightly larger font size for labels */
 }
 
 form input, form textarea, select {
-  width: 100%; /* Ensuring full width */
-  margin: 4px 0; /* Reduced margin for a tighter layout */
-  border: 2px solid var(--border-color); /* Softer border color */
-  border-radius: 12px; /* Rounded edges */
+  width: 95%; /* Ensuring full width */
+  max-width: 500px;
+  margin: 5px 0; /* Reduced margin for a tighter layout */
+  border: 3px solid var(--border-color); /* Softer border color */
+  border-radius: 15px; /* Rounded edges */
   outline: none;
-  transition: border-color 0.3s ease;
+  transition: border-color 0.2s ease;
   direction: rtl; /* Right-to-left text direction */
   text-align: center; /* Right-aligned text */
   font-family: var(--font);
@@ -145,15 +146,15 @@ input:focus, textarea:focus {
 
 /* Center the button itself */
 .submit-btn {
-  width: 90%; /* Keep the width */
+  width: 85%; /* Keep the width */
   background-color: var(--submit-color);
   border: none;
-  border-radius: 25px;
-  box-shadow: 0 4px 8px rgb(13, 49, 74); /* Softer shadow */
+  border-radius: 23px;
+  box-shadow: 1px 4px 8px rgb(13, 49, 74); /* Softer shadow */
   cursor: pointer;
   font-family: var(--font);
-  font-size: 22px; /* Adjusted button text size */
-  color: #fff;
+  font-size: 20px; /* Adjusted button text size */
+  color: #ffffff;
   padding: 10px; /* Consistent padding */
   margin: 20px auto 0; /* Center the button by setting left/right margins to auto */
   text-align: center;
@@ -162,7 +163,7 @@ input:focus, textarea:focus {
 
 .submit-btn:hover {
   background-color: var(--submit-hover-color);
-  box-shadow: inset 0 3px 7px #000; /* Stronger inset shadow */
+  box-shadow: inset 1px 3px 7px #000; /* Stronger inset shadow */
 }
 
 .no {
@@ -175,7 +176,7 @@ input:focus, textarea:focus {
     width: 90vw; /* Adjusted for smaller screens */
   }
   .input-group {
-    width: 100%; /* Full width for smaller screens */
+    width: 95%; /* Full width for smaller screens */
   }
 }
 
@@ -194,21 +195,21 @@ input:focus, textarea:focus {
 }
 
 .input-group.single-row select {
-  width: 100%; /* Ensure select takes full width of the container */
+  width: 95%; /* Ensure select takes full width of the container */
 }
 
 .toggle-buttons {
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  margin-top: 10px;
+  width: 95%;
+  margin-top: 8px;
 }
 
 .toggle-buttons {
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  margin-top: 10px;
+  width: 95%;
+  margin-top: 8px;
 }
 
 /* Default state */
@@ -236,4 +237,8 @@ input:focus, textarea:focus {
   background-color: #e2e6ea; /* Light gray background on hover */
   border-color: #d6d6d6;
   color: #000; /* Ensure text is black on hover */
+}
+
+form div {
+  font-size: 20px;
 }
