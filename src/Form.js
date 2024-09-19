@@ -22,7 +22,7 @@ const Form = () => {
     fitting: "",
   });
 
-  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isFitting, setFitting] = useState("");
   const [manualTimeChange, setManualTimeChange] = useState(false); // New state to track manual time change
   const [productOptions, setProductOptions] = useState([]); // Use state for product options
   const [mixOptions, setMixOptions] = useState([]); // Use state for mix options
@@ -82,7 +82,7 @@ const Form = () => {
   }, [manualTimeChange]);
 
   const loadProducts = async () => {
-    const response = await fetch(baseUrl + "product");
+    const response = await fetch(baseUrl + "products/" + isFitting);
     return await response.json(); // Return the fetched products
   };
   const loadMix = async () => {
@@ -153,18 +153,41 @@ const Form = () => {
       .classList.remove("no");
   };
 
-  const handleProductToggle = (product) => {
-    setSelectedProduct(product);
+  const handleProductToggle = (isfit) => {
+    setFitting(isfit);
+    formData.fitting = isfit;
+
   };
 
   // When product name is selected, update corresponding fields
   const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(`Form Submitted:
-    ${JSON.stringify(formData, null, 4)}`);
-    if (hasChanged) {
+    if(hasChanged){
+      let finalForm = {"recipe": []}; // it contains all the default keys, and rawmats are in the `recipe`
+      Object.keys(formData).forEach(key => {
+        if(key === "recipe_code"){
+          
+        }else if(key.startsWith("recipe_") && formData[key] != 0){
+          finalForm.recipe[key.slice(7)] = formData[key];
+        }else{
+          finalForm[key] = formData[key];
+        }
+      })
+      console.log("Final Form: " + JSON.stringify(finalForm, null, 4));
+
+
       // post to different endpoints
-    } else {
+    }else{
+      let finalForm = {}; // it contains all the default keys, and rawmats are in the `recipe`
+      Object.keys(formData).forEach(key => {
+        if(key != "recipe_code" && key.startsWith("recipe_")){
+          
+        }else{
+          finalForm[key] = formData[key];
+        }
+      })
+      console.log("Final Form: " + JSON.stringify(finalForm, null, 4));
+
       // await fetch(baseUrl + "/mixentry", {
       //   method: "POST",
       //   body: JSON.stringify(formData),
@@ -173,7 +196,11 @@ const Form = () => {
       //   }
       // });
     }
+    
   };
+
+
+
 
   const renderIngredients = async (mixCode) => {
     let ans = (
@@ -199,7 +226,7 @@ const Form = () => {
               <label>{ingred.rawmaterial.rawmaterial}</label>
               <input
                 type="text"
-                name={ingred.rawmaterial.rawmaterial}
+                name={"recipe_" + ingred.rawmaterial.rawmaterial}
                 value={ingred.weight}
                 onChange={handleChangeMaterial}
                 required
@@ -270,14 +297,14 @@ const Form = () => {
           <label>محصول تولیدی</label>
           <div className="toggle-buttons">
             <div
-              className={`toggle-button ${selectedProduct === 'Product1' ? 'active' : ''}`}
-              onClick={() => handleProductToggle('Product1')}
+              className={`toggle-button ${isFitting === 'True' ? 'active' : ''}`}
+              onClick={() => handleProductToggle("True")}
             >
               اتصالات
             </div>
             <div
-              className={`toggle-button ${selectedProduct === 'Product2' ? 'active' : ''}`}
-              onClick={() => handleProductToggle('Product2')}
+              className={`toggle-button ${isFitting === 'False' ? 'active' : ''}`}
+              onClick={() => handleProductToggle('False')}
             >
               لوله
             </div>
@@ -362,10 +389,11 @@ const Form = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            {Object.keys(productOptions).map((productId) => (
-              <option key={productId} value={productId}>
-                {productOptions[productId].name}
+            {productOptions.map((product) => (
+              <option key={product.code} value={product.code}>
+                {product.name}
               </option>
+
             ))}
           </select>
         </div>
