@@ -16,46 +16,38 @@ const Form = () => {
     productionAmount: "",
     product_id: "",
     recipe_code: "",
+    recipe: {},
     description: "",
     fitting: "",
   });
 
   const [isFitting, setFitting] = useState("True");
-  const [manualTimeChange, setManualTimeChange] = useState(false);
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
   const [operatorOptions, setOperatorOptions] = useState([]);
   const [lineOptions, setLineOptions] = useState([]);
+  const [defaultIngreds, setDefaultIngreds] = useState({});
   const [ingredients, setIngredients] = useState();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [timeInput, setTimeInput] = useState(moment().format('HH:mm'));
+  const [hasChanged, setHasChanged] = useState(false);
 
   // Automatically set date and time on component load
   useEffect(() => {
     const fetchOptions = async () => {
-      const products = await loadProducts();
+      const products = await (await fetch(`${baseUrl}product/${isFitting}`)).json();
       setProductOptions(products);
-      const mix = await loadMix();
+      const mix = await (await fetch(`${baseUrl}materials`)).json();
       setMixOptions(mix);
-      const operators = await loadOperator();
+      const operators = await (await fetch(`${baseUrl}operator/${isFitting}`)).json();
       setOperatorOptions(operators);
-      const lines = await loadLine();
+      const lines = await (await fetch(`${baseUrl}machine/${isFitting}`)).json();
       setLineOptions(lines);
     };
 
     fetchOptions();
 
     moment.loadPersian({ dialect: "persian-modern" });
-
-    const interval = setInterval(() => {
-      if (!manualTimeChange) {
-        setTimeInput(moment().format('HH:mm'));
-        setFormData((prevData) => ({
-          ...prevData,
-          time: moment().format('HH:mm'),
-        }));
-      }
-    }, 60000);
 
     const currentDate = moment().format("jYYYY-jMM-jDD");
     setFormData((prevData) => ({
@@ -64,38 +56,34 @@ const Form = () => {
       time: moment().format('HH:mm'),
     }));
 
-    return () => clearInterval(interval);
-  }, [manualTimeChange]);
+  }, [isFitting]);
 
-  const loadProducts = async () => {
-    const response = await fetch(`${baseUrl}product/${isFitting}`);
-    return await response.json();
-  };
-
-  const loadMix = async () => {
-    const response = await fetch(`${baseUrl}materials`);
-    return await response.json();
-  };
-
-  const loadOperator = async () => {
-    const response = await fetch(`${baseUrl}operator/${isFitting}`);
-    return await response.json();
-  };
-
-  const loadLine = async () => {
-    const response = await fetch(`${baseUrl}machine/${isFitting}`);
-    return await response.json();
-  };
-
+  
   const handleChange = async (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-
     if (e.target.name === "recipe_code") {
       const ingred = await renderIngredients(e.target.value);
       setIngredients(ingred);
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
+      console.log(`${e.target.name} -> ${e.target.value}`)
+      console.log(formData);
+    }else if(e.target.name.startsWith("recipe_")){
+      setFormData({
+        ...formData,
+        recipe: {
+          ...defaultIngreds,
+          ...formData.recipe,
+          [e.target.name]: e.target.value,
+        },
+      });
+      setHasChanged(true);
+    }else {
+      setFormData({
+        ...formData,
+        [e.target.name]: e.target.value,
+      });
     }
   };
 
@@ -123,11 +111,18 @@ const Form = () => {
       ...prevData,
       time: timeInput,
     }));
-    setManualTimeChange(false);
+    closeTimeInput();
   };
 
-  const handleToggleManualTime = () => {
-    setManualTimeChange(!manualTimeChange);
+  const openTimeInput = () => {
+    document.getElementById("time-input").classList.remove("no");
+    document.getElementById("time-text").classList.add("no");
+    
+  };
+  const closeTimeInput = () => {
+    document.getElementById("time-input").classList.add("no");
+    document.getElementById("time-text").classList.remove("no");
+    
   };
 
   const handleProductToggle = (isfit) => {
@@ -136,22 +131,44 @@ const Form = () => {
       ...prevData,
       fitting: isfit,
     }));
+    
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const finalForm = {};
-    Object.keys(formData).forEach((key) => {
-      if (key !== "recipe_code" && key.startsWith("recipe_")) {
-        // Skip recipe_code and recipe_ fields if not changed
-      } else {
-        finalForm[key] = formData[key];
-      }
-    });
+    if(hasChanged){
+      let finalForm = {}; // it contains all the default keys, and rawmats are in the `recipe`
+      Object.keys(formData).forEach(key => {
+        if(key === "recipe_code"){
+          
+        }else {
+          finalForm[key] = formData[key];
+        }
+      })
+      console.log("Final Form (has changed): " + JSON.stringify(finalForm, null, 4));
 
-    console.log("Final Form: " + JSON.stringify(finalForm, null, 4));
 
-    // Add your submit logic here
+      // post to different endpoints
+    }else{
+      let finalForm = {}; // it contains all the default keys, and rawmats are in the `recipe`
+      Object.keys(formData).forEach(key => {
+        if(key === "recipe"){
+          
+        }else{
+          finalForm[key] = formData[key];
+        }
+      })
+      console.log("Final Form (not changed): " + JSON.stringify(finalForm, null, 4));
+
+      // await fetch(baseUrl + "/mixentry", {
+      //   method: "POST",
+      //   body: JSON.stringify(formData),
+      //   headers: {
+      //     'Content-Type': 'application/json'
+      //   }
+      // });
+    }
+    
   };
 
   const renderIngredients = async (mixCode) => {
@@ -163,34 +180,31 @@ const Form = () => {
       } catch (err) {
         return ans;
       }
-      function addSubstringToKeys(obj, substring) {
+      function convertIngredients(ing_obj, substring) {
         const newObj = {};
         
-        for (const key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                const newKey = key + substring;
-                newObj[newKey] = obj[key];
-            }
-        }
+        Object.keys(ing_obj).forEach(key => {
+          newObj[substring + ing_obj[key].rawmaterial.id] = ing_obj[key].weight;
+          
+        })
         
         return newObj;
       }
-      addSubstringToKeys(mix_ingreds, "recipe");
-      setFormData((prevData) => ({
-        ...prevData,
-        ...mix_ingreds,
-      }));
+      let recipe_list = convertIngredients(mix_ingreds, "recipe_");
+      console.log(recipe_list);
+
+      setDefaultIngreds(recipe_list);
+      
       return (
         <div className="auto-container">
           {mix_ingreds.map((ingred) => (
-            <div className="input-group auto" key={ingred.rawmaterial.rawmaterial}>
+            <div className="input-group auto" key={ingred.rawmaterial.id}>
               <label>{ingred.rawmaterial.rawmaterial}</label>
               <input
                 type="text"
-                name={"recipe_" + ingred.rawmaterial.rawmaterial}
-                value={ingred.weight}
+                name={"recipe_" + ingred.rawmaterial.id}
+                defaultValue={ingred.weight}
                 onChange={handleChange}
-                required
               />
             </div>
           ))}
@@ -229,25 +243,23 @@ const Form = () => {
           </p>
         </div>
 
-        <div className="clock-container">
+        <div className="input-group clock-container">
           <label htmlFor="">زمان</label>
-          <div className="clock-display" onClick={handleToggleManualTime}>
-            {manualTimeChange ? (
-              <>
-                <input
-                  type="time"
-                  value={timeInput}
-                  onChange={handleTimeInputChange}
-                  className="time-input"
-                />
-                <button type="button" onClick={handleSaveTime}>ذخیره</button>
-                <button type="button" onClick={handleToggleManualTime}>لغو</button>
-              </>
-            ) : (
-              <>
-                <p>{moment(timeInput, 'HH:mm').format('HH:mm')}</p>
-              </>
-            )}
+          <div className="clock-display" >
+          <div id="time-input" className="no">
+            <input
+              type="time"
+              value={timeInput}
+              onChange={handleTimeInputChange}
+              className="time-input"
+            />
+            <button type="button" onClick={handleSaveTime} >ذخیره</button>
+            <button type="button" onClick={closeTimeInput} >لغو</button>
+          </div>
+          <div id="time-text">
+            <p onClick={openTimeInput} >{moment(timeInput, 'HH:mm').format('HH:mm')}</p>
+          </div>
+            
           </div>
         </div>
 
@@ -314,7 +326,7 @@ const Form = () => {
             <option value="">انتخاب کنید</option>
             {lineOptions.map((line) => (
               <option key={line.id} value={line.id}>
-                {line.name}
+                {line.machine}
               </option>
             ))}
           </select>
@@ -343,7 +355,7 @@ const Form = () => {
           >
             <option value="">انتخاب کنید</option>
             {productOptions.map((product) => (
-              <option key={product.id} value={product.id}>
+              <option key={product.code} value={product.code}>
                 {product.name}
               </option>
             ))}
@@ -355,11 +367,9 @@ const Form = () => {
           <select
             id="recipe_code"
             name="recipe_code"
-            value={formData.recipe_code}
             onChange={handleChange}
-            required
           >
-            <option value="other">سایر</option>
+            <option value="16">سایر</option>
             {mixOptions.map((mix) => (
               <option key={mix.id} value={mix.id}>
                 {mix.material}

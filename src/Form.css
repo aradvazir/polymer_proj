@@ -85,7 +85,7 @@ form h2 {
   padding: 12px; /* Adjusted padding for larger text */
 }
 
-.input-group.auto, .input-group.desc {
+.input-group.desc {
   width: calc(100% - 15px);
   font-size: 20px;
   text-align: left;
@@ -248,20 +248,13 @@ form div {
 
 /* Adjust the clock display styling */
 .clock-display {
-  background-color: rgba(129, 164, 173, 0.323); /* Semi-transparent background */
   border-radius: 15px;
-  padding: 20px 20px;
   text-align: center;
   cursor: pointer; /* Pointer for clickability */
   transition: background-color 0.2s ease;
   font-size: 20px; /* Increase font size for time display */
   color: var(--text-color);
   margin-top: 4px;
-}
-
-/* Time display hover effect */
-.clock-display:hover {
-  background-color: rgba(255, 255, 255, 0.3); /* Light hover effect */
 }
 
 /* Manual time input styling */
@@ -277,15 +270,15 @@ form div {
 }
 
 button {
-  font-size: 20px;
+  font: var(--font);
   background-color: var(--submit-color);
   color: #fff;
-  padding: 6px 12px;
   border-radius: 8px;
-  margin-top: 10px;
+  margin: 5px 2px -5px 1px;
   box-shadow: rgba(102, 137, 174, 0.323);
   cursor: pointer;
   transition: background-color 0.3s;
+  
 }
 
 button:hover {
@@ -391,11 +384,18 @@ button:hover {
   padding: 5px;
 }
 
-button:hover {
-  background-color: #4b70b8;
+.clock-display button {
+  background-color: transparent;
+  width: 40%;
+  box-shadow: 1px 1px 1px #fff5;
+  border: none;
 }
 
-button:active {
+.clock-display button:hover {
+  box-shadow: 1px 1px 1px #ffff;
+}
+
+.clock-display button:active {
   background-color: #3b5998;
 }
 
