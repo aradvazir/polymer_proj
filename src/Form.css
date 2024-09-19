@@ -1,139 +1,168 @@
-:root{
-  --background-color: #0056b3;
-  --text-color: #fff;
-  --submit-color: #22aa00;
-  --submit-pushed: #129a00;
+:root {
+  --background-color: #004d99; /* Darker blue for better contrast */
+  --text-color: #e5f6f3; /* Softer text color */
+  --submit-color: #28a745; /* Brighter green */
+  --submit-hover-color: #218838; /* Darker green for hover */
+  --background-gradient: linear-gradient(135deg, #041d50 0%, #0976e2e4 100%);
+  --border-color: #1a3a5a; /* Softer border color */
+  --border-focus-color: #025fc3; /* Deeper blue for focus */
   --font: 'B Nazanin', sans-serif;
 }
-
 
 @font-face {
   font-family: 'B Nazanin';
   src: url('./fonts/Nazaninb.ttf') format('truetype'); /* Path relative to the public directory */
-  font-weight: normal; /* or bold, depending on the font weight */
-  font-style: normal; /* or italic, if applicable */
+  font-weight: normal;
+  font-style: normal;
 }
 
 #root {
   font-family: var(--font);
-  font-size: 16px;
+  font-size: 20px; /* Base font size */
   margin-bottom: 10vh;
 }
 
 h1 {
-  font-size: 40px;
+  font-size: 55px; /* Adjusted size for headings */
   color: var(--background-color);
+  text-align: center;
+  margin-bottom: 20px; /* Space below the heading */
+}
+
+form p {
+  display: block;
+  margin-bottom: 5px; /* Slightly less space between label and input */
+  font-weight: bold;
+  text-align: center; /* Right-aligned text */
+  font-size: 28px;
 }
 
 .form-container {
-  position: absolute;
-  width: 60vw;
-  left: 20vw;
+  width: 60vw; /* Adjusted width for better balance */
+  max-width: 850px; /* Maximum width for larger screens */
   padding: 20px;
-  background-color: var(--background-color);
-  border-radius: 30px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  direction: rtl; /* Set the direction to RTL */
+  font-size: 0.9rem;
+  background: var(--background-gradient);
+  border-radius: 35px; /* Softer rounded corners */
+  box-shadow: 0 4px 8px rgba(5, 2, 15, 30); /* Softer shadow */
+  direction: rtl; /* Right-to-left direction */
   color: var(--text-color);
-  
+  margin: 5vh auto; /* Center horizontally and add vertical spacing */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 form {
   display: flex;
-  flex-direction: row;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 25px; /* Space between input groups */
+  width: 100%;
+  justify-content: center;
 }
 
 form h2 {
   text-align: center;
   width: 100%;
-  direction: rtl; /* RTL direction for heading */
+  font-size: 40px; /* Adjusted size for section headings */
 }
 
 .input-group {
-  width: 40%;
-  position: relative;
+  width: calc(50% - 15px); /* Adjusted width for better spacing */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Right-aligned items for RTL */
+  direction: rtl; /* Right-to-left direction */
+  box-sizing: border-box;
 }
 
-.input-group.date {
-  width: 20vw;
-  margin: 0 9vw 0 0;
+.input-group.date, .input-group.time {
+  width: calc(50% - 15px);
 }
 
-.input-group.time {
-  width: 10vw;
-  margin: 0 9vw 0 0;
+.input-group.date input, .input-group.time input {
+  font-size: 25px; /* Increased font size for date and time */
+  padding: 15px; /* Adjusted padding for larger text */
 }
 
-
-.input-group.auto {
-  width: auto;
-  margin: 0 5vw 0 5vw;
+.input-group.date label, .input-group.time label {
+  font-size: 45px; /* Increased font size for labels */
+  margin-bottom: 10px; /* Space below the label */
+  text-align: right; /* Right-aligned text */
 }
 
-.input-group.desc {
-  width: 80%;
+.input-group.auto, .input-group.desc {
+  width: calc(100% - 15px);
+  font-size: 22px;
+  text-align: left;
+  direction: rtl;
 }
 
 .auto-container {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  gap: 15px;
 }
-
 
 form label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 4px; /* Slightly less space between label and input */
   font-weight: bold;
-  direction: rtl; /* RTL direction for labels */
-  text-align: right; /* Align the text to the right */
+  text-align: right; /* Right-aligned text */
+  font-size: 24px; /* Slightly larger font size for labels */
 }
 
 form input, form textarea, select {
-  width: calc(80% + 22px);;
-  margin: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  width: 100%; /* Ensuring full width */
+  margin: 4px 0; /* Reduced margin for a tighter layout */
+  border: 2px solid var(--border-color); /* Softer border color */
+  border-radius: 12px; /* Rounded edges */
   outline: none;
   transition: border-color 0.3s ease;
-  direction: rtl; /* Set the text inside input fields to RTL */
-  text-align: right; /* Align text inside inputs to the right */
+  direction: rtl; /* Right-to-left text direction */
+  text-align: center; /* Right-aligned text */
   font-family: var(--font);
+  font-size: 18px;
+  padding: 8px; /* Added padding for better spacing */
+  box-sizing: border-box; /* Ensure padding and border are included in element width */
 }
 
 form textarea {
-  width: 100%;
-  margin: 0;
+  height: 150px; /* Increased height for description */
+  resize: vertical;
 }
+
+textarea#description {
+  direction: rtl; /* Set the text direction to right-to-left */
+  text-align: right; /* Align text to the right */
+}
+
 
 input:focus, textarea:focus {
-  border-color: #007bff;
+  border-color: var(--border-focus-color); /* Highlighted border color on focus */
 }
 
-textarea {
-  resize: vertical;
-  height: 100px;
-}
-
+/* Center the button itself */
 .submit-btn {
-  width: 100%;
+  width: 90%; /* Keep the width */
   background-color: var(--submit-color);
   border: none;
-  border-radius: 30px;
-  box-shadow: 2px 2px 5px #000;
+  border-radius: 25px;
+  box-shadow: 0 4px 8px rgb(13, 49, 74); /* Softer shadow */
   cursor: pointer;
   font-family: var(--font);
-  font-size: 24px;
+  font-size: 22px; /* Adjusted button text size */
   color: #fff;
-  
-  
+  padding: 10px; /* Consistent padding */
+  margin: 20px auto 0; /* Center the button by setting left/right margins to auto */
+  text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
 }
 
 .submit-btn:hover {
-  background-color: var(--submit-pushed);
-  box-shadow: inset 0 2px 5px #000;
+  background-color: var(--submit-hover-color);
+  box-shadow: inset 0 3px 7px #000; /* Stronger inset shadow */
 }
 
 .no {
@@ -141,15 +170,70 @@ textarea {
   height: 0;
 }
 
-
-@media only screen and (max-width: 768px){
+@media only screen and (max-width: 768px) {
   .form-container {
-    width: 85vw;
-    left: 2.5vw;
+    width: 90vw; /* Adjusted for smaller screens */
   }
-  .input-group.date, .input-group.time {
-    width: 30vw;
-    margin: 0 9vw 0 0;
+  .input-group {
+    width: 100%; /* Full width for smaller screens */
   }
-  
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  direction: rtl;
+  box-sizing: border-box;
+  width: calc(50% - 15px); /* Default width for other input groups */
+}
+
+.input-group.single-row {
+  width: 60%; /* Full width for single row elements */
+  margin-top: 5px; /* Add space above for separation */
+}
+
+.input-group.single-row select {
+  width: 100%; /* Ensure select takes full width of the container */
+}
+
+.toggle-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.toggle-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Default state */
+.toggle-button {
+  background-color: #f0f0f0; /* White background */
+  color: #000; /* Black text */
+  border: 3px solid #ccc;
+  border-radius: 20px;
+  padding: 10px;
+  cursor: pointer;
+  flex: 2;
+  text-align: center;
+  transition: background-color 0.1s, border-color 0.1s, color 0.3s;
+}
+
+/* Active state */
+.toggle-button.active {
+  background-color: #2fbe50; /* Green background */
+  color: #fff; /* White text */
+  border-color: #19351f;
+}
+
+/* Hover state */
+.toggle-button:hover {
+  background-color: #e2e6ea; /* Light gray background on hover */
+  border-color: #d6d6d6;
+  color: #000; /* Ensure text is black on hover */
 }

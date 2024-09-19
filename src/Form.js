@@ -22,13 +22,15 @@ const Form = () => {
     fitting: "",
   });
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [manualTimeChange, setManualTimeChange] = useState(false); // New state to track manual time change
   const [productOptions, setProductOptions] = useState([]); // Use state for product options
   const [mixOptions, setMixOptions] = useState([]); // Use state for mix options
   const [operatorOptions, setOperatorOptions] = useState([]); // Use state for mix options
   const [lineOptions, setLineOptions] = useState([]); // Use state for mix options
   const [ingredients, setIngredients] = useState();
-  const [selectedDate, setSelectedDate] = useState(new Date()); // State for the selected 
-  const [selectedTime, setSelectedTime] = useState("10:00"); // State for the selected 
+  const [selectedDate, setSelectedDate] = useState(new Date()); // State for the selected
+  const [selectedTime, setSelectedTime] = useState("10:00"); // State for the selected
   const [hasChanged, setHasChanged] = useState(true); // At first it is on other
   // Automatically set date and time on component load
   useEffect(() => {
@@ -36,23 +38,29 @@ const Form = () => {
       const products = await loadProducts();
       setProductOptions(products); // Update state with fetched products
     }
-    fetchProduct();
     async function fetchMix() {
       const mix = await loadMix();
       setMixOptions(mix); // Update state with fetched products
     }
-    fetchMix();
     async function fetchOperator() {
-      const mix = await loadOperator();
-      setOperatorOptions(mix); // Update state with fetched products
+      const operators = await loadOperator();
+      setOperatorOptions(operators); // Update state with fetched operators
     }
-    fetchOperator();
     async function fetchLine() {
-      const mix = await loadLine();
-      setLineOptions(mix); // Update state with fetched products
+      const lines = await loadLine();
+      setLineOptions(lines); // Update state with fetched lines
     }
+  
+    // Fetch all data
+    fetchProduct();
+    fetchMix();
+    fetchOperator();
     fetchLine();
-    moment.loadPersian({ dialect: "persian-modern" }); // Load Persian settings
+  
+    // Load Persian settings for moment.js
+    moment.loadPersian({ dialect: "persian-modern" });
+  
+    // Set the current date and time
     const currentDate = moment().format("jYYYY-jMM-jDD"); // Persian date
     const currentTime = moment().format("HH:mm"); // 24-hour time
     setFormData((prevData) => ({
@@ -60,7 +68,18 @@ const Form = () => {
       date: currentDate,
       time: currentTime,
     }));
-  }, []);
+  
+    // Automatically update time every minute unless manually changed
+    const interval = setInterval(() => {
+      const updatedTime = moment().format("HH:mm");
+      setFormData((prevData) => ({
+        ...prevData,
+        time: updatedTime,
+      }));
+    }, 60000); // Update every minute
+  
+    return () => clearInterval(interval); // Clean up the interval on component unmount
+  }, [manualTimeChange]);
 
   const loadProducts = async () => {
     const response = await fetch(baseUrl + "product");
@@ -86,7 +105,7 @@ const Form = () => {
     });
     if (e.target.name === "recipe_code") {
       const ingred = await renderIngredients(e.target.value);
-      if(ingred !== "other"){
+      if (ingred !== "other") {
         setHasChanged(true);
       }
       setIngredients(ingred);
@@ -97,9 +116,9 @@ const Form = () => {
   const handleChangeMaterial = async (e) => {
     setHasChanged(true);
     await handleChange(e);
-
   };
 
+  // Handle date change using the calendar
   const handleDateChange = (date) => {
     setSelectedDate(date);
     const formattedDate = moment(date).format("jYYYY-jMM-jDD"); // Convert to Jalali date
@@ -107,28 +126,45 @@ const Form = () => {
       ...prevData,
       date: formattedDate,
     }));
+    
+    // Hide the calendar and show the selected date
     document.getElementsByClassName("react-calendar")[0].classList.add("no");
-    document.getElementsByClassName("date")[0].getElementsByTagName("p")[0].classList.remove("no");
+    document
+      .getElementsByClassName("date")[0]
+      .getElementsByTagName("p")[0]
+      .classList.remove("no");
   };
+
+  // Handle manual time change
   const handleTimeChange = (e) => {
-    const newTime = e.target.value
-    console.log("New time: " + newTime)
+    const newTime = e.target.value;
     setSelectedTime(newTime);
     setFormData((prevData) => ({
       ...prevData,
       time: newTime,
     }));
+    setManualTimeChange(true); // Set the flag to prevent auto-updating
+
+    // Hide the time picker and show the selected time
     document.getElementsByClassName("time-picker")[0].classList.add("no");
-    document.getElementsByClassName("time")[0].getElementsByTagName("p")[0].classList.remove("no");
+    document
+      .getElementsByClassName("time")[0]
+      .getElementsByTagName("p")[0]
+      .classList.remove("no");
   };
+
+  const handleProductToggle = (product) => {
+    setSelectedProduct(product);
+  };
+
   // When product name is selected, update corresponding fields
   const handleSubmit = async (e) => {
     e.preventDefault();
     alert(`Form Submitted:
     ${JSON.stringify(formData, null, 4)}`);
-    if(hasChanged){
+    if (hasChanged) {
       // post to different endpoints
-    }else{
+    } else {
       // await fetch(baseUrl + "/mixentry", {
       //   method: "POST",
       //   body: JSON.stringify(formData),
@@ -137,7 +173,6 @@ const Form = () => {
       //   }
       // });
     }
-    
   };
 
   const renderIngredients = async (mixCode) => {
@@ -147,7 +182,9 @@ const Form = () => {
     if (mixCode) {
       let mix_ingreds = null;
       try {
-        mix_ingreds = await (await fetch(baseUrl + "material/" + mixCode)).json();
+        mix_ingreds = await (
+          await fetch(baseUrl + "material/" + mixCode)
+        ).json();
       } catch (err) {
         return ans;
       }
@@ -189,10 +226,15 @@ const Form = () => {
             locale="fa-IR"
             className="no"
           />
-          <p 
+          <p
             onClick={() => {
-              document.getElementsByClassName("react-calendar")[0].classList.remove("no");
-              document.getElementsByClassName("date")[0].getElementsByTagName("p")[0].classList.add("no");
+              document
+                .getElementsByClassName("react-calendar")[0]
+                .classList.remove("no");
+              document
+                .getElementsByClassName("date")[0]
+                .getElementsByTagName("p")[0]
+                .classList.add("no");
             }}
           >
             {moment(selectedDate).format("jYYYY/jMM/jDD")}
@@ -201,21 +243,45 @@ const Form = () => {
 
         <div className="input-group time">
           <label htmlFor="time">زمان</label>
-          <p 
+          <p
             onClick={() => {
-              document.getElementsByClassName("time-picker")[0].classList.remove("no");
-              document.getElementsByClassName("time")[0].getElementsByTagName("p")[0].classList.add("no");
+              document
+                .getElementsByClassName("time-picker")[0]
+                .classList.remove("no");
+              document
+                .getElementsByClassName("time")[0]
+                .getElementsByTagName("p")[0]
+                .classList.add("no");
             }}
           >
             {formData.time}
           </p>
-          <input 
-            aria-label="Time" 
-            type="time" 
+          <input
+            aria-label="Time"
+            type="time"
             className="time-picker no"
             value={selectedTime}
-            onChange={handleTimeChange}/>
-          
+            onChange={handleTimeChange}
+          />
+        </div>
+
+        {/* Product Toggle Buttons */}
+        <div className="input-group single-row">
+          <label>محصول تولیدی</label>
+          <div className="toggle-buttons">
+            <div
+              className={`toggle-button ${selectedProduct === 'Product1' ? 'active' : ''}`}
+              onClick={() => handleProductToggle('Product1')}
+            >
+              اتصالات
+            </div>
+            <div
+              className={`toggle-button ${selectedProduct === 'Product2' ? 'active' : ''}`}
+              onClick={() => handleProductToggle('Product2')}
+            >
+              لوله
+            </div>
+          </div>
         </div>
 
         {/* Operator selection dropdown */}
@@ -253,7 +319,7 @@ const Form = () => {
             <option value="3">شب</option>
           </select>
         </div>
-        
+
         {/* Line selection dropdown */}
         <div className="input-group">
           <label htmlFor="line_id">خط تولید</label>

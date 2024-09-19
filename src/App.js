@@ -1,10 +1,11 @@
-import React from 'react';
-import Form from './Form';
+import React from "react";
+import Form from "./Form";
+import "./App.css";
 
 function App() {
   return (
     <div>
-      <h1 align="center">فرم تولید</h1>
+      <h1>فرم تولید</h1>
       <Form />
     </div>
   );
