@@ -253,8 +253,9 @@ const Form = () => {
               onChange={handleTimeInputChange}
               className="time-input"
             />
-            <button type="button" onClick={handleSaveTime} >ذخیره</button>
-            <button type="button" onClick={closeTimeInput} >لغو</button>
+            <button type="button" className="action-button save-button" onClick={handleSaveTime}>ذخیره</button>
+            <button type="button" className="action-button cancel-button" onClick={closeTimeInput}>لغو</button>
+
           </div>
           <div id="time-text">
             <p onClick={openTimeInput} >{moment(timeInput, 'HH:mm').format('HH:mm')}</p>
