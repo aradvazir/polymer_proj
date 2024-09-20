@@ -5,7 +5,7 @@ import "react-calendar/dist/Calendar.css";
 import "./Form.css";
 
 // const baseUrl = "/";
-const baseUrl = "http://localhost/";
+const baseUrl = "http://localhost:8000/";
 
 const Form = () => {
   const [formData, setFormData] = useState({
