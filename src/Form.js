@@ -4,7 +4,8 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./Form.css";
 
-const baseUrl = "/";
+// const baseUrl = "/";
+const baseUrl = "http://localhost/";
 
 const Form = () => {
   const [formData, setFormData] = useState({
@@ -75,7 +76,7 @@ const Form = () => {
         recipe: {
           ...defaultIngreds,
           ...formData.recipe,
-          [e.target.name]: parseFloat(e.target.value),
+          [parseInt(e.target.name.slice(7))]: parseFloat(e.target.value),
         },
       });
       setHasChanged(true);
