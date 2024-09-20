@@ -4,25 +4,46 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./Form.css";
 
-// const baseUrl = "/";
-const baseUrl = "http://localhost:8000/";
+const baseUrl = "/";
+// const baseUrl = "http://localhost:8000/";
+
+const setCookie = (name, value) => {
+  let expires = "";
+  const date = new Date();
+  date.setTime(date.getTime() + (60 * 60 * 1000));
+  expires = "; expires=" + date.toUTCString();
+  // Construct the cookie string
+  const cookieString = `${name}=${value || ""}${expires}; path=/; SameSite=None; Secure`;
+  document.cookie = cookieString;
+}
+
+const getCookie = (name) => {
+  const nameEQ = name + "="; // Create a string to search for
+  const ca = document.cookie.split(';'); // Split cookies into an array
+  for (let i = 0; i < ca.length; i++) {
+      let c = ca[i]; // Get each cookie
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length); // Trim leading spaces
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length); // Return cookie value
+  }
+  return null; // Return null if cookie not found
+};
 
 const Form = () => {
   const [formData, setFormData] = useState({
     date: "",
     time: "",
-    operator_id: "",
-    shift: "",
-    line_id: "",
-    productionAmount: "",
-    product_id: "",
-    recipe_code: "",
+    operator_id: getCookie("operator_id") ? getCookie("operator_id") : "",
+    shift: getCookie("shift") ? getCookie("shift") : "",
+    line_id: getCookie("line_id") ? getCookie("line_id") : "",
+    productionAmount: getCookie("productionAmount") ? getCookie("productionAmount") : "",
+    product_id: getCookie("product_id") ? getCookie("product_id") : "",
+    recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "",
     recipe: {},
-    description: "",
-    fitting: "True",
+    description: getCookie("description") ? getCookie("description") : "",
+    fitting: getCookie("fitting") ? getCookie("fitting") : "True",
   });
 
-  const [isFitting, setFitting] = useState("True");
+  const [isFitting, setFitting] = useState(getCookie("fitting") ? getCookie("fitting") : "True");
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
   const [operatorOptions, setOperatorOptions] = useState([]);
@@ -59,38 +80,61 @@ const Form = () => {
 
   }, [isFitting]);
 
-  
-  const handleChange = async (e) => {
-    if (e.target.name === "recipe_code") {
-      const ingred = await renderIngredients(e.target.value);
+  useEffect(() => {
+    const start_recipe = async () => {
+      const ingred = await renderIngredients(formData.recipe_code);
       setIngredients(ingred);
-      setFormData({
-        ...formData,
-        [e.target.name]: e.target.value,
-      });
-      console.log(`${e.target.name} -> ${e.target.value}`)
-      console.log(formData);
-    }else if(e.target.name.startsWith("recipe_")){
-      setFormData({
-        ...formData,
-        recipe: {
-          ...defaultIngreds,
-          ...formData.recipe,
-          [parseInt(e.target.name.slice(7))]: parseFloat(e.target.value),
-        },
-      });
-      setHasChanged(true);
+      setHasChanged(false);
+    };
+    start_recipe();
+  }, []);
+
+  const handleRecipeCodeChange = async(e) => {
+    const value = e.target.value
+    const ingred = await renderIngredients(value);
+    
+    setIngredients(ingred);
+    setFormData({
+      ...formData,
+      [e.target.name]: value,
+    });
+    setHasChanged(false);
+    setCookie(e.target.name, value);
+    window.location.reload();
+  };
+  const handleRecipeChange = async(e) => {
+    const newKey = e.target.name.slice(7), newValue = parseFloat(e.target.value) || "";
+    let defaults = JSON.parse(getCookie("defaultIngreds"));
+    defaults[newKey] = newValue;
+    setCookie("defaultIngreds", JSON.stringify(defaults));
+    
+    setFormData({
+      ...formData,
+      recipe: {
+        ...defaults,
+        ...defaultIngreds,
+        ...formData.recipe,
+        [newKey]: newValue,
+      },
+    });
+    setHasChanged(true);
+  };
+
+  const handleChange = async (e) => {
+    if(e.target.name.startsWith("recipe_")){
+      await handleRecipeChange(e);
     }else {
       setFormData({
         ...formData,
         [e.target.name]: e.target.value,
       });
+      setCookie(e.target.name, e.target.value);
     }
   };
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
     const formattedDate = moment(date).format("jYYYY-jMM-jDD");
+    setSelectedDate(formattedDate);
     setFormData((prevData) => ({
       ...prevData,
       date: formattedDate,
@@ -125,6 +169,7 @@ const Form = () => {
     document.getElementById("time-text").classList.remove("no");
     
   };
+  
 
   const handleProductToggle = (isfit) => {
     setFitting(isfit);
@@ -132,25 +177,35 @@ const Form = () => {
       ...prevData,
       fitting: isfit,
     }));
-    
+    setCookie("fitting", isfit);
   };
 
   const handleSubmit = async (e) => {
+    console.log(formData);
     e.preventDefault();
     if(hasChanged){
-      let finalForm = {}; // it contains all the default keys, and rawmats are in the `recipe`
+      let finalForm = {recipe: {}}; // it contains all the default keys, and rawmats are in the `recipe`
       Object.keys(formData).forEach(key => {
-        if(key === "recipe_code"){
+        if(key === "recipe_code" || key === "recipe"){
           
-        } else if(key === "product_id" || key === "description" || key === "date" || key === "time" || key === "fitting" || key === "recipe"){
+        } else if(key === "product_id" || key === "description" || key === "fitting"){
           finalForm[key] = formData[key];
+        } else if(key === "date"){
+          finalForm[key] = formData[key] || selectedDate;
+        } else if(key === "time"){
+          finalForm[key] = formData[key] || timeInput;
         } else {
           finalForm[key] = parseInt(formData[key]);
+        }
+      });
+      Object.keys(formData.recipe).forEach(key => {
+        if(formData.recipe[key]){
+          finalForm.recipe[key] = formData.recipe[key];
         }
       })
       console.log("Final Form (has changed): " + JSON.stringify(finalForm, null, 4));
 
-      await fetch(baseUrl + "mixentry/other", {
+      await fetch(baseUrl + "mixentry/other/", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
@@ -164,8 +219,12 @@ const Form = () => {
       Object.keys(formData).forEach(key => {
         if(key === "recipe"){
           
-        } else if(key === "product_id" || key === "description" || key === "date" || key === "time" || key === "fitting"){
+        } else if(key === "product_id" || key === "description" || key === "fitting"){
           finalForm[key] = formData[key];
+        } else if(key === "date"){
+          finalForm[key] = formData[key] || selectedDate;
+        } else if(key === "time"){
+          finalForm[key] = formData[key] || timeInput;
         } else {
           finalForm[key] = parseInt(formData[key]);
         }
@@ -192,30 +251,30 @@ const Form = () => {
       } catch (err) {
         return ans;
       }
-      function convertIngredients(ing_obj, substring) {
+      
+      function id_weight_Ingredients(ing_obj) {
         const newObj = {};
         
         Object.keys(ing_obj).forEach(key => {
-          newObj[substring + ing_obj[key].rawmaterial.id] = parseFloat(ing_obj[key].weight);
+          newObj[ing_obj[key].rawmaterial.id] = parseFloat(ing_obj[key].weight);
           
         })
         
         return newObj;
       }
-      let recipe_list = convertIngredients(mix_ingreds, "recipe_");
-      function deconvertIngredients(ing_obj, substring) {
-        const newObj = {};
-        
-        Object.keys(ing_obj).forEach(key => {
-          newObj[key.slice(7)] = ing_obj[key].weight;
-          
-        })
-        
-        return newObj;
-      }
-      console.log(recipe_list);
-
-      setDefaultIngreds(deconvertIngredients(recipe_list));
+      
+      const defaults = id_weight_Ingredients(mix_ingreds)
+      setCookie("defaultIngreds", JSON.stringify(defaults))
+    
+      const newForm = {
+        ...formData,
+        recipe: {
+          ...mix_ingreds,
+          ...formData.recipe,
+        },
+      };
+      setFormData(newForm);
+      setDefaultIngreds(defaults);
       
       return (
         <div className="auto-container">
@@ -239,6 +298,7 @@ const Form = () => {
 
   return (
     <div className="form-container">
+      <div style={{visibility: "hidden"}}>{JSON.stringify(defaultIngreds)}</div>
       <form onSubmit={handleSubmit}>
         <h2>اطلاعات تولید</h2>
 
@@ -313,7 +373,7 @@ const Form = () => {
             onChange={handleChange}
             required
           >
-            <option value="">انتخاب کنید</option>
+            <option value="">انتخاب کنید</option> 
             {operatorOptions.map((operator) => (
               <option key={operator.id} value={operator.id}>
                 {operator.name}
@@ -321,7 +381,7 @@ const Form = () => {
             ))}
           </select>
         </div>
-
+        
         <div className="input-group">
           <label htmlFor="shift">شیفت</label>
           <select
@@ -391,9 +451,10 @@ const Form = () => {
           <select
             id="recipe_code"
             name="recipe_code"
-            onChange={handleChange}
+            value={formData.recipe_code}
+            onChange={handleRecipeCodeChange}
           >
-            <option value="16">سایر</option>
+            <option key="16" value="16" >سایر</option>
             {mixOptions.map((mix) => (
               <option key={mix.id} value={mix.id}>
                 {mix.material}

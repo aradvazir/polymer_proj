@@ -1,5 +1,5 @@
 [
-    {"rawmaterial": {"id": 4, "rawmaterial": "دوده ", "company": "مختاریان"}, "weight": 0},
+    {"rawmaterial": {"id": 4, "rawmaterial": "سایر ", "company": "مختاریان"}, "weight": 0},
     {"rawmaterial": {"id": 5, "rawmaterial": "کراتین ", "company": "مختاریان"}, "weight": 0},
     {"rawmaterial": {"id": 6, "rawmaterial": "مخمر ", "company": "مختاریان"}, "weight": 0},
     {"rawmaterial": {"id": 7, "rawmaterial": "PVC34 ", "company": "مختاریان"}, "weight": 0},
