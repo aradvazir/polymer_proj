@@ -18,7 +18,7 @@ const Form = () => {
     recipe_code: "",
     recipe: {},
     description: "",
-    fitting: "",
+    fitting: "True",
   });
 
   const [isFitting, setFitting] = useState("True");
@@ -29,7 +29,7 @@ const Form = () => {
   const [defaultIngreds, setDefaultIngreds] = useState({});
   const [ingredients, setIngredients] = useState();
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [timeInput, setTimeInput] = useState(moment().format('HH:mm'));
+  const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
   const [hasChanged, setHasChanged] = useState(false);
 
   // Automatically set date and time on component load
@@ -53,7 +53,7 @@ const Form = () => {
     setFormData((prevData) => ({
       ...prevData,
       date: currentDate,
-      time: moment().format('HH:mm'),
+      time: moment().format("HH:mm"),
     }));
 
   }, [isFitting]);
@@ -75,7 +75,7 @@ const Form = () => {
         recipe: {
           ...defaultIngreds,
           ...formData.recipe,
-          [e.target.name]: e.target.value,
+          [e.target.name]: parseFloat(e.target.value),
         },
       });
       setHasChanged(true);
@@ -141,12 +141,21 @@ const Form = () => {
       Object.keys(formData).forEach(key => {
         if(key === "recipe_code"){
           
-        }else {
+        } else if(key === "product_id" || key === "description" || key === "date" || key === "time" || key === "fitting" || key === "recipe"){
           finalForm[key] = formData[key];
+        } else {
+          finalForm[key] = parseInt(formData[key]);
         }
       })
       console.log("Final Form (has changed): " + JSON.stringify(finalForm, null, 4));
 
+      await fetch(baseUrl + "mixentry/other", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
 
       // post to different endpoints
     }else{
@@ -154,19 +163,21 @@ const Form = () => {
       Object.keys(formData).forEach(key => {
         if(key === "recipe"){
           
-        }else{
+        } else if(key === "product_id" || key === "description" || key === "date" || key === "time" || key === "fitting"){
           finalForm[key] = formData[key];
+        } else {
+          finalForm[key] = parseInt(formData[key]);
         }
       })
       console.log("Final Form (not changed): " + JSON.stringify(finalForm, null, 4));
 
-      // await fetch(baseUrl + "/mixentry", {
-      //   method: "POST",
-      //   body: JSON.stringify(formData),
-      //   headers: {
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
+      await fetch(baseUrl + "mixentry", {
+        method: "POST",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
     }
     
   };
@@ -258,7 +269,7 @@ const Form = () => {
 
           </div>
           <div id="time-text">
-            <p onClick={openTimeInput} >{moment(timeInput, 'HH:mm').format('HH:mm')}</p>
+            <p onClick={openTimeInput} >{moment(timeInput, "HH:mm").format("HH:mm")}</p>
           </div>
             
           </div>
@@ -268,14 +279,14 @@ const Form = () => {
           <label>محصول تولیدی</label>
           <div className="toggle-buttons">
             <div
-              className={`toggle-button ${isFitting === 'True' ? 'active' : ''}`}
+              className={`toggle-button ${isFitting === "True" ? "active" : ""}`}
               onClick={() => handleProductToggle("True")}
             >
               اتصالات
             </div>
             <div
-              className={`toggle-button ${isFitting === 'False' ? 'active' : ''}`}
-              onClick={() => handleProductToggle('False')}
+              className={`toggle-button ${isFitting === "False" ? "active" : ""}`}
+              onClick={() => handleProductToggle("False")}
             >
               لوله
             </div>
