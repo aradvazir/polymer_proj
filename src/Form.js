@@ -207,7 +207,7 @@ const Form = () => {
         const newObj = {};
         
         Object.keys(ing_obj).forEach(key => {
-          newObj[key.slice(7)] = parseFloat(ing_obj[key].weight);
+          newObj[key.slice(7)] = ing_obj[key].weight;
           
         })
         
@@ -332,8 +332,9 @@ const Form = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            <option value="1">روز</option>
-            <option value="2">شب</option>
+            <option value="1">صبح</option>
+            <option value="2">ظهر</option>
+            <option value="3">شب</option>
           </select>
         </div>
 
