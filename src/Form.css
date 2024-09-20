@@ -1,79 +1,25 @@
 :root {
-  --background-color: #004d99; /* Darker blue for better contrast */
-  --text-color: #e5f6f3; /* Softer text color */
-  --submit-color: #28a745; /* Brighter green */
-  --submit-hover-color: #218838; /* Darker green for hover */
+  --background-color: #004d99;
+  --text-color: #e5f6f3;
+  --submit-color: #28a745;
+  --submit-hover-color: #218838;
   --background-gradient: linear-gradient(135deg, #041d50 0%, #0976e2e4 100%);
-  --border-color: #1a3a5a; /* Softer border color */
-  --border-focus-color: #025fc3; /* Deeper blue for focus */
+  --border-color: #1a3a5a;
+  --border-focus-color: #025fc3;
   --font: 'B Nazanin', sans-serif;
 }
 
 @font-face {
   font-family: 'B Nazanin';
-  src: url('./fonts/Nazaninb.ttf') format('truetype'); /* Path relative to the public directory */
+  src: url('./fonts/Nazaninb.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 #root {
   font-family: var(--font);
-  font-size: 20px; /* Base font size */
+  font-size: 20px;
   margin-bottom: 10vh;
-}
-
-h1 {
-  font-size: 45px; /* Adjusted size for headings */
-  color: var(--background-color);
-  text-align: center;
-  margin-bottom: 15px; /* Space below the heading */
-}
-
-form p {
-  display: block;
-  margin-bottom: 5px; /* Slightly less space between label and input */
-  font-weight: bold;
-  text-align: center; /* Right-aligned text */
-  font-size: 25px;
-}
-
-.form-container {
-  width: 55vw; /* Adjusted width for better balance */
-  max-width: 800px; /* Maximum width for larger screens */
-  padding: 15px;
-  font-size: 0.85rem;
-  background: var(--background-gradient);
-  border-radius: 35px; /* Softer rounded corners */
-  box-shadow: 2px 5px 10px rgba(5, 2, 15, 30); /* Softer shadow */
-  direction: rtl; /* Right-to-left direction */
-  color: var(--text-color);
-  margin: 4vh auto; /* Center horizontally and add vertical spacing */
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px; /* Space between input groups */
-  width: 95%;
-  justify-content: center;
-}
-
-form h2 {
-  text-align: center;
-  width: 95%;
-  font-size: 40px; /* Adjusted size for section headings */
-}
-
-.input-group {
-  width: calc(50% - 15px); /* Adjusted width for better spacing */
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Right-aligned items for RTL */
-  direction: rtl; /* Right-to-left direction */
-  box-sizing: border-box;
 }
 
 .input-group.date, .input-group.time {
@@ -81,198 +27,75 @@ form h2 {
 }
 
 .input-group.date input, .input-group.time input {
-  font-size: 20px; /* Increased font size for date and time */
-  padding: 12px; /* Adjusted padding for larger text */
+  font-size: 20px;
+  padding: 15px;
 }
 
 .input-group.desc {
   width: calc(100% - 15px);
   font-size: 20px;
-  text-align: left;
+  text-align: right;
   direction: rtl;
 }
 
-.auto-container {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-form label {
-  display: block;
-  margin-bottom: 2px; /* Slightly less space between label and input */
-  font-weight: bold;
-  text-align: right; /* Right-aligned text */
-  font-size: 22px; /* Slightly larger font size for labels */
-}
-
-form input, form textarea, select {
-  width: 95%; /* Ensuring full width */
-  max-width: 500px;
-  margin: 5px 0; /* Reduced margin for a tighter layout */
-  border: 3px solid var(--border-color); /* Softer border color */
-  border-radius: 15px; /* Rounded edges */
-  outline: none;
-  transition: border-color 0.2s ease;
-  direction: rtl; /* Right-to-left text direction */
-  text-align: center; /* Right-aligned text */
-  font-family: var(--font);
-  font-size: 18px;
-  padding: 8px; /* Added padding for better spacing */
-  box-sizing: border-box; /* Ensure padding and border are included in element width */
-}
-
-form textarea {
-  height: 150px; /* Increased height for description */
-  resize: vertical;
-}
-
-textarea#description {
-  direction: rtl; /* Set the text direction to right-to-left */
-  text-align: right; /* Align text to the right */
-}
-
-input:focus, textarea:focus {
-  border-color: var(--border-focus-color); /* Highlighted border color on focus */
-}
-
-/* Center the button itself */
-.submit-btn {
-  width: 85%; /* Keep the width */
-  background-color: var(--submit-color);
-  border: none;
-  border-radius: 23px;
-  box-shadow: 1px 4px 8px rgb(13, 49, 74); /* Softer shadow */
+.date {
+  margin: 18px 0px 20px 10px;
+  width: 100px;
   cursor: pointer;
-  font-family: var(--font);
-  font-size: 20px; /* Adjusted button text size */
+}
+
+.date p {
+  height: 150px;
+}
+
+.date p:hover {
+  background-color: #225da1;
   color: #ffffff;
-  padding: 10px; /* Consistent padding */
-  margin: 20px auto 0; /* Center the button by setting left/right margins to auto */
-  text-align: center;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
 }
 
-.submit-btn:hover {
-  background-color: var(--submit-hover-color);
-  box-shadow: inset 1px 3px 7px #000; /* Stronger inset shadow */
-}
-
-.no {
-  visibility: collapse;
-  height: 0;
-}
-
-@media only screen and (max-width: 768px) {
-  .form-container {
-    width: 90vw; /* Adjusted for smaller screens */
-  }
-  .input-group {
-    width: 95%; /* Full width for smaller screens */
-  }
-}
-
-.input-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  direction: rtl;
-  box-sizing: border-box;
-  width: calc(50% - 15px); /* Default width for other input groups */
-}
-
-.input-group.single-row {
-  width: 60%; /* Full width for single row elements */
-  margin-top: 5px; /* Add space above for separation */
-}
-
-.input-group.single-row select {
-  width: 95%; /* Ensure select takes full width of the container */
-}
-
-.toggle-buttons {
-  display: flex;
-  justify-content: space-between;
-  width: 95%;
-  margin-top: 8px;
-}
-
-/* Default state */
-.toggle-button {
-  background-color: #f0f0f0; /* White background */
-  color: #000; /* Black text */
-  border: 2px solid #0a045a;
-  border-radius: 18px;
-  padding: 10px;
-  cursor: pointer;
-  flex: 2;
-  text-align: center;
-  transition: background-color 0.2s, border-color 0.2s, color 0.3s;
-}
-
-/* Hover state */
-.toggle-button:hover {
-  background-color: #14c600; /* Light gray background on hover */
-  border-color: #0a045a;
-  color: #ffffff; /* Ensure text is black on hover */
-}
-
-/* Active state */
-.toggle-button.active {
-  background-color: #24b245; /* Green background */
-  color: #fff; /* White text */
-  border-color: #0a045a;
-}
-
-form div {
-  font-size: 20px;
-}
-
-/* General styling adjustments for better alignment and appearance */
 .clock-container {
   flex-direction: column;
-  justify-content: center; /* Center the clock display */
+  justify-content: center;
   align-items: center;
-  width: 45%; /* Updated width to align with date */
-  max-width: 180px;
-  font-size: 26px;
+  width: 45%;
+  max-width: 300px;
+  height: 200px;
   color: var(--text-color);
 }
 
-/* Adjust the clock display styling */
 .clock-display {
   border-radius: 17px;
+  max-width: 200px;
+  height: 70px;
   text-align: center;
-  cursor: pointer; /* Pointer for clickability */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Added transition for color */
-  font-size: 22px; /* Increase font size for time display */
+  cursor: pointer;
+  justify-content: center;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-size: 22px;
   color: var(--text-color);
-  background-color: #1358a2b1; /* Initial background color */
-  margin-top: 10px;
+  background-color: #1358a2b1;
 }
 
 .clock-display:hover {
-  background-color: #225da1; /* Lighter blue on hover */
-  color: #ffffff; /* Optional: Change text color on hover */
+  background-color: #225da1;
+  color: #ffffff;
 }
 
-/* Manual time input styling */
 .time-input {
   background-color: rgba(255, 255, 255, 0.949);
   color: black;
   border: 3px solid var(--border-color);
   border-radius: 12px;
-  font-size: 22px; /* Slightly larger input size */
+  font-size: 22px;
   padding: 10px;
   text-align: center;
-  margin-top: 8px;
+  justify-content: center;
+  margin-top: 4px;
   border-radius: 13px;
 }
 
-/* Common styles for both buttons */
 .action-button {
-  width: 80px; /* Set a fixed width */
+  width: 80px;
   padding: 10px 20px;
   border-radius: 10px;
   cursor: pointer;
@@ -280,30 +103,28 @@ form div {
   font-size: 18px;
 }
 
-/* Save button specific styles */
 .save-button {
-  background-color: #4CAF50; /* Green for save */
+  background-color: #4CAF50;
   color: white;
   border: 0px 0px 0px rgba(8, 11, 36, 0.293);
 }
 
 .save-button:hover {
-  background-color: #297e2d; /* Darker green on hover */
+  background-color: #297e2d;
 }
 
 .save-button:active {
   background-color: rgb(68, 173, 41);
 }
 
-/* Cancel button specific styles */
 .cancel-button {
-  background-color: #f44336; /* Red for cancel */
+  background-color: #f44336;
   color: white;
   border: 0px 0px 0px rgba(8, 11, 36, 0.293);
 }
 
 .cancel-button:hover {
-  background-color: #ba2624; /* Darker red on hover */
+  background-color: #ba2624;
 }
 
 .cancel-button:active {
@@ -319,7 +140,6 @@ button {
   box-shadow: rgba(102, 137, 174, 0.323);
   cursor: pointer;
   transition: background-color 0.3s;
-  
 }
 
 button:hover {
@@ -327,92 +147,261 @@ button:hover {
 }
 
 .time-date-container {
-  display: flex;               /* Use flexbox to align them horizontally */
-  justify-content: space-between; /* Add space between date and time */
-  width: 100%;                 /* Ensure they take up full width */
-  align-items: center;          /* Vertically align the items */
-  gap: 20px;                   /* Add space between the elements */
-}
-
-.input-group.date, .clock-container {
-  width: 48%;                  /* Make both containers take 45% of the width */
   display: flex;
-  flex-direction: column;       /* Keep date and clock elements in column inside */
-  align-items: center;   
-  margin-bottom: 20px;       /* Center the inner elements */
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  gap: 20px;
 }
 
-.input-group.date label, .clock-container label {
-  text-align: right;            /* Right-align the labels */
-  margin-bottom: 5px;           /* Add some space between label and input */
-  font-size: 28px;
-}
-
-.calendar-container {
-  background-color: #2d4373; /* Same as the clock */
-  color: #ffffff; /* White text */
+.input-group.date {
+  width: 48%;
+  height: 150px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
 }
 
-.calendar-days {
-  color: #ffffff; /* White days for consistency */
-}
-
-.calendar-dates {
-  color: #ffffff; /* White for weekdays */
-}
-
-.calendar-weekend {
-  color: #ff5c5c; /* Red for weekends */
-}
-
-.selected-date {
-  background-color: #3b5998; /* Blue highlight for selected date */
-  color: #ffffff; /* White text */
-  border-radius: 6px;
-  padding: 5px;
-}
-
-.calendar-preview {
-  background-color: #2d4373; /* Match the clock background */
-  color: #ffffff;
-  border-radius: 12px;
+.input-group.date p {
+  font-size: 22px;
   padding: 15px;
+  width: 90%;
+  max-width: 180px;
+  max-height: 40px;
+  background-color: #1358a2b1;
   text-align: center;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
 }
 
-.calendar-preview .time {
-  font-size: 36px; /* Match the clock font size */
-  font-weight: bold;
-}
-
+/* Styles for the Calendar component */
 .react-calendar {
-  background-color: #2d4373; /* Match with clock background */
-  color: white; /* White text */
-  border-radius: 12px; /* Rounded corners like the clock */
-  padding: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.react-calendar__tile--active {
-  background-color: #3b5998; /* Blue for selected date */
-  color: white;
-  border-radius: 6px;
+  background-color: #295076; /* Background color of the calendar */
+  border: none; /* Remove default border */
+  color: var(--text-color); /* Set text color */
+  width: 500px;
 }
 
 .react-calendar__tile {
-  color: white;
+  background: transparent; /* Transparent background for tiles */
+  color: var(--text-color); /* Text color for days */
+  transition: background-color 0.3s; /* Smooth transition for hover effects */
 }
 
+.react-calendar__tile:hover {
+  background-color: rgba(255, 255, 255, 0.2); /* Background on hover */
+  color: #ffffff; /* Text color on hover */
+}
+
+.react-calendar__tile--active {
+  background-color: var(--submit-color); /* Active day color */
+  color: #ffffff; /* Active day text color */
+}
+
+.react-calendar__month-view__weekdays {
+  background-color: #003366; /* Weekday header background color */
+  color: #ffffff; /* Weekday header text color */
+  font-weight: bold; /* Bold weekday header text */
+}
+
+.react-calendar__navigation {
+  background-color: #002244; /* Navigation bar background color */
+  color: #ffffff; /* Navigation bar text color */
+}
+
+/* Styles for today's date */
 .react-calendar__tile--now {
-  background-color: #ff5c5c; /* Red for today's date */
-  color: white;
+  border: 2px solid var(--submit-color); /* Border for today’s date */
 }
 
-.clock-display p {
-  font-size: 24px;
+.calendar-overlay {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  position: absolute; /* Ensure it overlays correctly */
+  z-index: 1000; /* Ensure it stays on top */
+  left: 50%; /* Position from left */
+  transform: translateX(-50%); /* Adjust position to truly center */
+}
+
+
+h1 {
+  font-size: 45px;
+  color: var(--background-color);
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+form p {
+  display: block;
+  margin-bottom: 5px;
   font-weight: bold;
+  text-align: center;
+  font-size: 25px;
+  padding: 3px 5px;
+}
+
+.form-container {
+  width: 55vw;
+  max-width: 800px;
+  padding: 15px;
+  font-size: 0.85rem;
+  background: var(--background-gradient);
+  border-radius: 35px;
+  box-shadow: 2px 5px 10px rgba(5, 2, 15, 30);
+  direction: rtl;
+  color: var(--text-color);
+  margin: 4vh auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  width: 95%;
+  justify-content: center;
+}
+
+form h2 {
+  text-align: center;
+  width: 95%;
+  font-size: 40px;
+}
+
+.auto-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 2px;
+  font-weight: bold;
+  text-align: right;
+  font-size: 22px;
+}
+
+form input, form textarea, select {
+  width: 95%;
+  max-width: 500px;
+  margin: 5px 0;
+  border: 3px solid var(--border-color);
+  border-radius: 15px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  direction: rtl;
+  text-align: center;
+  font-family: var(--font);
+  font-size: 18px;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+form textarea {
+  height: 150px;
+  resize: vertical;
+}
+
+textarea#description {
+  direction: rtl;
+  text-align: right;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--border-focus-color);
+}
+
+.submit-btn {
+  width: 85%;
+  background-color: var(--submit-color);
+  border: none;
+  border-radius: 23px;
+  box-shadow: 1px 4px 8px rgb(13, 49, 74);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 20px;
+  color: #ffffff;
+  padding: 10px;
+  margin: 20px auto 10px;
+  text-align: center;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: var(--submit-hover-color);
+  box-shadow: inset 1px 3px 7px #000;
+}
+
+.no {
+  visibility: collapse;
+  height: 0;
+}
+
+@media only screen and (max-width: 768px) {
+  .form-container {
+    width: 90vw;
+  }
+  .input-group {
+    width: 95%;
+  }
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  direction: rtl;
+  box-sizing: border-box;
+  width: calc(50% - 15px);
+}
+
+.input-group.single-row {
+  width: 60%;
+  margin-top: 5px;
+}
+
+.input-group.single-row select {
+  width: 95%;
+}
+
+.toggle-buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 95%;
+  margin-top: 8px;
+}
+
+.toggle-button {
+  background-color: #f0f0f0;
+  color: #000;
+  border: 2px solid #0a045a;
+  border-radius: 18px;
+  padding: 10px;
+  cursor: pointer;
+  flex: 2;
+  text-align: center;
+  transition: background-color 0.2s, border-color 0.2s, color 0.3s;
+}
+
+.toggle-button:hover {
+  background-color: #14c600;
+  border-color: #0a045a;
+  color: #ffffff;
+}
+
+.toggle-button.active {
+  background-color: #24b245;
+  color: #fff;
+  border-color: #0a045a;
+}
+
+form div {
+  font-size: 20px;
 }

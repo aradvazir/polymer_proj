@@ -52,6 +52,7 @@ const Form = () => {
   const [ingredients, setIngredients] = useState();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
+  const [confirmedTime, setConfirmedTime] = useState(timeInput);
   const [hasChanged, setHasChanged] = useState(false);
 
   // Automatically set date and time on component load
@@ -71,11 +72,12 @@ const Form = () => {
 
     moment.loadPersian({ dialect: "persian-modern" });
 
-    const currentDate = moment().format("jYYYY-jMM-jDD");
+    const currentDate = moment().format("jYYYY-jMM-jDD"); // Persian date
+    const currentTime = moment().format("HH:mm"); // 24-hour time
     setFormData((prevData) => ({
       ...prevData,
       date: currentDate,
-      time: moment().format("HH:mm"),
+      time: currentTime,
     }));
 
   }, [isFitting]);
@@ -132,9 +134,10 @@ const Form = () => {
     }
   };
 
+  // Handle date change using the calendar
   const handleDateChange = (date) => {
-    const formattedDate = moment(date).format("jYYYY-jMM-jDD");
-    setSelectedDate(formattedDate);
+    setSelectedDate(date);
+    const formattedDate = moment(date).format("jYYYY-jMM-jDD"); // Convert to Jalali date
     setFormData((prevData) => ({
       ...prevData,
       date: formattedDate,
@@ -147,16 +150,13 @@ const Form = () => {
       .classList.remove("no");
   };
 
-  const handleTimeInputChange = (e) => {
-    setTimeInput(e.target.value);
+  const handleTimeInputChange = (event) => {
+    setTimeInput(event.target.value);
   };
 
   const handleSaveTime = () => {
-    setFormData((prevData) => ({
-      ...prevData,
-      time: timeInput,
-    }));
-    closeTimeInput();
+    setConfirmedTime(timeInput); // Update confirmed time
+    closeTimeInput(); // Close input
   };
 
   const openTimeInput = () => {
@@ -164,10 +164,11 @@ const Form = () => {
     document.getElementById("time-text").classList.add("no");
     
   };
+
   const closeTimeInput = () => {
+    setTimeInput(confirmedTime); // Reset to confirmed time
     document.getElementById("time-input").classList.add("no");
     document.getElementById("time-text").classList.remove("no");
-    
   };
   
 
@@ -327,22 +328,20 @@ const Form = () => {
 
         <div className="input-group clock-container">
           <label htmlFor="">زمان</label>
-          <div className="clock-display" >
-          <div id="time-input" className="no">
-            <input
-              type="time"
-              value={timeInput}
-              onChange={handleTimeInputChange}
-              className="time-input"
-            />
-            <button type="button" className="action-button save-button" onClick={handleSaveTime}>ذخیره</button>
-            <button type="button" className="action-button cancel-button" onClick={closeTimeInput}>لغو</button>
-
-          </div>
-          <div id="time-text">
-            <p onClick={openTimeInput} >{moment(timeInput, "HH:mm").format("HH:mm")}</p>
-          </div>
-            
+          <div className="clock-display">
+              <div id="time-input" className="no">
+                  <input
+                      type="time"
+                      value={timeInput}
+                      onChange={handleTimeInputChange}
+                      className="time-input"
+                  />
+                  <button type="button" className="action-button save-button" onClick={handleSaveTime}>ذخیره</button>
+                  <button type="button" className="action-button cancel-button" onClick={closeTimeInput}>لغو</button>
+              </div>
+              <div id="time-text">
+                  <p onClick={openTimeInput}>{moment(confirmedTime, "HH:mm").format("HH:mm")}</p>
+              </div>
           </div>
         </div>
 
