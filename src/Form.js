@@ -203,9 +203,19 @@ const Form = () => {
         return newObj;
       }
       let recipe_list = convertIngredients(mix_ingreds, "recipe_");
+      function deconvertIngredients(ing_obj, substring) {
+        const newObj = {};
+        
+        Object.keys(ing_obj).forEach(key => {
+          newObj[key.slice(7)] = parseFloat(ing_obj[key].weight);
+          
+        })
+        
+        return newObj;
+      }
       console.log(recipe_list);
 
-      setDefaultIngreds(recipe_list);
+      setDefaultIngreds(deconvertIngredients(recipe_list));
       
       return (
         <div className="auto-container">
