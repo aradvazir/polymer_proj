@@ -195,7 +195,7 @@ const Form = () => {
         const newObj = {};
         
         Object.keys(ing_obj).forEach(key => {
-          newObj[substring + ing_obj[key].rawmaterial.id] = ing_obj[key].weight;
+          newObj[substring + ing_obj[key].rawmaterial.id] = parseFloat(ing_obj[key].weight);
           
         })
         
