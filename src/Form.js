@@ -30,8 +30,8 @@ const getCookie = (name) => {
 
 const Form = () => {
   const [formData, setFormData] = useState({
-    date: "",
-    time: "",
+    date: moment().format("jYYYY-jMM-jDD"),
+    time: moment().format("HH:mm"),
     operator_id: getCookie("operator_id") ? getCookie("operator_id") : "",
     shift: getCookie("shift") ? getCookie("shift") : "",
     line_id: getCookie("line_id") ? getCookie("line_id") : "",
