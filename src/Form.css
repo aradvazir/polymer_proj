@@ -41,14 +41,7 @@
   cursor: pointer;
 }
 
-.date p {
-  height: 150px;
-}
 
-.date p:hover {
-  background-color: #225da1;
-  color: #ffffff;
-}
 
 .input-group.time {
   flex-direction: column;
@@ -62,7 +55,7 @@
 
 .clock-display, .date-display {
   border-radius: 17px;
-  max-width: 100%;
+  width: 100%;
   height: 70px;
   text-align: center;
   cursor: pointer;
@@ -178,7 +171,8 @@ button:hover {
   background-color: #295076; /* Background color of the calendar */
   border: none; /* Remove default border */
   color: var(--text-color); /* Set text color */
-  width: 500px;
+  width: 60vw;
+  position: absolute;
 }
 
 .react-calendar__tile {
@@ -341,14 +335,6 @@ input:focus, textarea:focus {
   height: 0;
 }
 
-@media only screen and (max-width: 768px) {
-  .form-container {
-    width: 90vw;
-  }
-  .input-group {
-    width: 95%;
-  }
-}
 
 .input-group {
   display: flex;
@@ -401,4 +387,16 @@ input:focus, textarea:focus {
 
 form div {
   font-size: 20px;
+}
+
+@media only screen and (max-width: 768px) {
+  .form-container {
+    width: 90vw;
+  }
+  .input-group {
+    width: 95%;
+  }
+  .react-calendar {
+    width: 80vw;
+  }
 }
