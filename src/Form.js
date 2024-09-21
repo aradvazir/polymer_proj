@@ -305,28 +305,31 @@ const Form = () => {
 
         <div className="input-group date">
           <label htmlFor="date">تاریخ</label>
-          <Calendar
-            onChange={handleDateChange}
-            value={selectedDate}
-            locale="fa-IR"
-            className="no"
-          />
-          <p
-            onClick={() => {
-              document
-                .getElementsByClassName("react-calendar")[0]
-                .classList.remove("no");
-              document
-                .getElementsByClassName("date")[0]
-                .getElementsByTagName("p")[0]
-                .classList.add("no");
-            }}
-          >
-            {moment(selectedDate).format("jYYYY/jMM/jDD")}
-          </p>
+          <div className="date-display">
+            <Calendar
+              onChange={handleDateChange}
+              value={selectedDate}
+              locale="fa-IR"
+              className="no"
+            />
+            <p
+              onClick={() => {
+                document
+                  .getElementsByClassName("react-calendar")[0]
+                  .classList.remove("no");
+                document
+                  .getElementsByClassName("date")[0]
+                  .getElementsByTagName("p")[0]
+                  .classList.add("no");
+              }}
+            >
+              {moment(selectedDate).format("jYYYY/jMM/jDD")}
+            </p>
+          </div>
+          
         </div>
 
-        <div className="input-group clock-container">
+        <div className="input-group time">
           <label htmlFor="">زمان</label>
           <div className="clock-display">
               <div id="time-input" className="no">
