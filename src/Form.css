@@ -41,9 +41,7 @@
   cursor: pointer;
 }
 
-
-
-.input-group.time {
+.input-group.time, .input-group.date {
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -63,11 +61,11 @@
   transition: background-color 0.3s ease, color 0.3s ease;
   font-size: 22px;
   color: var(--text-color);
-  background-color: #1358a2b1;
+  background-color: #4c78a77c;
 }
 
-.clock-display:hover {
-  background-color: #225da1;
+.clock-display:hover, .date-display:hover {
+  background-color: #6286af;
   color: #ffffff;
 }
 
@@ -80,8 +78,8 @@
   padding: 10px;
   text-align: center;
   justify-content: center;
-  margin-top: 4px;
   border-radius: 13px;
+  margin: 1px;
 }
 
 .action-button {
@@ -136,87 +134,93 @@ button:hover {
   background-color: var(--submit-hover-color);
 }
 
-.time-date-container {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  align-items: center;
-  gap: 20px;
-}
-
-.input-group.date {
-  width: 40%;
-  height: 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  margin-bottom: 10px;
-}
-
-/* .input-group.date p {
-  font-size: 22px;
-  padding: 15px;
-  width: 90%;
-  max-width: 180px;
-  max-height: 40px;
-  background-color: #1358a2b1;
-  text-align: center;
-  border-radius: 15px;
-} */
-
-/* Styles for the Calendar component */
+/* Calendar Component Styles */
 .react-calendar {
-  background-color: #295076; /* Background color of the calendar */
-  border: none; /* Remove default border */
-  color: var(--text-color); /* Set text color */
-  width: 60vw;
+  background-color: #2b3a47; /* Slightly darker background for better contrast */
+  border: 2px solid #013262; /* Solid border to frame the calendar */
+  border-radius: 17px; /* Rounded corners for a modern look */
+  color: var(--text-color); /* Text color */
+  width: 36vw; /* Adjust to fit within the viewport */
   position: absolute;
+  box-shadow: 1px 5px 10px rgba(22, 27, 50, 0.1); /* Soft shadow for depth */
+  padding: 15px; /* Padding inside the calendar */
 }
 
+/* Tile Styles */
 .react-calendar__tile {
-  background: transparent; /* Transparent background for tiles */
-  color: var(--text-color); /* Text color for days */
-  transition: background-color 0.3s; /* Smooth transition for hover effects */
+  background: transparent; /* Transparent to blend with background */
+  color: var(--text-color); /* Ensure text color is consistent */
+  border-radius: 5px; /* Rounded corners for tiles */
+  padding: 5px; /* Add padding for better spacing */
+  transition: background-color 0.3s, transform 0.2s; /* Add smooth hover and active transitions */
+  text-align: center; /* Center align the day numbers */
 }
 
+/* Hover effect for tiles */
 .react-calendar__tile:hover {
-  background-color: rgba(255, 255, 255, 0.2); /* Background on hover */
-  color: #ffffff; /* Text color on hover */
+  background-color: rgba(255, 254, 254, 0.267); /* Softer hover background */
+  color: #000000; /* Text color on hover */
+  transform: scale(1.15); /* Slight zoom effect on hover */
 }
 
+/* Active tile */
 .react-calendar__tile--active {
   background-color: var(--submit-color); /* Active day color */
   color: #ffffff; /* Active day text color */
+  font-weight: bold; /* Make active date stand out */
 }
 
+/* Weekday headers */
 .react-calendar__month-view__weekdays {
-  background-color: #003366; /* Weekday header background color */
-  color: #ffffff; /* Weekday header text color */
-  font-weight: bold; /* Bold weekday header text */
+  background-color: #0f2f4f79; /* Dark background for weekday headers */
+  color: #ffffff; /* White text for clarity */
+  font-weight: bold; /* Bold text for emphasis */
+  text-transform: uppercase; /* Uppercase weekday names for style */
+  padding: 10px 0; /* Add padding for better spacing */
+  box-shadow: inset;
 }
 
+/* Navigation styles (arrows, month, year) */
 .react-calendar__navigation {
-  background-color: #002244; /* Navigation bar background color */
-  color: #ffffff; /* Navigation bar text color */
+  background-color: #002244; /* Match with other dark elements */
+  color: #ffffff; /* White text for contrast */
+  padding: 10px; /* Add padding for navigation */
+  border-radius: 12px; /* Match rounded corners */
+  margin-bottom: 10px; /* Add space between navigation and calendar */
 }
 
-/* Styles for today's date */
+.react-calendar__navigation:hover {
+  background-color: #06083489;
+  color: #ffffff;
+}
+
+/* Highlight today's date */
 .react-calendar__tile--now {
-  border: 2px solid var(--submit-color); /* Border for today’s date */
+  background-color: rgb(237, 9, 9); /* Set your custom color for today’s date */
+  color: #ffffff; /* Ensure the text color contrasts the background */
+  font-weight: bold; /* Emphasize today’s date with bold text */
+  border-radius: 5px; /* Circle shape to make it visually distinct */
+  transition: background-color 0.3s, transform 0.3s; /* Smooth transition for hover or other interactions */
 }
 
-.calendar-overlay {
-  display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  position: absolute; /* Ensure it overlays correctly */
-  z-index: 1000; /* Ensure it stays on top */
-  left: 50%; /* Position from left */
-  transform: translateX(-50%); /* Adjust position to truly center */
+/* Optional: Add a hover effect for today's date */
+.react-calendar__tile--now:hover {
+  background-color: #ff0000; /* Change the color when hovering over today's date */
+  color: black;
+  transform: scale(1.15); /* Slight zoom effect on hover */
 }
 
+/* Disabled tiles (non-clickable days) */
+.react-calendar__tile--disabled {
+  color: rgba(255, 255, 255, 0.4); /* Light gray for disabled days */
+  cursor: not-allowed; /* Show that these are not clickable */
+  opacity: 0.5; /* Faded look */
+}
+
+/* Remove default outline on focus (optional) */
+.react-calendar__tile:focus {
+  outline: none;
+}
 
 h1 {
   font-size: 45px;
@@ -261,7 +265,7 @@ form {
 form h2 {
   text-align: center;
   width: 95%;
-  font-size: 40px;
+  font-size: 45px;
 }
 
 .auto-container {
@@ -398,5 +402,8 @@ form div {
   }
   .react-calendar {
     width: 80vw;
+  }
+  .react-calendar__tile {
+    padding: 8px; /* Reduce padding on smaller screens */
   }
 }
