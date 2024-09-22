@@ -61,11 +61,11 @@
   transition: background-color 0.3s ease, color 0.3s ease;
   font-size: 22px;
   color: var(--text-color);
-  background-color: #4c78a77c;
+  background-color: #86acd67c;
 }
 
 .clock-display:hover, .date-display:hover {
-  background-color: #6286af;
+  background-color: #9ebfe3;
   color: #ffffff;
 }
 
