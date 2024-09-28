@@ -244,7 +244,7 @@ const Form = () => {
   };
 
   const renderIngredients = async (mixCode) => {
-    let ans = <div className="input-group auto">هیچ میکسی انتخاب نشده است.</div>;
+    let ans = <div className="input-group-special auto">هیچ میکسی انتخاب نشده است.</div>;
     if (mixCode) {
       let mix_ingreds = null;
       try {
@@ -280,7 +280,7 @@ const Form = () => {
       return (
         <div className="auto-container">
           {mix_ingreds.map((ingred) => (
-            <div className="input-group auto" key={ingred.rawmaterial.id}>
+            <div className="input-group-special auto" key={ingred.rawmaterial.id}>
               <label>{ingred.rawmaterial.rawmaterial}</label>
               <input
                 type="text"
@@ -303,7 +303,7 @@ const Form = () => {
       <form onSubmit={handleSubmit}>
         <h2>اطلاعات تولید</h2>
 
-        <div className="input-group date">
+        <div className="input-group-special date">
           <label htmlFor="date">تاریخ</label>
           <div className="date-display">
             <Calendar
@@ -329,7 +329,7 @@ const Form = () => {
           
         </div>
 
-        <div className="input-group time">
+        <div className="input-group-special time">
           <label htmlFor="">زمان</label>
           <div className="clock-display">
               <div id="time-input" className="no">
@@ -348,7 +348,7 @@ const Form = () => {
           </div>
         </div>
 
-        <div className="input-group single-row">
+        <div className="input-group-special single-row">
           <label>محصول تولیدی</label>
           <div className="toggle-buttons">
             <div
@@ -366,7 +366,7 @@ const Form = () => {
           </div>
         </div>
 
-        <div className="input-group">
+        <div className="input-group-special">
           <label htmlFor="operator_id">نام اپراتور</label>
           <select
             id="operator_id"
@@ -384,7 +384,7 @@ const Form = () => {
           </select>
         </div>
         
-        <div className="input-group">
+        <div className="input-group-special">
           <label htmlFor="shift">شیفت</label>
           <select
             id="shift"
@@ -400,7 +400,7 @@ const Form = () => {
           </select>
         </div>
 
-        <div className="input-group">
+        <div className="input-group-special">
           <label htmlFor="line_id">خط</label>
           <select
             id="line_id"
@@ -418,7 +418,7 @@ const Form = () => {
           </select>
         </div>
 
-        <div className="input-group">
+        <div className="input-group-special">
           <label htmlFor="productionAmount">مقدار تولید</label>
           <input
             type="number"
@@ -430,7 +430,7 @@ const Form = () => {
           />
         </div>
 
-        <div className="input-group">
+        <div className="input-group-special">
           <label htmlFor="product_id">محصول</label>
           <select
             id="product_id"
@@ -448,7 +448,7 @@ const Form = () => {
           </select>
         </div>
 
-        <div className="input-group">
+        <div className="input-group-special">
           <label htmlFor="recipe_code">نام میکس</label>
           <select
             id="recipe_code"
@@ -467,7 +467,7 @@ const Form = () => {
 
         {ingredients}
 
-        <div className="input-group desc">
+        <div className="input-group-special desc">
           <label htmlFor="description">توضیحات</label>
           <textarea
             id="description"

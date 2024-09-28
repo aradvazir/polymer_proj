@@ -23,12 +23,12 @@
 }
 
 
-.input-group.date input, .input-group.time input {
+.input-group-special.date input, .input-group-special.time input {
   font-size: 20px;
   padding: 15px;
 }
 
-.input-group.desc {
+.input-group-special.desc {
   width: calc(100% - 15px);
   font-size: 20px;
   text-align: right;
@@ -41,7 +41,7 @@
   cursor: pointer;
 }
 
-.input-group.time, .input-group.date {
+.input-group-special.time, .input-group-special.date {
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -340,7 +340,7 @@ input:focus, textarea:focus {
 }
 
 
-.input-group {
+.input-group-special {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -349,12 +349,12 @@ input:focus, textarea:focus {
   width: calc(50% - 15px);
 }
 
-.input-group.single-row {
+.input-group-special.single-row {
   width: 60%;
   margin-top: 5px;
 }
 
-.input-group.single-row select {
+.input-group-special.single-row select {
   width: 95%;
 }
 
@@ -397,7 +397,7 @@ form div {
   .form-container {
     width: 90vw;
   }
-  .input-group {
+  .input-group-special {
     width: 95%;
   }
   .react-calendar {

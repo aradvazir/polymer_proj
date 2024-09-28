@@ -1,0 +1,166 @@
+:root {
+  --background-gradient: linear-gradient(135deg, #f0f4f8, #d1e3e9);
+  --text-color: #333;
+  --border-color: #ccc;
+  --submit-color: #007bff;
+  --submit-hover-color: #0056b3;
+  --alert-bg: #f9c2c2;
+  --alert-border: #f5c2c7;
+  --alert-text: #721c24;
+}
+
+.table-container {
+  width: 90%;
+  margin: 5vh auto;
+  background: var(--background-gradient);
+  border-radius: 20px;
+  box-shadow: 2px 5px 10px rgba(5, 2, 15, 0.3);
+  overflow-x: auto;
+  direction: rtl; /* Ensure RTL layout */
+  padding: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #002244;
+  color: var(--text-color);
+  font-family: var(--font);
+  font-size: 18px;
+  text-align: center;
+  box-shadow: 1px 3px 8px rgba(22, 27, 50, 0.1);
+  border-radius: 10px;
+}
+
+thead {
+  background-color: #1a3a5a;
+}
+
+th, td {
+  padding: 12px 15px;
+  border: 1px solid var(--border-color);
+}
+
+tr:nth-child(even) {
+  background-color: #013262;
+}
+
+tr:hover {
+  background-color: #014c99;
+  color: #ffffff;
+}
+
+th {
+  font-weight: bold;
+  background-color: #003366;
+}
+
+.add-row-btn, .edit-btn, .delete-btn {
+  background-color: var(--submit-color);
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-row-btn:hover, .edit-btn:hover, .delete-btn:hover {
+  background-color: var(--submit-hover-color);
+}
+
+.delete-btn {
+  background-color: #f44336;
+}
+
+.delete-btn:hover {
+  background-color: #ba2624;
+}
+
+/* Alert Styles */
+.alert {
+  display: none; /* Hidden by default, can be shown when needed */
+  background-color: var(--alert-bg);
+  border: 1px solid var(--alert-border);
+  color: var(--alert-text);
+  padding: 15px;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center; /* Center the button group horizontally */
+  align-items: center;     /* Align the buttons vertically */
+  gap: 20px;               /* Space between buttons */
+  width: 100%;             /* Ensure the group takes full width */
+}
+
+
+.button-group .btn {
+  flex: none; /* Ensure buttons take only the necessary space */
+}
+
+
+.add-row-btn, .edit-btn, .delete-btn, .cancel-btn {
+  background-color: var(--submit-color);
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.add-row-btn:hover, .edit-btn:hover, .delete-btn:hover, .cancel-btn:hover {
+  background-color: var(--submit-hover-color);
+}
+
+.delete-btn {
+  background-color: #f44336;
+}
+
+.delete-btn:hover {
+  background-color: #ba2624;
+}
+
+/* Align buttons in rows */
+.button-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.button-row .edit-btn, .button-row .delete-btn, .button-row .cancel-btn {
+  flex: 1; /* Ensure equal size */
+}
+
+.Add-button {
+  background-color: #4caf50; /* Green background */
+  color: white; /* White text color */
+  padding: 10px 20px; /* Padding around the text */
+  font-size: 16px; /* Font size */
+  border: none; /* No border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s, transform 0.3s; /* Smooth transitions */
+}
+
+.Add-button:hover {
+  background-color: #45a049; /* Darker green on hover */
+  transform: scale(1.05); /* Slightly increase size on hover */
+}
+
+.Add-button:active {
+  transform: scale(2); /* Slightly decrease size when pressed */
+}
+
+/* Responsive design for smaller screens */
+@media only screen and (max-width: 768px) {
+  table {
+      font-size: 16px;
+  }
+  th, td {
+      padding: 8px;
+  }
+}
