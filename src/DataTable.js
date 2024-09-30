@@ -137,14 +137,15 @@ const DataTable = () => {
         </div>
       </div>
 
-      <Button
-        className={`custom-button ${
-          showForm ? "cancel-button" : "plus-button"
-        }`}
-        onClick={() => setShowForm(!showForm)}
-      >
-        {showForm ? "انصراف" : <AiOutlinePlus size={25} />}
-      </Button>
+      <div className="button-container">
+        <Button
+          className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
+          onClick={() => setShowForm(!showForm)}
+        >
+          {showForm ? "انصراف" : <AiOutlinePlus size={25} />}
+        </Button>
+      </div>
+
 
       {showForm && (
         <Form className="mb-4">

@@ -32,19 +32,25 @@
 
 /* General table styles */
 .custom-table {
-  width: 95%;
-  border: 2px solid #003366; /* Overall table border */
+  width: 80vw;
+  border: 2px solid #000000; /* Overall table border */
   border-radius: 20px;
   margin: auto;
   border-collapse: collapse; /* Collapsed borders for smooth edges */
   overflow: hidden; /* Ensures the rounded corners take effect */
+  font-size: 20px;
+  padding: 10px;
 }
 
 .custom-table th, .custom-table td {
-  border: none; /* Remove individual cell borders */
-  padding: 6px; /* Add padding for cleaner cell spacing */
+  border: 1px black; /* Remove individual cell borders */
+  padding: 5px; /* Add padding for cleaner cell spacing */
   text-align: center;
   vertical-align: middle;
+}
+
+.custom-table thead th:hover {
+  background-color: #0055a5; /* Change background on hover */
 }
 
 /* Button group for edit mode */
@@ -101,7 +107,7 @@ button[variant="warning"]:hover {
   align-items: center; /* Center items horizontally */
   width: 45%; /* Set a fixed width */
   margin: 20px auto; /* Center the input group in the parent container */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  box-shadow: 1px 5px 8px rgba(51, 77, 143, 0.652); /* Subtle shadow */
   border-radius: 14px; /* Rounded corners */
   background-color: #e7e8ef30; /* Light background */
   padding: 15px; /* Inner padding for spacing */
@@ -146,6 +152,15 @@ button[variant="warning"]:hover {
   padding: 15px;
   border-radius: 5px;
   margin-top: 15px;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  width: 100%; /* Ensure the container takes the full width of the row */
+  height: 100%; /* Optional: If you want to center it vertically too */
+  margin: 10px 0px 25px 0px;
 }
 
 .button-group {
@@ -199,11 +214,20 @@ button[variant="warning"]:hover {
 .plus-button {
   background-color: var(--submit-color); /* Blue background */
   color: white; /* White text/icon color */
-  border: none; /* Remove border */
+  border: 1px rgba(0, 0, 1, 0.414) solid;
+  border-radius: 10px;
+  font-size: 25px;
+  width: 30vw;
 }
 
 .plus-button:hover {
-  background-color: var(--submit-hover-color); /* Darker blue on hover */
+  background-color: var(--submit-hover-color);
+  border: 1px black solid;
+  transform: scale(1.1);
+}
+
+.plus-button:active {
+  background-color: var(--submit-hover-color);
 }
 
 /* Styles for the button when it's in the "cancel" state */
