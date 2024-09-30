@@ -9,7 +9,7 @@
   --alert-text: #721c24;
 }
 
-.table-container {
+#root {
   width: 90%;
   margin: 5vh auto;
   background: var(--background-gradient);
@@ -30,6 +30,7 @@ table {
   text-align: center;
   box-shadow: 1px 3px 8px rgba(22, 27, 50, 0.1);
   border-radius: 10px;
+  margin: 10px;
 }
 
 thead {

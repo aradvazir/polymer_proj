@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // For Bootstrap styles
 import { Table, Button, Form, Container, Modal, Toast } from "react-bootstrap";
+import "./DataTable.css";
 
 const baseUrl = "/";
 // const baseUrl = "http://localhost:8000/";
@@ -20,22 +21,35 @@ const DataTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!tables) {
-        const tables = await (await fetch(baseUrl + "tables")).json();
-        setTables(tables);
-      }
-
-      let cols = [];
-      try {
-        cols = await (await fetch(baseUrl + "columns/" + table)).json();
-        setCols(cols);
-      } catch (err) {}
+      const tables = await (await fetch(baseUrl + "tables")).json();
+      setTables(tables);
+      
+      
     };
     fetchData();
   });
+  const fetchCols = async (table_name) => {
+    let cols = [];
+      try {
+        cols = await (await fetch(baseUrl + "table/" + table_name)).json();
+        setCols(cols);
+        const dictionary = cols.reduce((acc, key) => {
+          acc[key] = "";
+          return acc;
+        }, {});
+        setNewItem(dictionary);
+      } catch (err) {
+        console.log(err);
+      }
+  };
+
   const handleAdd = () => {
     setData([...data, { ...newItem }]);
-    setNewItem({});
+    const dictionary = columns.reduce((acc, key) => {
+      acc[key] = "";
+      return acc;
+    }, {});
+    setNewItem(dictionary);
     setShowForm(false); // Hide the form after adding
   };
 
@@ -57,6 +71,7 @@ const DataTable = () => {
 
   const handleTableChange = async (e) => {
     setTable(e.target.value);
+    await fetchCols(e.target.value);
   };
 
   const toggleEditMode = (id) => {
@@ -114,12 +129,13 @@ const DataTable = () => {
                     placeholder={col}
                     name={col}
                     value={newItem[col]}
-                    onChange={(e) =>
+                    onChange={(e) =>{
                       setNewItem({
                         ...newItem,
                         [e.target.name]: e.target.value,
-                      })
-                    }
+                      });
+                      console.log(newItem);
+                    }}
                   />
                 </Form.Group>
               )
