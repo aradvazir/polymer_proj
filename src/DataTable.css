@@ -1,12 +1,22 @@
 :root {
-  --background-gradient: linear-gradient(135deg, #f0f4f8, #d1e3e9);
-  --text-color: #333;
-  --border-color: #ccc;
-  --submit-color: #007bff;
-  --submit-hover-color: #0056b3;
+  --background-color: #004d99;
+  --text-color: #e5f6f3;
+  --submit-color: #28a745;
+  --submit-hover-color: #218838;
+  --background-gradient: linear-gradient(135deg, #3E62B4 0%, #8ba1b7e4 100%);
+  --border-color: #1a3a5a;
+  --border-focus-color: #025fc3;
   --alert-bg: #f9c2c2;
   --alert-border: #f5c2c7;
   --alert-text: #721c24;
+  --font: 'B Nazanin', sans-serif;
+}
+
+@font-face {
+  font-family: 'B Nazanin';
+  src: url('./fonts/Nazaninb.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
 }
 
 #root {
@@ -20,63 +30,93 @@
   padding: 20px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #002244;
-  color: var(--text-color);
-  font-family: var(--font);
-  font-size: 18px;
+/* General table styles */
+.custom-table {
+  width: 95%;
+  border: 2px solid #003366; /* Overall table border */
+  border-radius: 20px;
+  margin: 20px auto;
+  border-collapse: collapse; /* Collapsed borders for smooth edges */
+  overflow: hidden; /* Ensures the rounded corners take effect */
+}
+
+.custom-table th, .custom-table td {
+  border: none; /* Remove individual cell borders */
+  padding: 12px; /* Add padding for cleaner cell spacing */
   text-align: center;
-  box-shadow: 1px 3px 8px rgba(22, 27, 50, 0.1);
-  border-radius: 10px;
-  margin: 10px;
+  vertical-align: middle;
 }
 
-thead {
-  background-color: #1a3a5a;
+/* Button group for edit mode */
+.button-group {
+  display: flex;
+  justify-content: space-evenly;
 }
 
-th, td {
-  padding: 12px 15px;
-  border: 1px solid var(--border-color);
+/* Button styles */
+button {
+  font-size: 14px;
+  padding: 5px 10px;
+  margin: 0 5px;
+  border-radius: 4px;
 }
 
-tr:nth-child(even) {
-  background-color: #013262;
-}
-
-tr:hover {
-  background-color: #014c99;
-  color: #ffffff;
-}
-
-th {
-  font-weight: bold;
-  background-color: #003366;
-}
-
-.add-row-btn, .edit-btn, .delete-btn {
-  background-color: var(--submit-color);
-  color: white;
-  padding: 10px 15px;
+.save-button {
+  background-color: #28a745; /* Green color for save button */
   border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
 }
 
-.add-row-btn:hover, .edit-btn:hover, .delete-btn:hover {
-  background-color: var(--submit-hover-color);
+.save-button:hover {
+  background-color: #218838; /* Darker green on hover */
 }
 
-.delete-btn {
-  background-color: #f44336;
+button[variant="warning"] {
+  background-color: #ffc107;
 }
 
-.delete-btn:hover {
-  background-color: #ba2624;
+button[variant="warning"]:hover {
+  background-color: #e0a800;
 }
+
+/* Editing input field */
+.edit-input {
+  width: 100%;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+.parent-container {
+  display: flex; /* Use flexbox layout */
+  justify-content: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically (optional) */
+  width: 100%; /* Ensure the container takes the full width */
+  height: 100%; /* Ensure the container takes the full height (optional) */
+}
+
+.input-group-special {
+  display: flex;
+  flex-direction: column; /* Stack label and select vertically */
+  align-items: center; /* Center items horizontally */
+  width: 45%; /* Set a fixed width */
+  margin: 20px auto; /* Center the input group in the parent container */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  border-radius: 13px; /* Rounded corners */
+  background-color: #e7e8ef30; /* Light background */
+  padding: 15px; /* Inner padding for spacing */
+  border: 1px solid #cdcfdfe0; /* Light border */
+}
+
+.input-group-special label {
+  font-size: 27px; /* Larger font size for the label */
+  font-weight: 1000;
+  color: #ffffff; /* Dark blue color for the label */
+  margin-bottom: 10px; /* Space between label and select */
+  text-align: center; /* Center the text of the label */
+  width: 100%; /* Ensure the label takes full width to center correctly */
+}
+
 
 /* Alert Styles */
 .alert {
@@ -97,44 +137,24 @@ th {
   width: 100%;             /* Ensure the group takes full width */
 }
 
-
 .button-group .btn {
   flex: none; /* Ensure buttons take only the necessary space */
 }
 
-
-.add-row-btn, .edit-btn, .delete-btn, .cancel-btn {
-  background-color: var(--submit-color);
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.add-row-btn:hover, .edit-btn:hover, .delete-btn:hover, .cancel-btn:hover {
-  background-color: var(--submit-hover-color);
-}
-
-.delete-btn {
-  background-color: #f44336;
-}
-
-.delete-btn:hover {
-  background-color: #ba2624;
-}
-
-/* Align buttons in rows */
-.button-row {
+/* General button styles */
+.custom-button {
   display: flex;
-  justify-content: space-between;
-  margin-top: 15px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px; /* Add padding to make the button more clickable */
+  font-size: 18px; /* Font size for text */
+  border-radius: 5px; /* Rounded corners */
+  transition: all 0.3s ease; /* Smooth transition for hover and color changes */
+  cursor: pointer;
+  width: fit-content; /* Button size adjusts to its content */
+  direction: rtl; /* Ensure RTL alignment for Persian text */
 }
 
-.button-row .edit-btn, .button-row .delete-btn, .button-row .cancel-btn {
-  flex: 1; /* Ensure equal size */
-}
 
 .Add-button {
   background-color: #4caf50; /* Green background */
@@ -154,6 +174,28 @@ th {
 
 .Add-button:active {
   transform: scale(0.95); /* Slightly decrease size when pressed */
+}
+
+/* Styles for the button when it's in the "plus" state */
+.plus-button {
+  background-color: var(--submit-color); /* Blue background */
+  color: white; /* White text/icon color */
+  border: none; /* Remove border */
+}
+
+.plus-button:hover {
+  background-color: var(--submit-hover-color); /* Darker blue on hover */
+}
+
+/* Styles for the button when it's in the "cancel" state */
+.cancel-button {
+  background-color: #d9534f; /* Red background */
+  color: white; /* White text */
+  border: none;
+}
+
+.cancel-button:hover {
+  background-color: #c9302c; /* Darker red on hover */
 }
 
 /* Responsive design for smaller screens */

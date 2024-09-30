@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // For Bootstrap styles
 import { Table, Button, Form, Container, Modal, Toast } from "react-bootstrap";
+import { AiOutlinePlus } from "react-icons/ai";
 import "./DataTable.css";
 
 const baseUrl = "/";
@@ -23,24 +24,22 @@ const DataTable = () => {
     const fetchData = async () => {
       const tables = await (await fetch(baseUrl + "tables")).json();
       setTables(tables);
-      
-      
     };
     fetchData();
   });
   const fetchCols = async (table_name) => {
     let cols = [];
-      try {
-        cols = await (await fetch(baseUrl + "table/" + table_name)).json();
-        setCols(cols);
-        const dictionary = cols.reduce((acc, key) => {
-          acc[key] = "";
-          return acc;
-        }, {});
-        setNewItem(dictionary);
-      } catch (err) {
-        console.log(err);
-      }
+    try {
+      cols = await (await fetch(baseUrl + "table/" + table_name)).json();
+      setCols(cols);
+      const dictionary = cols.reduce((acc, key) => {
+        acc[key] = "";
+        return acc;
+      }, {});
+      setNewItem(dictionary);
+    } catch (err) {
+      setCols([]);
+    }
   };
 
   const handleAdd = () => {
@@ -95,27 +94,33 @@ const DataTable = () => {
 
   return (
     <Container className="p-4">
-      <div className="input-group-special">
-        <label htmlFor="table_id">نام جدول</label>
-        <select
-          id="table_id"
-          name="table_id"
-          value={table}
-          onChange={handleTableChange}
-          required
-        >
-          <option value="">انتخاب کنید</option>
-          {tables.map((table) => (
-            <option key={table} value={table}>
-              {table}
-            </option>
-          ))}
-        </select>
+      <div className="parent-container">
+        <div className="input-group-special">
+          <label htmlFor="table_id">نام جدول</label>
+          <select
+            id="table_id"
+            name="table_id"
+            value={table}
+            onChange={handleTableChange}
+            required
+          >
+            <option value="">انتخاب کنید</option>
+            {tables.map((table) => (
+              <option key={table} value={table}>
+                {table}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <h1 className="mb-4">لیست</h1>
-      <Button variant="primary" onClick={() => setShowForm(!showForm)}>
-        {showForm ? "انصراف" : "افزودن مورد"}
+      <Button
+        className={`custom-button ${
+          showForm ? "cancel-button" : "plus-button"
+        }`}
+        onClick={() => setShowForm(!showForm)}
+      >
+        {showForm ? "انصراف" : <AiOutlinePlus size={25} />}
       </Button>
 
       {showForm && (
@@ -129,7 +134,7 @@ const DataTable = () => {
                     placeholder={col}
                     name={col}
                     value={newItem[col]}
-                    onChange={(e) =>{
+                    onChange={(e) => {
                       setNewItem({
                         ...newItem,
                         [e.target.name]: e.target.value,
@@ -152,10 +157,12 @@ const DataTable = () => {
         </Form>
       )}
 
-      <Table striped bordered hover>
+      <Table striped bordered hover className="custom-table">
         <thead>
           <tr>
-            {columns.map((col) => columns.length && <th>{col}</th>)}
+            {columns.map((col, index) => (
+              <th key={index}>{col}</th>
+            ))}
             <th>ویرایش</th>
             <th>حذف</th>
           </tr>
@@ -163,35 +170,34 @@ const DataTable = () => {
         <tbody>
           {data.map((item) => (
             <tr key={item.id}>
-              {Object.keys(item).map((key) => (
-                <td name={item.id}>
+              {Object.keys(item).map((key, index) => (
+                <td key={index} name={item.id}>
                   {editMode === item.id ? (
                     <Form.Control
                       type="text"
                       value={tempItem[key]}
                       onChange={(e) => handleEdit(item.id, key, e.target.value)}
+                      className="edit-input"
                     />
                   ) : (
                     <span>{item[key]}</span>
                   )}
                 </td>
               ))}
-
               <td>
                 {editMode === item.id ? (
-                  <td>
-                    <div className="button-group">
-                      <Button
-                        variant="success"
-                        onClick={() => toggleEditMode(item.id)}
-                      >
-                        ذخیره
-                      </Button>
-                      <Button variant="secondary" onClick={cancelEdit}>
-                        انصراف
-                      </Button>
-                    </div>
-                  </td>
+                  <div className="button-group">
+                    <Button
+                      variant="success"
+                      onClick={() => toggleEditMode(item.id)}
+                      className="save-button"
+                    >
+                      ذخیره
+                    </Button>
+                    <Button variant="secondary" onClick={cancelEdit}>
+                      انصراف
+                    </Button>
+                  </div>
                 ) : (
                   <Button
                     variant="warning"
