@@ -152,7 +152,7 @@ th {
 }
 
 .Add-button:active {
-  transform: scale(2); /* Slightly decrease size when pressed */
+  transform: scale(0.95); /* Slightly decrease size when pressed */
 }
 
 /* Responsive design for smaller screens */
