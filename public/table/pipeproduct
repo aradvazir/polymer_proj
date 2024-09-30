@@ -1,0 +1,15 @@
+[
+  "id",
+  "name",
+  "code",
+  "currency",
+  "usage",
+  "export",
+  "size",
+  "tickness",
+  "quality",
+  "length",
+  "weight",
+  "color",
+  "image"
+]

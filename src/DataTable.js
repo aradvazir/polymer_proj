@@ -41,6 +41,28 @@ const DataTable = () => {
       setCols([]);
     }
   };
+  const fetchData = async (
+    table_name,
+    start,
+    end,
+    order = "id",
+    is_asc = "True"
+  ) => {
+    const url =
+      baseUrl +
+      "values/" +
+      table_name +
+      "/" +
+      start +
+      "/" +
+      end +
+      "/" +
+      order +
+      "/" +
+      is_asc;
+    const the_data = await (await fetch(url)).json();
+    setData(the_data);
+  };
 
   const handleAdd = () => {
     setData([...data, { ...newItem }]);
@@ -71,6 +93,7 @@ const DataTable = () => {
   const handleTableChange = async (e) => {
     setTable(e.target.value);
     await fetchCols(e.target.value);
+    await fetchData(e.target.value, 0, 7);
   };
 
   const toggleEditMode = (id) => {
