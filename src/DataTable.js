@@ -149,9 +149,9 @@ const DataTable = () => {
 
       {showForm && (
         <Form className="mb-4">
-          {columns.map(
+          {columns.length && columns.filter(item => item !== "id").map(
             (col) =>
-              columns.length && (
+              (
                 <Form.Group className="mb-3">
                   <Form.Control
                     type="text"
@@ -184,7 +184,7 @@ const DataTable = () => {
       <Table striped bordered hover className="custom-table">
         <thead>
           <tr>
-            {columns.map((col, index) => (
+            {columns.filter(item => item !== "id").map((col, index) => (
               <th key={index}>{col}</th>
             ))}
             <th>ویرایش</th>
@@ -194,7 +194,7 @@ const DataTable = () => {
         <tbody>
           {data.map((item) => (
             <tr key={item.id}>
-              {Object.keys(item).map((key, index) => (
+              {Object.keys(item).filter(item => item !== "id").map((key, index) => (
                 <td key={index} name={item.id}>
                   {editMode === item.id ? (
                     <Form.Control
