@@ -6,7 +6,7 @@ import * as XLSX from "xlsx"; // Import XLSX
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./DataTable.css";
-import nazaninFont from './fonts/Nazaninb.ttf';
+import nazaninFont from './fonts/tnrNaz.ttf';
 
 const baseUrl = "/";
 // const baseUrl = "http://localhost:8000/";
@@ -84,6 +84,8 @@ const DataTable = () => {
 
   const handleDelete = () => {
     if (itemToDelete) {
+      console.log("Deleted Item: ");
+      console.log(itemToDelete);
       setData(data.filter((item) => item.id !== itemToDelete));
       setShowModal(false); // Close modal after deletion
     }
@@ -107,6 +109,8 @@ const DataTable = () => {
   const toggleEditMode = (id) => {
     if (editMode === id) {
       // If already in edit mode, save changes
+      console.log("The edited: ");
+      console.log(tempItem)
       setData(
         data.map((item) => (item.id === id ? { ...item, ...tempItem } : item))
       );
@@ -133,55 +137,56 @@ const DataTable = () => {
 
   const handlePDF = () => {
     const doc = new jsPDF();
-    
     // Fetch the font file
     fetch(nazaninFont)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        return response.arrayBuffer();
-      })
-      .then(fontData => {
-        const fontArray = new Uint8Array(fontData);
-        const fontBase64 = btoa(String.fromCharCode.apply(null, fontArray));
-  
-        // Add the font to the jsPDF instance
-        doc.addFileToVFS("Nazanin.ttf", fontBase64);
-        doc.addFont("Nazanin.ttf", "Nazanin", "normal");
-        doc.setFont("Nazanin");
-  
-        // Define columns and data for autoTable
-        const columnsConfig = columns.map(col => ({
-          header: col, // Column headers
-          dataKey: col // Data key for mapping
-        }));
-  
-        const rows = data.map(item => {
-          const row = {};
-          columns.forEach(col => {
-            row[col] = item[col]; // Map data
-          });
-          return row;
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.arrayBuffer();
+        })
+        .then(fontData => {
+            const fontArray = new Uint8Array(fontData);
+            const fontBase64 = btoa(String.fromCharCode(...fontArray));
+
+            // Add the Farsi font to the jsPDF instance
+            doc.addFileToVFS("Nazanin.ttf", fontBase64);
+            doc.addFont("Nazanin.ttf", "Nazanin", "normal");
+            doc.setFont("Nazanin"); // Set the initial font for Farsi
+
+            // Define columns and data for autoTable
+            const columnsConfig = columns.map(col => ({
+                header: col, // Column headers
+                dataKey: col // Data key for mapping
+            }));
+
+            const rows = data.map(item => {
+                const row = {};
+                columns.forEach(col => {
+                    row[col] = item[col]; // Map data
+                });
+                return row;
+            });
+
+            // Create the PDF table
+            doc.autoTable({
+                columns: columnsConfig,
+                body: rows,
+                styles: {
+                    fontSize: 60 / columns.length,
+                    font: "Nazanin", // Default font for the table (if not overridden per row)
+                },
+                margin: { top: 10 },
+            });
+
+            doc.save("table_data.pdf");
+        })
+        .catch(error => {
+            console.error("Error loading font or generating PDF:", error);
         });
+  };
+
   
-        // Create the PDF table
-        doc.autoTable({
-          columns: columnsConfig,
-          body: rows,
-          styles: {
-            font: "Nazanin", // Set the font for the table
-            fontSize: 12,
-          },
-          margin: { top: 10 },
-        });
-  
-        doc.save("table_data.pdf");
-      })
-      .catch(error => {
-        console.error("Error loading font or generating PDF:", error);
-      });
-  };  
 
   return (
     <Container className="p-4">
