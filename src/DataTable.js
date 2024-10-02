@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // For Bootstrap styles
 import { Table, Button, Form, Container, Modal, Toast } from "react-bootstrap";
 import { AiOutlinePlus } from "react-icons/ai";
+import * as XLSX from "xlsx"; // Import XLSX
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 import "./DataTable.css";
+import nazaninFont from './fonts/Nazaninb.ttf';
 
 const baseUrl = "/";
 // const baseUrl = "http://localhost:8000/";
@@ -19,6 +23,8 @@ const DataTable = () => {
   const [columns, setCols] = useState([]);
   const [table, setTable] = useState("");
   const [tables, setTables] = useState([]);
+  const [showRightButtons, setShowRightButtons] = useState(true);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,7 +32,7 @@ const DataTable = () => {
       setTables(tables);
     };
     fetchData();
-  });
+  }, []);
   const fetchCols = async (table_name) => {
     let cols = [];
     try {
@@ -118,14 +124,64 @@ const DataTable = () => {
     setEditMode(null); // Exit edit mode without saving
   };
 
-  const handleAction1 = () => {
-    // Action for the first button
+  const handleExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(data); // Convert data to worksheet
+    const workbook = XLSX.utils.book_new(); // Create a new workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Data"); // Append the worksheet
+    XLSX.writeFile(workbook, "data.xlsx"); // Save the file
   };
+
+  const handlePDF = () => {
+    const doc = new jsPDF();
+    
+    // Fetch the font file
+    fetch(nazaninFont)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.arrayBuffer();
+      })
+      .then(fontData => {
+        const fontArray = new Uint8Array(fontData);
+        const fontBase64 = btoa(String.fromCharCode.apply(null, fontArray));
   
-  const handleAction2 = () => {
-    // Action for the second button
-  };
+        // Add the font to the jsPDF instance
+        doc.addFileToVFS("Nazanin.ttf", fontBase64);
+        doc.addFont("Nazanin.ttf", "Nazanin", "normal");
+        doc.setFont("Nazanin");
   
+        // Define columns and data for autoTable
+        const columnsConfig = columns.map(col => ({
+          header: col, // Column headers
+          dataKey: col // Data key for mapping
+        }));
+  
+        const rows = data.map(item => {
+          const row = {};
+          columns.forEach(col => {
+            row[col] = item[col]; // Map data
+          });
+          return row;
+        });
+  
+        // Create the PDF table
+        doc.autoTable({
+          columns: columnsConfig,
+          body: rows,
+          styles: {
+            font: "Nazanin", // Set the font for the table
+            fontSize: 12,
+          },
+          margin: { top: 10 },
+        });
+  
+        doc.save("table_data.pdf");
+      })
+      .catch(error => {
+        console.error("Error loading font or generating PDF:", error);
+      });
+  };  
 
   return (
     <Container className="p-4">
@@ -150,18 +206,34 @@ const DataTable = () => {
       </div>
 
       <div className="button-container">
-        <div className="left-buttons">
-          <Button className="custom-button new-button" variant="primary" onClick={handleAction1}>
-            دکمه اول
-          </Button>
-          <Button className="custom-button new-button" variant="secondary" onClick={handleAction2}>
-            دکمه دوم
-          </Button>
-        </div>
+        {/* Top-right buttons */}
+        {showRightButtons && (
+          <div className="right-buttons">
+            <Button className="ExcelPdf-button" onClick={() => {
+              console.log("Excel button clicked")
+              handleExcel();
+            }}>
+              Excel
+            </Button>
+            <Button className="ExcelPdf-button" onClick={() => {
+              console.log("PDF button clicked")
+              handlePDF();
+            }}>
+              PDF
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <div className="button-container">
+        {/* Centered plus button */}
         <div className="center-button">
           <Button
             className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
-            onClick={() => setShowForm(!showForm)}
+            onClick={() => {
+              setShowForm(!showForm);
+              setShowRightButtons(!showRightButtons); // Toggle visibility of right buttons
+            }}
           >
             {showForm ? "انصراف" : <AiOutlinePlus size={30} />}
           </Button>
@@ -178,13 +250,12 @@ const DataTable = () => {
                     type="text"
                     placeholder={col}
                     name={col}
-                    value={newItem[col]}
+                    value={newItem[col] || ''} // Provide a fallback to avoid uncontrolled input
                     onChange={(e) => {
                       setNewItem({
                         ...newItem,
                         [e.target.name]: e.target.value,
                       });
-                      
                     }}
                   />
                 </Form.Group>
@@ -192,7 +263,10 @@ const DataTable = () => {
           )}
             
           <div className="d-flex justify-content-center">
-            <Button className="Add-button" variant="success" onClick={handleAdd}>
+            <Button className="Add-button" variant="success" onClick={() => {
+              handleAdd(); // Your existing logic for adding
+              setShowRightButtons(true); // Show the right buttons again
+            }}>
               افزودن مورد
             </Button>
           </div>
