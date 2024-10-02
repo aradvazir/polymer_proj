@@ -65,9 +65,11 @@ const DataTable = () => {
   };
 
   const handleAdd = () => {
+    console.log("Item 2 add: ");
+    console.log(newItem);
     setData([...data, { ...newItem }]);
     const dictionary = columns.reduce((acc, key) => {
-      acc[key] = "";
+      acc[key] = null;
       return acc;
     }, {});
     setNewItem(dictionary);
@@ -93,7 +95,7 @@ const DataTable = () => {
   const handleTableChange = async (e) => {
     setTable(e.target.value);
     await fetchCols(e.target.value);
-    await fetchData(e.target.value, 0, 7);
+    await fetchData(e.target.value, 0, 1000);
   };
 
   const toggleEditMode = (id) => {
@@ -109,7 +111,7 @@ const DataTable = () => {
       const itemToEdit = data.find((item) => item.id === id);
       setTempItem({ ...itemToEdit }); // Populate temp item
     }
-    
+
   };
 
   const cancelEdit = () => {
@@ -164,7 +166,7 @@ const DataTable = () => {
                         ...newItem,
                         [e.target.name]: e.target.value,
                       });
-                      console.log(newItem);
+                      
                     }}
                   />
                 </Form.Group>
