@@ -107,8 +107,9 @@ const DataTable = () => {
       // Set edit mode for the row
       setEditMode(id);
       const itemToEdit = data.find((item) => item.id === id);
-      setTempItem({ name: itemToEdit.name, value: itemToEdit.value }); // Populate temp item
+      setTempItem({ ...itemToEdit }); // Populate temp item
     }
+    
   };
 
   const cancelEdit = () => {
