@@ -118,6 +118,15 @@ const DataTable = () => {
     setEditMode(null); // Exit edit mode without saving
   };
 
+  const handleAction1 = () => {
+    // Action for the first button
+  };
+  
+  const handleAction2 = () => {
+    // Action for the second button
+  };
+  
+
   return (
     <Container className="p-4">
       <div className="parent-container">
@@ -141,14 +150,23 @@ const DataTable = () => {
       </div>
 
       <div className="button-container">
-        <Button
-          className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
-          onClick={() => setShowForm(!showForm)}
-        >
-          {showForm ? "انصراف" : <AiOutlinePlus size={25} />}
-        </Button>
+        <div className="left-buttons">
+          <Button className="custom-button new-button" variant="primary" onClick={handleAction1}>
+            دکمه اول
+          </Button>
+          <Button className="custom-button new-button" variant="secondary" onClick={handleAction2}>
+            دکمه دوم
+          </Button>
+        </div>
+        <div className="center-button">
+          <Button
+            className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
+            onClick={() => setShowForm(!showForm)}
+          >
+            {showForm ? "انصراف" : <AiOutlinePlus size={30} />}
+          </Button>
+        </div>
       </div>
-
 
       {showForm && (
         <Form className="mb-4">
@@ -172,12 +190,9 @@ const DataTable = () => {
                 </Form.Group>
               )
           )}
-          <div className="d-flex justify-content-end mb-3">
-            <Button
-              className="Add-button"
-              variant="success"
-              onClick={handleAdd}
-            >
+            
+          <div className="d-flex justify-content-center">
+            <Button className="Add-button" variant="success" onClick={handleAdd}>
               افزودن مورد
             </Button>
           </div>

@@ -160,39 +160,73 @@ button[variant="warning"]:hover {
 
 .button-container {
   display: flex;
-  justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
-  width: 100%; /* Ensure the container takes the full width of the row */
-  height: 100%; /* Optional: If you want to center it vertically too */
+  justify-content: space-between; /* Space between left buttons and the center button */
+  align-items: center;
+  width: 100%; /* Full width of the row */
   margin: 10px 0px 25px 0px;
 }
 
-.button-group {
+.left-buttons {
   display: flex;
-  justify-content: center; /* Center the button group horizontally */
-  align-items: center;     /* Align the buttons vertically */
-  gap: 20px;               /* Space between buttons */
-  width: 100%;             /* Ensure the group takes full width */
+  justify-content: flex-start; /* Aligns left buttons to the start (left) of the row */
+  gap: 20px; /* Space between the two left buttons */
 }
 
-.button-group .btn {
-  flex: none; /* Ensure buttons take only the necessary space */
+.center-button {
+  flex-grow: 1; /* This ensures the "plus" button stays centered */
+  display: flex;
+  justify-content: center; /* Centers the plus button within the container */
 }
 
-/* General button styles */
 .custom-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 20px; /* Add padding to make the button more clickable */
-  font-size: 18px; /* Font size for text */
-  border-radius: 5px; /* Rounded corners */
-  transition: all 0.3s ease; /* Smooth transition for hover and color changes */
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 5px;
+  transition: all 0.3s ease;
   cursor: pointer;
-  width: fit-content; /* Button size adjusts to its content */
-  direction: rtl; /* Ensure RTL alignment for Persian text */
+  width: fit-content;
+  direction: ltr;
 }
 
+/* Styles for the new buttons */
+.new-button {
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 18px;
+}
+
+.new-button:hover {
+  background-color: #0056b3;
+}
+
+.new-button:active {
+  background-color: #004085;
+}
+
+/* Plus button styles */
+.plus-button {
+  background-color: var(--submit-color);
+  color: white;
+  border: 1px solid rgba(0, 0, 1, 0.414);
+  border-radius: 10px;
+  font-size: 25px;
+  width: 27vw;
+}
+
+.plus-button:hover {
+  background-color: var(--submit-hover-color);
+  border: 1px black solid;
+  transform: scale(1.1);
+}
+
+.plus-button:active {
+  background-color: var(--submit-hover-color);
+}
 
 .Add-button {
   background-color: #4caf50; /* Green background */
@@ -212,26 +246,6 @@ button[variant="warning"]:hover {
 
 .Add-button:active {
   transform: scale(0.95); /* Slightly decrease size when pressed */
-}
-
-/* Styles for the button when it's in the "plus" state */
-.plus-button {
-  background-color: var(--submit-color); /* Blue background */
-  color: white; /* White text/icon color */
-  border: 1px rgba(0, 0, 1, 0.414) solid;
-  border-radius: 10px;
-  font-size: 25px;
-  width: 30vw;
-}
-
-.plus-button:hover {
-  background-color: var(--submit-hover-color);
-  border: 1px black solid;
-  transform: scale(1.1);
-}
-
-.plus-button:active {
-  background-color: var(--submit-hover-color);
 }
 
 /* Styles for the button when it's in the "cancel" state */
