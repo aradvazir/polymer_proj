@@ -39,6 +39,7 @@
   overflow: hidden; /* Ensures the rounded corners take effect */
   font-size: 16px;
   padding: 10px;
+  border: transparent;
 }
 
 .custom-table th, .custom-table td {
@@ -47,6 +48,15 @@
   text-align: center;
   vertical-align: middle;
   min-width: max-content;
+  
+}
+.custom-table.form-table th, .custom-table.form-table td  {
+  min-width: fit-content;
+  font-size: 12px;
+}
+
+.form-control {
+  font-size: inherit;
 }
 
 .custom-table thead {
@@ -189,8 +199,8 @@ button[variant="warning"]:hover {
   direction: ltr;
 }
 
-.ExcelPdf-button {
-  background-color: var(--submit-color);
+.Pdf-button {
+  background-color: #d01;
   color: rgb(255, 255, 255);
   padding: 10px 20px;
   border: 1px rgba(0, 111, 2, 0.723) solid;
@@ -198,8 +208,22 @@ button[variant="warning"]:hover {
   font-size: 20px;
 }
 
-.ExcelPdf-button:hover {
-  background-color: var(--submit-hover-color);
+.Pdf-button:hover {
+  background-color: #901;
+  border: 1px rgba(0, 60, 1, 0.723) solid;
+  transform: scale(1.1);
+}
+.Excel-button {
+  background-color: #191;
+  color: rgb(255, 255, 255);
+  padding: 10px 20px;
+  border: 1px rgba(0, 111, 2, 0.723) solid;
+  border-radius: 5px;
+  font-size: 20px;
+}
+
+.Excel-button:hover {
+  background-color: #161;
   border: 1px rgba(0, 60, 1, 0.723) solid;
   transform: scale(1.1);
 }
