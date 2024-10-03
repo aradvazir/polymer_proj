@@ -6,6 +6,7 @@ import * as XLSX from "xlsx"; // Import XLSX
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./DataTable.css";
+import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import nazaninFont from './fonts/tnrNaz.ttf';
 
 const baseUrl = "/";
@@ -100,9 +101,16 @@ const DataTable = () => {
   const handleAdd = async() => {
     console.log("Item 2 add: ");
     console.log(newItem);
+    if(baseUrl !== "/"){
+      await fetch(baseUrl + "table/" + table, {
+        method: "POST",
+        body: JSON.stringify(newItem)
+      })
+    }  
+    
     setData([...data, { ...newItem }]);
     const dictionary = columns.reduce((acc, key) => {
-      acc[key] = null;
+      acc[key] = "";
       return acc;
     }, {});
     setNewItem(dictionary);
@@ -248,7 +256,7 @@ const DataTable = () => {
           >
             <option value="">انتخاب کنید</option>
             {tables.map((t) => (
-              <option key={t} value={t}>
+              <option value={t}>
                 {t}
               </option>
             ))}
@@ -260,17 +268,17 @@ const DataTable = () => {
         {/* Top-right buttons */}
         {showRightButtons && (
           <div className="right-buttons">
-            <Button className="ExcelPdf-button" onClick={() => {
+            <Button className="Excel-button" onClick={() => {
               console.log("Excel button clicked")
               handleExcel();
             }}>
-              Excel
+              <FaFileExcel size={20} />
             </Button>
-            <Button className="ExcelPdf-button" onClick={() => {
+            <Button className="Pdf-button" onClick={() => {
               console.log("PDF button clicked")
               handlePDF();
             }}>
-              PDF
+              <FaFilePdf size={20} />
             </Button>
           </div>
         )}
@@ -278,7 +286,7 @@ const DataTable = () => {
 
       <div className="button-container">
         {/* Centered plus button */}
-        <div className="center-button">
+        {!showForm && <div className="center-button">
           <Button
             className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
             onClick={() => {
@@ -286,39 +294,61 @@ const DataTable = () => {
               setShowRightButtons(!showRightButtons); // Toggle visibility of right buttons
             }}
           >
-            {showForm ? "انصراف" : <AiOutlinePlus size={30} />}
+            <AiOutlinePlus size={30} />
           </Button>
-        </div>
+        </div>}
       </div>
 
       {showForm && (
         <Form className="mb-4">
-          {columns.length && columns.filter(item => item !== "id").map(
-            (col) =>
-              (
-                <Form.Group className="mb-3">
-                  <Form.Control
-                    type="text"
-                    placeholder={col}
-                    name={col}
-                    value={newItem[col] || ''} // Provide a fallback to avoid uncontrolled input
-                    onChange={(e) => {
-                      setNewItem({
-                        ...newItem,
-                        [e.target.name]: e.target.value,
-                      });
-                    }}
-                  />
-                </Form.Group>
-              )
-          )}
+          <Table striped bordered hover className="custom-table form-table">
+            <thead>
+              <tr>
+                {columns.filter(item => item !== "id").map(col => (
+                  <th>{col}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                {columns.length && columns.filter(item => item !== "id").map(
+                  (col) =>
+                    (
+                      <td>
+                        <Form.Control
+                          type="text"
+                          placeholder={col}
+                          name={col}
+                          value={newItem[col]} // Provide a fallback to avoid uncontrolled input
+                          onChange={(e) => {
+                            setNewItem({
+                              ...newItem,
+                              [e.target.name]: e.target.value,
+                            });
+                          }}
+                        />
+                      </td>
+                    )
+                )}
+              </tr>
+            </tbody>
+          </Table>
             
           <div className="d-flex justify-content-center">
             <Button className="Add-button" variant="success" onClick={async() => {
-              await handleAdd(); // Your existing logic for adding
-              setShowRightButtons(true); // Show the right buttons again
+              await handleAdd();
+              setShowRightButtons(true);
             }}>
               افزودن مورد
+            </Button>
+            <Button
+              className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
+              onClick={() => {
+                setShowForm(!showForm);
+                setShowRightButtons(!showRightButtons); // Toggle visibility of right buttons
+              }}
+            >
+              انصراف
             </Button>
           </div>
         </Form>
@@ -328,7 +358,7 @@ const DataTable = () => {
         <thead>
           <tr>
             {columns.filter(item => item !== "id").map((col, index) => (
-              <th key={index}>{col}</th>
+              <th>{col}</th>
             ))}
             <th>ویرایش</th>
             <th>حذف</th>
@@ -336,9 +366,9 @@ const DataTable = () => {
         </thead>
         <tbody>
           {data.map((item) => (
-            <tr key={item.id}>
-              {Object.keys(item).filter(item => item !== "id").map((key, index) => (
-                <td key={index} name={item.id}>
+            <tr>
+              {Object.keys(item).filter(item => item !== "id").map(key => (
+                <td name={item.id}>
                   {editMode === item.id ? (
                     <Form.Control
                       type="text"
