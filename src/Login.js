@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import './Login.css';
-import logo from './logo.jpg'; // Ensure the logo is in the 'src' folder
+import logo from './golsar.png';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
+  const navigate = useNavigate(); 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -11,19 +13,20 @@ const Login = () => {
     // Handle login logic here
     console.log('Username:', username);
     console.log('Password:', password);
+    navigate("/menu");
   };
 
   return (
-    <div>
-      <div className="logo-container">
-        <img src={logo} alt="Logo" className="login-logo" />
+    <div className='loginpage'>
+      <div className="login__logo-container">
+        <img src={logo} alt="Logo" className="login__logo" />
       </div>
-      <div className="login-wrapper">
-        <div className="login-container">
-          <div className="login-box">
+      <div className="login__wrapper">
+        <div className="login__container">
+          <div className="login__box">
             <h2>ورود</h2>
             <form onSubmit={handleLogin}>
-              <div className="input-group">
+              <div className="login__input-group">
                 <input
                   type="text"
                   id="username"
@@ -33,7 +36,7 @@ const Login = () => {
                   required
                 />
               </div>
-              <div className="input-group">
+              <div className="login__input-group">
                 <input
                   type="password"
                   id="password"
@@ -43,7 +46,7 @@ const Login = () => {
                   required
                 />
               </div>
-              <button type="submit" className="login-btn">
+              <button type="submit" className="login__btn">
                 ورود
               </button>
             </form>

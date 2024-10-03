@@ -243,7 +243,7 @@ const DataTable = () => {
   
 
   return (
-    <Container className="p-4">
+    <Container className="datatable">
       <div className="parent-container">
         <div className="input-group-special">
           <label htmlFor="table_id">نام جدول</label>

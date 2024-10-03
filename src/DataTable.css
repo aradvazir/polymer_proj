@@ -19,7 +19,7 @@
   font-style: normal;
 }
 
-#root {
+.datatable {
   width: 90%;
   margin: 5vh auto;
   background: var(--background-gradient);
@@ -303,7 +303,7 @@ form input, form textarea, select {
   th, td {
       padding: 8px;
   }
-  .p-4 {
+  .datatable {
     margin-right: -2.5vw;
   }
 }

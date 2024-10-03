@@ -143,9 +143,9 @@ const Form = () => {
       date: formattedDate,
     }));
 
-    document.getElementsByClassName("react-calendar")[0].classList.add("no");
+    document.getElementsByClassName("form__react-calendar")[0].classList.add("no");
     document
-      .getElementsByClassName("date")[0]
+      .getElementsByClassName("form__date")[0]
       .getElementsByTagName("p")[0]
       .classList.remove("no");
   };
@@ -244,7 +244,7 @@ const Form = () => {
   };
 
   const renderIngredients = async (mixCode) => {
-    let ans = <div className="input-group-special auto">هیچ میکسی انتخاب نشده است.</div>;
+    let ans = <div className="form__input-group-special auto">هیچ میکسی انتخاب نشده است.</div>;
     if (mixCode) {
       let mix_ingreds = null;
       try {
@@ -278,9 +278,9 @@ const Form = () => {
       setDefaultIngreds(defaults);
       
       return (
-        <div className="auto-container">
+        <div className="form__auto-container">
           {mix_ingreds.map((ingred) => (
-            <div className="input-group-special auto" key={ingred.rawmaterial.id}>
+            <div className="form__input-group-special auto" key={ingred.rawmaterial.id}>
               <label>{ingred.rawmaterial.rawmaterial}</label>
               <input
                 type="text"
@@ -298,14 +298,14 @@ const Form = () => {
   };
 
   return (
-    <div className="form-container">
+    <div className="form__form-container">
       <div style={{visibility: "hidden"}}>{JSON.stringify(defaultIngreds)}</div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="form__form">
         <h2>اطلاعات تولید</h2>
 
-        <div className="input-group-special date">
+        <div className="form__input-group-special date">
           <label htmlFor="date">تاریخ</label>
-          <div className="date-display">
+          <div className="form__date-display">
             <Calendar
               onChange={handleDateChange}
               value={selectedDate}
@@ -315,10 +315,10 @@ const Form = () => {
             <p
               onClick={() => {
                 document
-                  .getElementsByClassName("react-calendar")[0]
+                  .getElementsByClassName("form__react-calendar")[0]
                   .classList.remove("no");
                 document
-                  .getElementsByClassName("date")[0]
+                  .getElementsByClassName("form__date")[0]
                   .getElementsByTagName("p")[0]
                   .classList.add("no");
               }}
@@ -329,18 +329,18 @@ const Form = () => {
           
         </div>
 
-        <div className="input-group-special time">
+        <div className="form__input-group-special form__time">
           <label htmlFor="">زمان</label>
-          <div className="clock-display">
+          <div className="form__clock-display">
               <div id="time-input" className="no">
                   <input
                       type="time"
                       value={timeInput}
                       onChange={handleTimeInputChange}
-                      className="time-input"
+                      className="form__time-input"
                   />
-                  <button type="button" className="action-button save-button" onClick={handleSaveTime}>ذخیره</button>
-                  <button type="button" className="action-button cancel-button" onClick={closeTimeInput}>لغو</button>
+                  <button type="button" className="form__action-button save-button" onClick={handleSaveTime}>ذخیره</button>
+                  <button type="button" className="form__action-button cancel-button" onClick={closeTimeInput}>لغو</button>
               </div>
               <div id="time-text">
                   <p onClick={openTimeInput}>{moment(confirmedTime, "HH:mm").format("HH:mm")}</p>
@@ -348,17 +348,17 @@ const Form = () => {
           </div>
         </div>
 
-        <div className="input-group-special single-row">
+        <div className="form__input-group-special single-row">
           <label>محصول تولیدی</label>
-          <div className="toggle-buttons">
+          <div className="form__toggle-buttons">
             <div
-              className={`toggle-button ${isFitting === "True" ? "active" : ""}`}
+              className={`form__toggle-button ${isFitting === "True" ? "active" : ""}`}
               onClick={() => handleProductToggle("True")}
             >
               اتصالات
             </div>
             <div
-              className={`toggle-button ${isFitting === "False" ? "active" : ""}`}
+              className={`form__toggle-button ${isFitting === "False" ? "active" : ""}`}
               onClick={() => handleProductToggle("False")}
             >
               لوله
@@ -366,7 +366,7 @@ const Form = () => {
           </div>
         </div>
 
-        <div className="input-group-special">
+        <div className="form__input-group-special">
           <label htmlFor="operator_id">نام اپراتور</label>
           <select
             id="operator_id"
@@ -384,7 +384,7 @@ const Form = () => {
           </select>
         </div>
         
-        <div className="input-group-special">
+        <div className="form__input-group-special">
           <label htmlFor="shift">شیفت</label>
           <select
             id="shift"
@@ -400,7 +400,7 @@ const Form = () => {
           </select>
         </div>
 
-        <div className="input-group-special">
+        <div className="form__input-group-special">
           <label htmlFor="line_id">خط</label>
           <select
             id="line_id"
@@ -418,7 +418,7 @@ const Form = () => {
           </select>
         </div>
 
-        <div className="input-group-special">
+        <div className="form__input-group-special">
           <label htmlFor="productionAmount">مقدار تولید</label>
           <input
             type="number"
@@ -430,7 +430,7 @@ const Form = () => {
           />
         </div>
 
-        <div className="input-group-special">
+        <div className="form__input-group-special">
           <label htmlFor="product_id">محصول</label>
           <select
             id="product_id"
@@ -448,7 +448,7 @@ const Form = () => {
           </select>
         </div>
 
-        <div className="input-group-special">
+        <div className="form__input-group-special">
           <label htmlFor="recipe_code">نام میکس</label>
           <select
             id="recipe_code"
@@ -467,7 +467,7 @@ const Form = () => {
 
         {ingredients}
 
-        <div className="input-group-special desc">
+        <div className="form__input-group-special desc">
           <label htmlFor="description">توضیحات</label>
           <textarea
             id="description"
@@ -478,7 +478,7 @@ const Form = () => {
           ></textarea>
         </div>
 
-        <button type="submit" className="submit-btn">
+        <button type="submit" className="form__submit-btn">
           ثبت
         </button>
       </form>

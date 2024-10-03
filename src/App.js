@@ -1,13 +1,21 @@
 import React from "react";
-// import Form from "./Form";
-// import DataTable from "./DataTable";
-// import Login from "./Login";
+import Form from "./Form";
+import DataTable from "./DataTable";
+import Login from "./Login";
 import Menu from "./Menu";
 import "./App.css";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
-    <Menu/>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Login />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/mixentry" element={<Form />} />
+        <Route path="/datatable" element={<DataTable />} />
+      </Routes>
+    </Router>
   );
 }
 

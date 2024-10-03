@@ -3,17 +3,17 @@ import './Menu.css'; // Import the CSS file for styling
 
 const Menu = () => {
   return (
-    <div className="menu-container">
-      <h1 className="menu-title">منو</h1>
-      <ul className="menu-options">
+    <div className="menu__container">
+      <h1 className="menu__title">منو</h1>
+      <ul className="menu__options">
         <li>
-          <a href="/page1" className="menu-option">گزینه ۱</a>
+          <a href="/mixentry" className="menu__option">ورود اطلاعات میکس</a>
         </li>
         <li>
-          <a href="/page2" className="menu-option">گزینه ۲</a>
+          <a href="/datatable" className="menu__option">مشاهده جدول ها</a>
         </li>
         <li>
-          <a href="/page3" className="menu-option">گزینه ۳</a>
+          <a href="/page3" className="menu__option">گزینه ۳</a>
         </li>
       </ul>
     </div>

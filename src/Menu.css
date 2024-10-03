@@ -1,4 +1,4 @@
-.menu-container {
+.menu__container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,7 +8,7 @@
   background-color: linear-gradient(135deg, #3E62B4 0%, #8ba1b7e4 100%);
 }
 
-.menu-title {
+.menu__title {
   font-size: 3rem;
   color: #333; /* Darker text */
   margin-bottom: 30px;
@@ -16,12 +16,12 @@
   letter-spacing: 1px;
 }
 
-.menu-options {
+.menu__options {
   list-style-type: none;
   padding: 0;
 }
 
-.menu-option {
+.menu__option {
   display: block;
   text-align: center;
   padding: 15px 30px;
@@ -37,7 +37,7 @@
   transition: background-color 0.3s, transform 0.3s; /* Smooth hover */
 }
 
-.menu-option:hover {
+.menu__option:hover {
   background-color: #007bff; /* Blue on hover */
   color: white; /* White text on hover */
   transform: scale(1.05); /* Slight scaling on hover */
