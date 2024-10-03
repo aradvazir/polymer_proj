@@ -24,7 +24,7 @@ const Login = () => {
       <div className="login__wrapper">
         <div className="login__container">
           <div className="login__box">
-            <h2>ورود</h2>
+            <h2>ورود به پنل کاربری</h2>
             <form onSubmit={handleLogin}>
               <div className="login__input-group">
                 <input

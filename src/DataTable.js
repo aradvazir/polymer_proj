@@ -339,7 +339,7 @@ const DataTable = () => {
               await handleAdd();
               setShowRightButtons(true);
             }}>
-              افزودن مورد
+              افزودن
             </Button>
             <Button
               className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
