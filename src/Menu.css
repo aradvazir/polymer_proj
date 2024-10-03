@@ -1,39 +1,44 @@
 .menu-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100vh; /* Full viewport height */
-    background-color: #f0f0f0; /* Light background color */
-    font-family: 'Nazanin', sans-serif; /* Use the Persian font */
-  }
-  
-  .menu-title {
-    font-size: 2.5rem; /* Title font size */
-    margin-bottom: 20px; /* Spacing below title */
-  }
-  
-  .menu-options {
-    list-style-type: none; /* Remove default list style */
-    padding: 0; /* Remove padding */
-  }
-  
-  .menu-option {
-    display: block;
-    text-align: center;
-    padding: 15px 30px; /* Padding around the options */
-    margin: 10px 0; /* Margin between options */
-    background-color: #fff; /* White background for options */
-    border: 1px solid #ccc; /* Light border */
-    border-radius: 5px; /* Rounded corners */
-    text-decoration: none; /* Remove underline from links */
-    color: #333; /* Text color */
-    font-size: 1.2rem; /* Option font size */
-    transition: background-color 0.3s; /* Smooth transition for hover */
-  }
-  
-  .menu-option:hover {
-    background-color: #007bff; /* Change background on hover */
-    color: white; /* Change text color on hover */
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-family: 'Nazanin', sans-serif;
+  background-color: linear-gradient(135deg, #3E62B4 0%, #8ba1b7e4 100%);
+}
+
+.menu-title {
+  font-size: 3rem;
+  color: #333; /* Darker text */
+  margin-bottom: 30px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.menu-options {
+  list-style-type: none;
+  padding: 0;
+}
+
+.menu-option {
+  display: block;
+  text-align: center;
+  padding: 15px 30px;
+  margin: 15px 0; /* More spacing between options */
+  background-color: #ffffff; /* White background */
+  border: 2px solid #007bff; /* Blue border */
+  border-radius: 10px; /* Smoother rounded corners */
+  color: #007bff; /* Blue text color */
+  font-size: 1.4rem;
+  font-weight: 600; /* Bolder font */
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
+  transition: background-color 0.3s, transform 0.3s; /* Smooth hover */
+}
+
+.menu-option:hover {
+  background-color: #007bff; /* Blue on hover */
+  color: white; /* White text on hover */
+  transform: scale(1.05); /* Slight scaling on hover */
+}
