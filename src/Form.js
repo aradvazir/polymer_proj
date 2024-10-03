@@ -143,9 +143,9 @@ const Form = () => {
       date: formattedDate,
     }));
 
-    document.getElementsByClassName("form__react-calendar")[0].classList.add("no");
+    document.getElementsByClassName("react-calendar")[0].classList.add("no");
     document
-      .getElementsByClassName("form__date")[0]
+      .getElementsByClassName("form__date-display")[0]
       .getElementsByTagName("p")[0]
       .classList.remove("no");
   };
@@ -303,7 +303,7 @@ const Form = () => {
       <form onSubmit={handleSubmit} className="form__form">
         <h2>اطلاعات تولید</h2>
 
-        <div className="form__input-group-special date">
+        <div className="form__input-group-special form__date">
           <label htmlFor="date">تاریخ</label>
           <div className="form__date-display">
             <Calendar
@@ -315,10 +315,10 @@ const Form = () => {
             <p
               onClick={() => {
                 document
-                  .getElementsByClassName("form__react-calendar")[0]
+                  .getElementsByClassName("react-calendar")[0]
                   .classList.remove("no");
                 document
-                  .getElementsByClassName("form__date")[0]
+                  .getElementsByClassName("form__date-display")[0]
                   .getElementsByTagName("p")[0]
                   .classList.add("no");
               }}
@@ -339,8 +339,8 @@ const Form = () => {
                       onChange={handleTimeInputChange}
                       className="form__time-input"
                   />
-                  <button type="button" className="form__action-button save-button" onClick={handleSaveTime}>ذخیره</button>
-                  <button type="button" className="form__action-button cancel-button" onClick={closeTimeInput}>لغو</button>
+                  <button type="button" className="form__action-button form__save-button" onClick={handleSaveTime}>ذخیره</button>
+                  <button type="button" className="form__action-button form__cancel-button" onClick={closeTimeInput}>لغو</button>
               </div>
               <div id="time-text">
                   <p onClick={openTimeInput}>{moment(confirmedTime, "HH:mm").format("HH:mm")}</p>

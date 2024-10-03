@@ -2,5 +2,6 @@
   "machines",
   "materials",
   "pipeproduct",
-  "folks"
+  "folks",
+  "users"
 ]

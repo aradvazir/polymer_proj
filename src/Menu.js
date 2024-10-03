@@ -1,5 +1,14 @@
 import React from 'react';
 import './Menu.css'; // Import the CSS file for styling
+const setCookie = (name, value) => {
+  let expires = "";
+  const date = new Date();
+  date.setTime(date.getTime() + (60 * 60 * 1000));
+  expires = "; expires=" + date.toUTCString();
+  // Construct the cookie string
+  const cookieString = `${name}=${value || ""}${expires}; path=/; SameSite=None; Secure`;
+  document.cookie = cookieString;
+}
 
 const Menu = () => {
   return (
@@ -14,7 +23,7 @@ const Menu = () => {
             <a href="/datatable" className="menu__option">مشاهده جدول ها</a>
           </li>
           <li>
-            <a href="/page3" className="menu__option">گزینه ۳</a>
+            <a href="/datatable" className="menu__option" onClick={setCookie("table", "users")}>کاربران</a>
           </li>
         </ul>
       </div>

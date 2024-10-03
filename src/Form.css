@@ -23,7 +23,7 @@
 }
 
 
-.form__input-group-special.date input, .form__input-group-special.time input {
+.form__input-group-special.form__date input, .form__input-group-special.form__time input {
   font-size: 20px;
   padding: 15px;
 }
@@ -35,7 +35,7 @@
   direction: rtl;
 }
 
-.form__input-group-special.time, .form__input-group-special.date {
+.form__input-group-special.form__time, .form__input-group-special.form__date {
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -48,7 +48,7 @@
 
 .form__clock-display, .form__date-display {
   border-radius: 17px;
-  width: 250px;
+  width: 100%;
   height: 70px;
   margin: 10px;
   text-align: center;
@@ -79,7 +79,8 @@
 
 .form__action-button {
   width: 80px;
-  padding: 10px 20px;
+  max-width: 40%;
+  padding: 10px;
   border-radius: 10px;
   cursor: pointer;
   text-align: center;
@@ -114,7 +115,7 @@
 }
 
 /* Calendar Component Styles */
-.form__react-calendar {
+.react-calendar {
   background-color: #2b3a47; /* Slightly darker background for better contrast */
   border: 2px solid #013262; /* Solid border to frame the calendar */
   border-radius: 17px; /* Rounded corners for a modern look */
@@ -126,7 +127,7 @@
 }
 
 /* Tile Styles */
-.form__react-calendar__tile {
+.react-calendar__tile {
   background: transparent; /* Transparent to blend with background */
   color: var(--text-color); /* Ensure text color is consistent */
   border-radius: 5px; /* Rounded corners for tiles */
@@ -136,21 +137,21 @@
 }
 
 /* Hover effect for tiles */
-.form__react-calendar__tile:hover {
+.react-calendar__tile:hover {
   background-color: rgba(255, 254, 254, 0.267); /* Softer hover background */
   color: #000000; /* Text color on hover */
   transform: scale(1.15); /* Slight zoom effect on hover */
 }
 
 /* Active tile */
-.form__react-calendar__tile--active {
+.react-calendar__tile--active {
   background-color: var(--submit-color); /* Active day color */
   color: #ffffff; /* Active day text color */
   font-weight: bold; /* Make active date stand out */
 }
 
 /* Weekday headers */
-.form__react-calendar__month-view__weekdays {
+.react-calendar__month-view__weekdays {
   background-color: #0f2f4f79; /* Dark background for weekday headers */
   color: #ffffff; /* White text for clarity */
   font-weight: bold; /* Bold text for emphasis */
@@ -160,7 +161,7 @@
 }
 
 /* Navigation styles (arrows, month, year) */
-.form__react-calendar__navigation {
+.react-calendar__navigation {
   background-color: #002244; /* Match with other dark elements */
   color: #ffffff; /* White text for contrast */
   padding: 10px; /* Add padding for navigation */
@@ -168,13 +169,13 @@
   margin-bottom: 10px; /* Add space between navigation and calendar */
 }
 
-.form__react-calendar__navigation:hover {
+.react-calendar__navigation:hover {
   background-color: #06083489;
   color: #ffffff;
 }
 
 /* Highlight today's date */
-.form__react-calendar__tile--now {
+.react-calendar__tile--now {
   background-color: rgb(237, 9, 9); /* Set your custom color for today’s date */
   color: #ffffff; /* Ensure the text color contrasts the background */
   font-weight: bold; /* Emphasize today’s date with bold text */
@@ -183,21 +184,21 @@
 }
 
 /* Optional: Add a hover effect for today's date */
-.form__react-calendar__tile--now:hover {
+.react-calendar__tile--now:hover {
   background-color: #ff0000; /* Change the color when hovering over today's date */
   color: black;
   transform: scale(1.15); /* Slight zoom effect on hover */
 }
 
 /* Disabled tiles (non-clickable days) */
-.form__react-calendar__tile--disabled {
+.react-calendar__tile--disabled {
   color: rgba(255, 255, 255, 0.4); /* Light gray for disabled days */
   cursor: not-allowed; /* Show that these are not clickable */
   opacity: 0.5; /* Faded look */
 }
 
 /* Remove default outline on focus (optional) */
-.form__react-calendar__tile:focus {
+.react-calendar__tile:focus {
   outline: none;
 }
 
@@ -380,10 +381,10 @@ input:focus, textarea:focus {
   .form__input-group-special {
     width: 95%;
   }
-  .form__react-calendar {
+  .react-calendar {
     width: 80vw;
   }
-  .form__react-calendar__tile {
+  .react-calendar__tile {
     padding: 8px; /* Reduce padding on smaller screens */
   }
 }
