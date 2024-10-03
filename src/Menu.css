@@ -1,0 +1,39 @@
+.menu-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* Full viewport height */
+    background-color: #f0f0f0; /* Light background color */
+    font-family: 'Nazanin', sans-serif; /* Use the Persian font */
+  }
+  
+  .menu-title {
+    font-size: 2.5rem; /* Title font size */
+    margin-bottom: 20px; /* Spacing below title */
+  }
+  
+  .menu-options {
+    list-style-type: none; /* Remove default list style */
+    padding: 0; /* Remove padding */
+  }
+  
+  .menu-option {
+    display: block;
+    text-align: center;
+    padding: 15px 30px; /* Padding around the options */
+    margin: 10px 0; /* Margin between options */
+    background-color: #fff; /* White background for options */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 5px; /* Rounded corners */
+    text-decoration: none; /* Remove underline from links */
+    color: #333; /* Text color */
+    font-size: 1.2rem; /* Option font size */
+    transition: background-color 0.3s; /* Smooth transition for hover */
+  }
+  
+  .menu-option:hover {
+    background-color: #007bff; /* Change background on hover */
+    color: white; /* Change text color on hover */
+  }
+  
