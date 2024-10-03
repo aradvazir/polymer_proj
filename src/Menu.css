@@ -1,44 +1,64 @@
-.menu__container {
+@font-face {
+  font-family: 'B Nazanin';
+  src: url('./fonts/Nazaninb.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Full page wrapper to center the content */
+.menu__wrapper {
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100vh;
-  font-family: 'Nazanin', sans-serif;
-  background-color: linear-gradient(135deg, #3E62B4 0%, #8ba1b7e4 100%);
+  background-color: white; /* Background color directly */
 }
 
+/* Menu container box with gradient background */
+.menu__box {
+  background: linear-gradient(135deg, #3E62B4 0%, #8ba1b7e4 100%); /* Gradient background directly */
+  padding: 40px; /* Padding directly */
+  border-radius: 15px; /* Border radius directly */
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1); /* Box shadow directly */
+  text-align: center;
+  width: 350px;
+}
+
+/* Menu title styling */
 .menu__title {
-  font-size: 3rem;
-  color: #333; /* Darker text */
+  font-size: 2.5rem; /* Title font size directly */
+  color: #333; /* Text color directly */
   margin-bottom: 30px;
   font-weight: bold;
   letter-spacing: 1px;
 }
 
+/* Menu options list */
 .menu__options {
   list-style-type: none;
   padding: 0;
+  margin: 0;
 }
 
+/* Menu option buttons */
 .menu__option {
   display: block;
   text-align: center;
-  padding: 15px 30px;
-  margin: 15px 0; /* More spacing between options */
-  background-color: #ffffff; /* White background */
-  border: 2px solid #007bff; /* Blue border */
-  border-radius: 10px; /* Smoother rounded corners */
-  color: #007bff; /* Blue text color */
-  font-size: 1.4rem;
-  font-weight: 600; /* Bolder font */
+  padding: 15px 20px;
+  margin: 15px 0;
+  background-color: #f0f0f0; /* Secondary color directly */
+  border: 2px solid #000000; /* Primary color directly */
+  border-radius: 10px;
+  color: #000000; /* Primary color directly */
+  font-size: 1.2rem; /* Option font size directly */
+  font-weight: 600;
   text-decoration: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow */
-  transition: background-color 0.3s, transform 0.3s; /* Smooth hover */
+  transition: background-color 0.3s, transform 0.3s;
 }
 
+/* Hover effect */
 .menu__option:hover {
-  background-color: #007bff; /* Blue on hover */
+  background-color: #129e20; /* Primary color on hover */
   color: white; /* White text on hover */
-  transform: scale(1.05); /* Slight scaling on hover */
+  transform: translateY(-3px);
 }

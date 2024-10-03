@@ -1,8 +1,8 @@
 :root {
     --background-color: #f0f2f5;
     --container-bg-color: rgba(255, 255, 255, 0.8);
-    --primary-color: #28a745;
-    --primary-hover-color: #218838;
+    --button-color: #28a745;
+    --button-hover-color: #218838;
     --font-color: #333;
     --input-bg-color: #f0f2f5;
     --box-shadow-color: rgba(0, 0, 0, 0.851);
@@ -100,7 +100,7 @@
 .login__btn {
     width: 100%;
     padding: var(--button-padding);
-    background-color: var(--primary-color);
+    background-color: var(--button-color);
     border: 1px solid rgba(0, 56, 6, 0.451);
     border-radius: var(--border-radius);
     color: white;
@@ -110,7 +110,7 @@
 }
   
 .login__btn:hover {
-    background-color: var(--primary-hover-color);
+    background-color: var(--button-hover-color);
 }
   
 .login__box form {
