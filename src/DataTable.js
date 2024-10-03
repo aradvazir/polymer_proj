@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // For Bootstrap styles
 import { Table, Button, Form, Container, Modal, Toast } from "react-bootstrap";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -11,6 +11,27 @@ import nazaninFont from './fonts/tnrNaz.ttf';
 const baseUrl = "/";
 // const baseUrl = "http://localhost:8000/";
 
+const setCookie = (name, value, mins = 60) => {
+  let expires = "";
+  const date = new Date();
+  date.setTime(date.getTime() + (mins * 60 * 1000));
+  expires = "; expires=" + date.toUTCString();
+  // Construct the cookie string
+  const cookieString = `${name}=${value || ""}${expires}; path=/; SameSite=None; Secure`;
+  document.cookie = cookieString;
+}
+
+const getCookie = (name) => {
+  const nameEQ = name + "="; // Create a string to search for
+  const ca = document.cookie.split(';'); // Split cookies into an array
+  for (let i = 0; i < ca.length; i++) {
+      let c = ca[i]; // Get each cookie
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length); // Trim leading spaces
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length); // Return cookie value
+  }
+  return null; // Return null if cookie not found
+};
+
 const DataTable = () => {
   const [data, setData] = useState([]);
   const [newItem, setNewItem] = useState({});
@@ -21,7 +42,7 @@ const DataTable = () => {
   const [showToast, setShowToast] = useState(false); // For error toast
   const [tempItem, setTempItem] = useState({}); // Temporary item for edit
   const [columns, setCols] = useState([]);
-  const [table, setTable] = useState("");
+  const [table, setTable] = useState(getCookie("table")?getCookie("table") : "");
   const [tables, setTables] = useState([]);
   const [showRightButtons, setShowRightButtons] = useState(true);
 
@@ -30,6 +51,7 @@ const DataTable = () => {
     const fetchData = async () => {
       const tables = await (await fetch(baseUrl + "tables")).json();
       setTables(tables);
+      
     };
     fetchData();
   }, []);
@@ -66,11 +88,16 @@ const DataTable = () => {
       order +
       "/" +
       is_asc;
-    const the_data = await (await fetch(url)).json();
-    setData(the_data);
+    try{
+      const the_data = await (await fetch(url)).json();
+      setData(the_data);
+    }catch(err){
+      setData([]);
+    }
+    
   };
 
-  const handleAdd = () => {
+  const handleAdd = async() => {
     console.log("Item 2 add: ");
     console.log(newItem);
     setData([...data, { ...newItem }]);
@@ -82,10 +109,15 @@ const DataTable = () => {
     setShowForm(false); // Hide the form after adding
   };
 
-  const handleDelete = () => {
+  const handleDelete = async() => {
     if (itemToDelete) {
       console.log("Deleted Item: ");
       console.log(itemToDelete);
+      if(baseUrl !== "/"){
+        await fetch(baseUrl + "table/" + table + "/" + itemToDelete, {
+          method: "DELETE",
+        })
+      }  
       setData(data.filter((item) => item.id !== itemToDelete));
       setShowModal(false); // Close modal after deletion
     }
@@ -100,17 +132,31 @@ const DataTable = () => {
     setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
   };
 
-  const handleTableChange = async (e) => {
-    setTable(e.target.value);
-    await fetchCols(e.target.value);
-    await fetchData(e.target.value, 0, 1000);
-  };
-
-  const toggleEditMode = (id) => {
+  const handleTableChange = useCallback(async(e, table_name=null) => {
+    if(e){
+      table_name = e.target.value;
+    }else{
+      console.log("Table: " + table_name)
+    }
+    setTable(table_name);
+    setCookie("table", table_name);
+    await fetchCols(table_name);
+    await fetchData(table_name, 0, 1000);
+  }, [/* dependencies */]);
+  useEffect(() => {
+    handleTableChange(null, table);
+  }, [handleTableChange, table]);
+  const toggleEditMode = async(id) => {
     if (editMode === id) {
       // If already in edit mode, save changes
       console.log("The edited: ");
       console.log(tempItem)
+      if(baseUrl !== "/"){
+        await fetch(baseUrl + "table/" + table + "/" + editMode, {
+          method: "PUT",
+          body: JSON.stringify(tempItem)
+        })
+      }  
       setData(
         data.map((item) => (item.id === id ? { ...item, ...tempItem } : item))
       );
@@ -201,9 +247,9 @@ const DataTable = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            {tables.map((table) => (
-              <option key={table} value={table}>
-                {table}
+            {tables.map((t) => (
+              <option key={t} value={t}>
+                {t}
               </option>
             ))}
           </select>
@@ -268,8 +314,8 @@ const DataTable = () => {
           )}
             
           <div className="d-flex justify-content-center">
-            <Button className="Add-button" variant="success" onClick={() => {
-              handleAdd(); // Your existing logic for adding
+            <Button className="Add-button" variant="success" onClick={async() => {
+              await handleAdd(); // Your existing logic for adding
               setShowRightButtons(true); // Show the right buttons again
             }}>
               افزودن مورد
@@ -310,7 +356,7 @@ const DataTable = () => {
                   <div className="button-group">
                     <Button
                       variant="success"
-                      onClick={() => toggleEditMode(item.id)}
+                      onClick={async() => await toggleEditMode(item.id)}
                       className="save-button"
                     >
                       ذخیره

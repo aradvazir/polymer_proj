@@ -46,6 +46,7 @@
   padding: 5px; /* Add padding for cleaner cell spacing */
   text-align: center;
   vertical-align: middle;
+  min-width: max-content;
 }
 
 .custom-table thead {
@@ -261,5 +262,8 @@ button[variant="warning"]:hover {
   }
   th, td {
       padding: 8px;
+  }
+  .p-4 {
+    margin-right: -2.5vw;
   }
 }
