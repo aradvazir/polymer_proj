@@ -1,8 +1,8 @@
 :root {
     --background-color: #f0f2f5;
     --container-bg-color: rgba(255, 255, 255, 0.8);
-    --primary-color: #3b82f6;
-    --primary-hover-color: #2563eb;
+    --primary-color: #28a745;
+    --primary-hover-color: #218838;
     --font-color: #333;
     --input-bg-color: #f0f2f5;
     --box-shadow-color: rgb(0, 0, 0);
@@ -11,9 +11,9 @@
     --font-family: 'B Nazanin', sans-serif;
     --font-size-heading: 24px;
     --font-size-input: 18px;
-    --container-width: 400px;
-    --container-padding: 15px;
-    --input-padding: 10px;
+    --container-width: 25vw;
+    --container-padding: 25px;
+    --input-padding: 12px;
     --button-padding: 10px;
 }
 
@@ -48,7 +48,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(135deg, #b8bfcb6e, #7ea0eb80);
+    background: linear-gradient(135deg, #3E62B4 0%, #8ba1b7e4 100%);
     width: var(--container-width); /* Fixed width */
     height: var(--container-width); /* Same height as width to maintain square shape */
     padding: var(--container-padding);
@@ -65,7 +65,8 @@ body {
 .login-box h2 {
     text-align: center;
     font-size: var(--font-size-heading);
-    color: var(--font-color);
+    font-size: 30px;
+    color: white;
     margin-bottom: 15px;
 }
   
@@ -110,6 +111,14 @@ body {
     display: flex;
     flex-direction: column;
 }
+
+.login-logo {
+    width: 200px; /* Set the desired width */
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+    margin: 0 auto; /* Center the logo */
+  }
+  
   
 @media (max-width: 768px) {
     .login-container {
