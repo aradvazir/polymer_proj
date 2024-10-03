@@ -35,12 +35,6 @@
   direction: rtl;
 }
 
-.form__date, .form__time {
-  margin: 15px 20px 15px 12px;
-  width: 100px;
-  cursor: pointer;
-}
-
 .form__input-group-special.time, .form__input-group-special.date {
   flex-direction: column;
   justify-content: center;
@@ -48,13 +42,15 @@
   width: 40%;
   max-width: 300px;
   height: 150px;
+  margin: 10px;
   color: var(--text-color);
 }
 
 .form__clock-display, .form__date-display {
   border-radius: 17px;
-  width: 100%;
+  width: 250px;
   height: 70px;
+  margin: 10px;
   text-align: center;
   cursor: pointer;
   justify-content: center;
@@ -79,7 +75,6 @@
   text-align: center;
   justify-content: center;
   border-radius: 13px;
-  margin: 1px;
 }
 
 .form__action-button {
@@ -88,13 +83,14 @@
   border-radius: 10px;
   cursor: pointer;
   text-align: center;
+  flex-direction: column;
   font-size: 18px;
+  color: white;
+  border: 0px 0px 0px rgba(8, 11, 36, 0.293);
 }
 
 .form__save-button {
   background-color: #4CAF50;
-  color: white;
-  border: 0px 0px 0px rgba(8, 11, 36, 0.293);
 }
 
 .form__save-button:hover {
@@ -107,8 +103,6 @@
 
 .form__cancel-button {
   background-color: #f44336;
-  color: white;
-  border: 0px 0px 0px rgba(8, 11, 36, 0.293);
 }
 
 .form__cancel-button:hover {
@@ -117,21 +111,6 @@
 
 .form__cancel-button:active {
   background-color: #f03628;
-}
-
-button {
-  font: var(--font);
-  background-color: var(--submit-color);
-  color: #fff;
-  border-radius: 8px;
-  margin: 5px 2px -5px 1px;
-  box-shadow: rgba(102, 137, 174, 0.323);
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: var(--submit-hover-color);
 }
 
 /* Calendar Component Styles */
@@ -266,6 +245,7 @@ h1 {
   text-align: center;
   width: 95%;
   font-size: 45px;
+  margin-top: 20px;
 }
 
 .form__auto-container {
