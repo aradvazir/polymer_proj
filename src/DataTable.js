@@ -197,7 +197,7 @@ const DataTable = () => {
       const filtered = data.filter((item) => {
         return Object.keys(updatedFilters).every((key) => {
           const filterValue = updatedFilters[key].toLowerCase();
-          return item[key] 
+          return item[key] != null 
             ? item[key].toString().toLowerCase().includes(filterValue)
             : false;
         });
