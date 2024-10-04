@@ -168,16 +168,19 @@ const DataTable = () => {
   // };
 
   const handleColumnSearch = (column, value) => {
+    console.log("Searching in column:", column, "for value:", value); // Debugging line
     setColumnFilters((prev) => ({ ...prev, [column]: value }));
-
+  
     const filtered = data.filter((item) =>
       item[column]
         ? item[column].toString().toLowerCase().includes(value.toLowerCase())
         : false
     );
-
+  
+    console.log("Filtered Data:", filtered); // Check if filtering is working
     setFilteredData(filtered);
   };
+  
 
   const toggleSearchInput = (column) => {
     setSearchInputVisible((prev) => ({ ...prev, [column]: !prev[column] }));
@@ -189,9 +192,10 @@ const DataTable = () => {
 
   const resetFilters = () => {
     setColumnFilters({});
-    setFilteredData(data);
-    setSearchInputVisible({});
+    setFilteredData(data);  // Reset to original data
+    setSearchInputVisible({}); // Hide all search input boxes
   };
+  
 
   const handleTableChange = useCallback(async(e, table_name=null) => {
     if(e){
@@ -483,7 +487,7 @@ const DataTable = () => {
           </tr>
         </thead>
         <tbody>
-          {data.map((item) => (
+          {filteredData.map((item) => (
             <tr>
               {Object.keys(item).filter(key => key !== "id" && key !== "hashed_pass").map(key => (
                 <td>
@@ -531,7 +535,6 @@ const DataTable = () => {
                 </Button>
               </td>
               }
-              
             </tr>
           ))}
         </tbody>
