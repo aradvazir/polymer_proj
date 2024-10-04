@@ -159,28 +159,25 @@ const DataTable = () => {
     setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
   };
 
-  // const searchCol = (col, text2search) => {
-  //   const filtered = data.filter(item => {
-  //     const colVal = item[col].toString();
-  //     return colVal.includes(text2search);
-  //   })
-  //   setData(filtered);
-  // };
-
   const handleColumnSearch = (column, value) => {
-    console.log("Searching in column:", column, "for value:", value); // Debugging line
-    setColumnFilters((prev) => ({ ...prev, [column]: value }));
+    setColumnFilters((prevFilters) => {
+      const updatedFilters = { ...prevFilters, [column]: value };
+      
+      // Apply filtering for all active filters across all columns
+      const filtered = data.filter((item) => {
+        return Object.keys(updatedFilters).every((key) => {
+          const filterValue = updatedFilters[key].toLowerCase();
+          return item[key] 
+            ? item[key].toString().toLowerCase().includes(filterValue)
+            : false;
+        });
+      });
   
-    const filtered = data.filter((item) =>
-      item[column]
-        ? item[column].toString().toLowerCase().includes(value.toLowerCase())
-        : false
-    );
-  
-    console.log("Filtered Data:", filtered); // Check if filtering is working
-    setFilteredData(filtered);
+      // Update filteredData and column filters
+      setFilteredData(filtered);
+      return updatedFilters;
+    });
   };
-  
 
   const toggleSearchInput = (column) => {
     setSearchInputVisible((prev) => ({ ...prev, [column]: !prev[column] }));
@@ -192,10 +189,11 @@ const DataTable = () => {
 
   const resetFilters = () => {
     setColumnFilters({});
-    setFilteredData(data);  // Reset to original data
-    setSearchInputVisible({}); // Hide all search input boxes
-  };
+    setFilteredData(data);  // Reset filtered data to the original data
   
+    // Close all search boxes
+    setSearchInputVisible({});
+  };
 
   const handleTableChange = useCallback(async(e, table_name=null) => {
     if(e){
