@@ -1,14 +1,6 @@
 import React from 'react';
 import './Menu.css'; // Import the CSS file for styling
-const setCookie = (name, value) => {
-  let expires = "";
-  const date = new Date();
-  date.setTime(date.getTime() + (60 * 60 * 1000));
-  expires = "; expires=" + date.toUTCString();
-  // Construct the cookie string
-  const cookieString = `${name}=${value || ""}${expires}; path=/; SameSite=None; Secure`;
-  document.cookie = cookieString;
-}
+import { setCookie } from './consts';
 
 const Menu = () => {
   return (

@@ -3,30 +3,8 @@ import moment from "moment-jalaali";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import "./Form.css";
+import { baseUrl, getCookie, setCookie } from "./consts";
 
-const baseUrl = "/";
-// const baseUrl = "http://localhost:8000/";
-
-const setCookie = (name, value) => {
-  let expires = "";
-  const date = new Date();
-  date.setTime(date.getTime() + (60 * 60 * 1000));
-  expires = "; expires=" + date.toUTCString();
-  // Construct the cookie string
-  const cookieString = `${name}=${value || ""}${expires}; path=/; SameSite=None; Secure`;
-  document.cookie = cookieString;
-}
-
-const getCookie = (name) => {
-  const nameEQ = name + "="; // Create a string to search for
-  const ca = document.cookie.split(';'); // Split cookies into an array
-  for (let i = 0; i < ca.length; i++) {
-      let c = ca[i]; // Get each cookie
-      while (c.charAt(0) === ' ') c = c.substring(1, c.length); // Trim leading spaces
-      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length); // Return cookie value
-  }
-  return null; // Return null if cookie not found
-};
 
 const Form = () => {
   const [formData, setFormData] = useState({
