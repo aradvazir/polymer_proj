@@ -1,7 +1,7 @@
 [
-    "id",
-    "name",
-    "count",
-    "switchs",
-    "quality"
+    {"id": "text"},
+    {"name": "text"},
+    {"count": "text"},
+    {"switchs": "text"},
+    {"quality": "text"}
 ]

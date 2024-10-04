@@ -1,15 +1,15 @@
 [
-  "id",
-  "name",
-  "code",
-  "currency",
-  "usage",
-  "export",
-  "size",
-  "tickness",
-  "quality",
-  "length",
-  "weight",
-  "color",
-  "image"
+  {"id": "text"},
+  {"name": "text"},
+  {"code": "text"},
+  {"currency": "text"},
+  {"usage": "text"},
+  {"export": "text"},
+  {"size": "text"},
+  {"tickness": "text"},
+  {"quality": "text"},
+  {"length": "text"},
+  {"weight": "text"},
+  {"color": "text"},
+  {"image": "text"}
 ]
