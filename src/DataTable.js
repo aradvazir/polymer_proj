@@ -11,6 +11,7 @@ import nazaninFont from './fonts/tnrNaz.ttf';
 import { baseUrl, getCookie, setCookie } from "./consts";
 
 const role = getCookie("role");
+const token = getCookie("token");
 const delete_permission = (role === "admin") || (role === "manager");
 const edit_permission =   (role === "admin") || (role === "manager") || (role === "editor");
 
@@ -36,17 +37,22 @@ const DataTable = () => {
     const fetchData = async () => {
       const tables = await (await fetch(baseUrl + "tables")).json();
       setTables(tables);
-      setFilteredData(data);
+      setFilteredData(data ? data : []);
       
     };
     fetchData();
   }, [data]);
   const fetchCols = async (table_name) => {
     let cols = [];
+    if(!table_name){
+      setCols([]);
+      return;
+    }
     try {
       cols = await (await fetch(baseUrl + "table/" + table_name)).json();
       setCols(cols);
-      const dictionary = cols.reduce((acc, key) => {
+      const dictionary = cols.reduce((acc, item) => {
+        const key = Object.keys(item).pop();
         acc[key] = "";
         return acc;
       }, {});
@@ -62,6 +68,10 @@ const DataTable = () => {
     order = "id",
     is_asc = "True"
   ) => {
+    if(!table_name) {
+      setData([]);
+      return;
+    }
     const url =
       baseUrl +
       "values/" +
@@ -104,22 +114,22 @@ const DataTable = () => {
     console.log(newItem);
     if(baseUrl !== "/"){
       if(table !== "users"){
-        await fetch(baseUrl + "table/" + table, {
+        const add_resp = await fetch(baseUrl + "table/" + table, {
           method: "POST",
-          body: JSON.stringify(newItem)
-        })
+          body: JSON.stringify(newItem),
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        console.log(add_resp);
       }else{
-        let form = new FormData();
-        form.append("username", newItem.username);
-        form.append("hashed_pass", newItem.password);
-        form.append("role", newItem.role);
         let newnewItem = {
           username: newItem.username,
           hashed_pass: newItem.password,
           role: newItem.role,
         }
         console.log(newnewItem);
-        const token = getCookie("token");
         const signup_resp = await fetch(baseUrl + "signup/", {
           method: "POST",
           
@@ -134,10 +144,11 @@ const DataTable = () => {
         console.log(await signup_resp.json())
       }
       
-      window.location.reload();
+      // window.location.reload();
     }else {
       setData([...data, { ...newItem }]);
-      const dictionary = columns.reduce((acc, key) => {
+      const dictionary = columns.reduce((acc, item) => {
+        const key = Object.keys(item).pop();
         acc[key] = "";
         return acc;
       }, {});
@@ -152,9 +163,15 @@ const DataTable = () => {
       console.log("Deleted Item: ");
       console.log(itemToDelete);
       if(baseUrl !== "/"){
-        await fetch(baseUrl + "table/" + table + "/" + itemToDelete, {
+        const delete_resp = await fetch(baseUrl + "table/" + table + "/" + itemToDelete, {
           method: "DELETE",
-        })
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        });
+        console.log(delete_resp);
+        console.log(await delete_resp.json())
+        setShowModal(false); // Close modal after deletion
       }else{
         setData(data.filter((item) => item.id !== itemToDelete));
         setShowModal(false); // Close modal after deletion
@@ -229,12 +246,21 @@ const DataTable = () => {
     if (editMode === id) {
       // If already in edit mode, save changes
       console.log("The edited: ");
-      console.log(tempItem)
+      const edit_form = new FormData();
+      Object.keys(tempItem).forEach(key => {
+        edit_form.append(key, tempItem[key]);
+      })
+      console.log(edit_form);
       if(baseUrl !== "/"){
-        await fetch(baseUrl + "table/" + table + "/" + editMode, {
+        const edit_resp = await fetch(baseUrl + "table/" + table + "/" + editMode, {
           method: "PUT",
-          body: JSON.stringify(tempItem)
-        })
+          body: JSON.stringify(edit_form),
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            // 'Content-Type': 'application/json'
+          }
+        });
+        console.log(edit_resp);
       }  
       setData(
         data.map((item) => (item.id === id ? { ...item, ...tempItem } : item))
@@ -339,13 +365,11 @@ const DataTable = () => {
         {showRightButtons && (
           <div className="right-buttons">
             <Button className="Excel-button" onClick={() => {
-              console.log("Excel button clicked")
               handleExcel();
             }}>
               <FaFileExcel size={20} />
             </Button>
             <Button className="Pdf-button" onClick={() => {
-              console.log("PDF button clicked")
               handlePDF();
             }}>
               <FaFilePdf size={20} />
@@ -377,7 +401,7 @@ const DataTable = () => {
                 {columns.filter(item => !("id" in item)).map(dict => {
                   const col = Object.keys(dict).pop();
                   return col !== "hashed_pass" ? (
-                    <th>col</th>
+                    <th>{col}</th>
                   ) : (
                     <th>Password</th>
                   );
@@ -449,9 +473,11 @@ const DataTable = () => {
         </Form>
       )}
 
-      <div className="reset-button-container">
-        <button onClick={resetFilters} className="reset-button">حذف فیلتر‌ها</button>
-      </div>
+      {Object.keys(searchInputVisible).length && 
+        <div className="reset-button-container">
+          <button onClick={resetFilters} className="reset-button">حذف فیلتر‌ها</button>
+        </div>
+      }
 
       <Table striped bordered hover className="custom-table">
       <thead>
@@ -511,7 +537,7 @@ const DataTable = () => {
                       className="edit-input"
                     />
                   ) : (
-                    <span>{item[key]}</span>
+                    <span>{item[key] != null ? item[key].toString() : ""}</span>
                   )}
                 </td>
               ))}
