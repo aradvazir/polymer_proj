@@ -23,4 +23,8 @@ export const getCookie = (name) => {
     }
     return null; // Return null if cookie not found
 };
-  
+
+export const TYPES = {
+    "character varying": "text",
+    "integer": "number"
+}

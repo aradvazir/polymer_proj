@@ -72,6 +72,7 @@ const DataTable = () => {
       is_asc;
     try{
       const the_data = await (await fetch(url)).json();
+      console.log(the_data);
       setData(the_data);
     }catch(err){
       setData([]);
@@ -152,6 +153,13 @@ const DataTable = () => {
 
   const handleEdit = (id, key, value) => {
     setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
+  };
+  const searchCol = (col, text2search) => {
+    const filtered = data.filter(item => {
+      const colVal = item[col].toString();
+      return colVal.includes(text2search);
+    })
+    setData(filtered);
   };
 
   const handleTableChange = useCallback(async(e, table_name=null) => {
@@ -318,18 +326,23 @@ const DataTable = () => {
           <Table striped bordered hover className="custom-table form-table">
             <thead>
               <tr>
-                {columns.filter(item => item !== "id").map(col => col !== "hashed_pass" ? (
-                  <th>{col}</th>
-                ) : (
-                  <th>Password</th>
-                ))}
+                {columns.filter(item => !("id" in item)).map(dict => {
+                  const col = Object.keys(dict).pop();
+                  return col !== "hashed_pass" ? (
+                    <th>col</th>
+                  ) : (
+                    <th>Password</th>
+                  );
+                }
+              )}
               </tr>
             </thead>
             <tbody>
               <tr>
-                {columns.length && columns.filter(item => item !== "id").map(
-                  (col) =>
-                    col !== "hashed_pass" ? (
+                {columns.length && columns.filter(item => !("id" in item)).map(
+                  (dict) => {
+                    const col = Object.keys(dict).pop();
+                    return col !== "hashed_pass" ? (
                       <td>
                         <Form.Control
                           type="text"
@@ -361,6 +374,8 @@ const DataTable = () => {
                         />
                       </td>
                     )
+                  }
+                    
                 )}
               </tr>
             </tbody>
@@ -389,9 +404,12 @@ const DataTable = () => {
       <Table striped bordered hover className="custom-table">
         <thead>
           <tr>
-            {columns.filter(item => item !== "id" && item !== "hashed_pass").map((col, index) => (
-              <th>{col}</th>
-            ))}
+            {columns.filter(item => !("id" in item) && !("hashed_pass" in item)).map(dict => {
+              const col = Object.keys(dict).pop();
+              return (
+                <th>{col}</th>
+              )
+            })}
             {edit_permission && <th>ویرایش</th>}
             {delete_permission && <th>حذف</th>}
           </tr>
@@ -399,8 +417,8 @@ const DataTable = () => {
         <tbody>
           {data.map((item) => (
             <tr>
-              {Object.keys(item).filter(item => item !== "id" && item !== "hashed_pass").map(key => (
-                <td name={item.id}>
+              {Object.keys(item).filter(key => key !== "id" && key !== "hashed_pass").map(key => (
+                <td>
                   {editMode === item.id ? (
                     <Form.Control
                       type="text"
