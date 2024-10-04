@@ -84,6 +84,19 @@ const DataTable = () => {
     
   };
 
+  const translations = {
+    allproducts: "همه محصولات",
+    fittingproduct: "اتصالات",
+    machines: "دستگاه‌ها",
+    materials: "محصولات",
+    operators: "اپراتور‌ها",
+    pipeproduct: "لوله‌ها",
+    rawmaterials: "مواد اولیه",
+    recipes: "دستور تولید",
+    mixentries: "اطلاعات میکسر",
+    // Add more translations as needed
+  };
+
   const handleAdd = async() => {
     console.log("Item 2 add: ");
     delete newItem.id;
@@ -295,8 +308,6 @@ const DataTable = () => {
         });
   };
 
-  
-
   return (
     <Container className="datatable">
       {/* {table !== "users" && */}{
@@ -312,8 +323,8 @@ const DataTable = () => {
           >
             <option value="">انتخاب کنید</option>
             {tables.map((t) => (
-              <option value={t}>
-                {t}
+              <option key={t} value={t}>
+                {translations[t] || t} {/* Use the translation, fallback to original if not found */}
               </option>
             ))}
           </select>
