@@ -309,6 +309,40 @@ form input, form textarea, select {
   transform: scale(0.95);
 }
 
+.reset-button-container {
+  display: flex;
+  justify-content: center; /* Horizontally centers the button */
+  align-items: center;     /* Vertically centers the button */
+  padding: 20px 0;         /* Optional: adds some vertical padding */
+}
+
+.reset-button {
+  background-color: #ff6347;
+  color: white;
+  padding: 10px 20px;
+  font-size: 18px;
+  border: 1px solid rgb(188, 42, 42);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(107, 12, 12, 0.338);
+  transition: background-color 0.3s ease;
+}
+
+.reset-button:hover {
+  background-color: #ff4500;
+}
+
+.reset-button:active {
+  background-color: #e63e00;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.reset-button:focus {
+  outline: none;
+}
+
+
 /* Responsive design for smaller screens */
 @media only screen and (max-width: 1040px) {
   .custom-table {

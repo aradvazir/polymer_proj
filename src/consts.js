@@ -1,6 +1,6 @@
-export const baseUrl = "/";
+// export const baseUrl = "/";
 // export const baseUrl = "http://localhost:8000/";
-// export const baseUrl = "http://172.16.87.18/"
+export const baseUrl = "http://172.16.87.18/"
 
 export const setCookie = (name, value, mins = 60) => {
     let expires = "";
@@ -10,8 +10,7 @@ export const setCookie = (name, value, mins = 60) => {
     // Construct the cookie string
     const cookieString = `${name}=${value || ""}${expires}; path=/; SameSite=None; Secure`;
     document.cookie = cookieString;
-}
-  
+};
 
 export const getCookie = (name) => {
     const nameEQ = name + "="; // Create a string to search for

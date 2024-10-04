@@ -14,7 +14,7 @@ const Menu = () => {
             <a href="/mixentry" className="menu__option">ورود اطلاعات میکس</a>
           </li>
           <li>
-            <a href="/datatable" className="menu__option">مشاهده جدول ها</a>
+            <a href="/datatable" className="menu__option" onClick={setCookie("table", "")}>مشاهده جدول ها</a>
           </li>
           {users_permission && 
           <li>

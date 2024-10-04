@@ -27,16 +27,20 @@ const DataTable = () => {
   const [table, setTable] = useState(getCookie("table")?getCookie("table") : "");
   const [tables, setTables] = useState([]);
   const [showRightButtons, setShowRightButtons] = useState(true);
+  const [filteredData, setFilteredData] = useState([]);
+  const [columnFilters, setColumnFilters] = useState({});
+  const [searchInputVisible, setSearchInputVisible] = useState({});
 
 
   useEffect(() => {
     const fetchData = async () => {
       const tables = await (await fetch(baseUrl + "tables")).json();
       setTables(tables);
+      setFilteredData(data);
       
     };
     fetchData();
-  }, []);
+  }, [data]);
   const fetchCols = async (table_name) => {
     let cols = [];
     try {
@@ -154,12 +158,39 @@ const DataTable = () => {
   const handleEdit = (id, key, value) => {
     setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
   };
-  const searchCol = (col, text2search) => {
-    const filtered = data.filter(item => {
-      const colVal = item[col].toString();
-      return colVal.includes(text2search);
-    })
-    setData(filtered);
+
+  // const searchCol = (col, text2search) => {
+  //   const filtered = data.filter(item => {
+  //     const colVal = item[col].toString();
+  //     return colVal.includes(text2search);
+  //   })
+  //   setData(filtered);
+  // };
+
+  const handleColumnSearch = (column, value) => {
+    setColumnFilters((prev) => ({ ...prev, [column]: value }));
+
+    const filtered = data.filter((item) =>
+      item[column]
+        ? item[column].toString().toLowerCase().includes(value.toLowerCase())
+        : false
+    );
+
+    setFilteredData(filtered);
+  };
+
+  const toggleSearchInput = (column) => {
+    setSearchInputVisible((prev) => ({ ...prev, [column]: !prev[column] }));
+    // Optionally reset the input when opened
+    if (!searchInputVisible[column]) {
+      setColumnFilters((prev) => ({ ...prev, [column]: "" }));
+    }
+  };
+
+  const resetFilters = () => {
+    setColumnFilters({});
+    setFilteredData(data);
+    setSearchInputVisible({});
   };
 
   const handleTableChange = useCallback(async(e, table_name=null) => {
@@ -266,7 +297,8 @@ const DataTable = () => {
 
   return (
     <Container className="datatable">
-      <div className="parent-container">
+      {/* {table !== "users" && */}{
+        <div className="parent-container">
         <div className="input-group-special">
           <label htmlFor="table_id">نام جدول</label>
           <select
@@ -284,7 +316,7 @@ const DataTable = () => {
             ))}
           </select>
         </div>
-      </div>
+      </div>}
 
       <div className="button-container">
         {/* Top-right buttons */}
@@ -401,17 +433,53 @@ const DataTable = () => {
         </Form>
       )}
 
+      <div className="reset-button-container">
+        <button onClick={resetFilters} className="reset-button">Reset Filters</button>
+      </div>
+
       <Table striped bordered hover className="custom-table">
-        <thead>
+      <thead>
           <tr>
             {columns.filter(item => !("id" in item) && !("hashed_pass" in item)).map(dict => {
               const col = Object.keys(dict).pop();
               return (
-                <th>{col}</th>
-              )
+                <th key={col} style={{ cursor: "pointer" }} onClick={() => toggleSearchInput(col)}>
+                  {col}
+                </th>
+              );
             })}
             {edit_permission && <th>ویرایش</th>}
             {delete_permission && <th>حذف</th>}
+          </tr>
+          <tr>
+            {columns.filter(item => !("id" in item) && !("hashed_pass" in item)).map(dict => {
+              const col = Object.keys(dict).pop();
+              return (
+                <th key={`input-${col}`}>
+                  {searchInputVisible[col] && (
+                    <input
+                    type="text"
+                    style={{
+                      textAlign: 'center', // Horizontally center the text
+                      height: '30px',      // Fixed height
+                      lineHeight: '30px',   // Set line-height equal to height for vertical centering
+                      width: '100%',       // Make input box fill the column width
+                      fontSize: '14px',    // Adjust the font size as needed
+                      padding: '1px',          // Remove default padding
+                      borderRadius: '10px',
+                      boxSizing: 'border-box', // Ensure padding and border are included in the element's width and height
+                    }}
+                    placeholder={`Search ${col}`}
+                    value={columnFilters[col] || ""}
+                    onChange={(e) => handleColumnSearch(col, e.target.value)}
+                    autoFocus
+                  />
+                  )}
+                </th>
+              );
+            })}
+            {edit_permission && <th></th>}
+            {delete_permission && <th></th>}
           </tr>
         </thead>
         <tbody>
