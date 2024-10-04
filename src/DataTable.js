@@ -436,7 +436,7 @@ const DataTable = () => {
       )}
 
       <div className="reset-button-container">
-        <button onClick={resetFilters} className="reset-button">Reset Filters</button>
+        <button onClick={resetFilters} className="reset-button">حذف فیلتر‌ها</button>
       </div>
 
       <Table striped bordered hover className="custom-table">
