@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './Menu.css'; // Import the CSS file for styling
 import { setCookie, getCookie } from './consts';
 import { useNavigate } from 'react-router-dom';
 
 
-const role = getCookie("role");
-console.log(role);
-const users_permission = (role === "admin") || (role === "manager");
-
-
 const Menu = () => {
-  const navigate = useNavigate(); 
-  
+  const navigate = useNavigate(getCookie("role")); 
+  const [role, setRole] = useState();
+  const [users_permission, setUsersPerm] = useState(false);
+  useEffect(() => {
+    setRole(getCookie("role"));
+    setUsersPerm((role === "admin") || (role === "manager"));
+  }, [role])
   return (
     <div className="menu__wrapper">
       <div className="menu__box">
@@ -33,6 +33,13 @@ const Menu = () => {
               navigate("/datatable")
             }}>کاربران</a>
           </li>}
+          <li>
+            <a href="/" className="menu__option" onClick={() => {
+              setCookie("token", "");
+              setCookie("role", "");
+              navigate("/");
+            }}>خروج</a>
+          </li>
         </ul>
       </div>
     </div>

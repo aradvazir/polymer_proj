@@ -1,13 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './Login.css';
 import logo from './golsar.png';
 import { useNavigate } from 'react-router-dom';
-import { baseUrl, setCookie } from './consts';
+import { baseUrl, setCookie, getCookie } from './consts';
 
 const Login = () => {
   const navigate = useNavigate(); 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const token = getCookie("token");
+  useEffect(() => {
+    if(token){
+      navigate("/menu");
+    }
+  })
+  
 
   const handleLogin = async(e) => {
     e.preventDefault();
@@ -34,9 +42,10 @@ const Login = () => {
     console.log(login_resp);
     console.log(login_json);
     if(login_resp.ok){
-      navigate("/menu")
       setCookie("token", login_json.access_token, 6000000);
       setCookie("role", login_json.role, 6000000);
+      navigate("/menu")
+      
     }else if(login_resp.status === 401){
       window.alert("نام کاربری یا رمز اشتباه است")
     }
