@@ -28,6 +28,7 @@
   overflow-x: auto;
   direction: rtl; /* Ensure RTL layout */
   padding: 20px;
+  font-family: var(--font);
 }
 
 /* General table styles */
@@ -124,6 +125,7 @@ button[variant="warning"]:hover {
   flex-direction: column; /* Stack label and select vertically */
   align-items: center; /* Center items horizontally */
   width: 45%; /* Set a fixed width */
+  min-width: 200px;
   margin: 20px auto; /* Center the input group in the parent container */
   box-shadow: 1px 5px 8px rgba(51, 77, 143, 0.652); /* Subtle shadow */
   border-radius: 14px; /* Rounded corners */
@@ -311,11 +313,20 @@ form input, form textarea, select {
 @media only screen and (max-width: 1040px) {
   .custom-table {
       font-size: 16px;
+      width: 90vw;
   }
   th, td {
       padding: 8px;
   }
   .datatable {
     margin-right: -2.5vw;
+    max-width: 100%;
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width: 420px) {
+  .custom-table {
+    font-size: 12px;
   }
 }

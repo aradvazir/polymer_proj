@@ -1,7 +1,9 @@
 import React from 'react';
 import './Menu.css'; // Import the CSS file for styling
-import { setCookie } from './consts';
-
+import { setCookie, getCookie } from './consts';
+const role = getCookie("role");
+console.log(role);
+const users_permission = (role === "admin") || (role === "manager");
 const Menu = () => {
   return (
     <div className="menu__wrapper">
@@ -14,9 +16,10 @@ const Menu = () => {
           <li>
             <a href="/datatable" className="menu__option">مشاهده جدول ها</a>
           </li>
+          {users_permission && 
           <li>
             <a href="/datatable" className="menu__option" onClick={setCookie("table", "users")}>کاربران</a>
-          </li>
+          </li>}
         </ul>
       </div>
     </div>

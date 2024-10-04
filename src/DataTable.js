@@ -10,6 +10,9 @@ import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import nazaninFont from './fonts/tnrNaz.ttf';
 import { baseUrl, getCookie, setCookie } from "./consts";
 
+const role = getCookie("role");
+const delete_permission = (role === "admin") || (role === "manager");
+const edit_permission =   (role === "admin") || (role === "manager") || (role === "editor");
 
 const DataTable = () => {
   const [data, setData] = useState([]);
@@ -78,21 +81,52 @@ const DataTable = () => {
 
   const handleAdd = async() => {
     console.log("Item 2 add: ");
+    delete newItem.id;
+    delete newItem.hashed_pass;
     console.log(newItem);
     if(baseUrl !== "/"){
-      await fetch(baseUrl + "table/" + table, {
-        method: "POST",
-        body: JSON.stringify(newItem)
-      })
-    }  
+      if(table !== "users"){
+        await fetch(baseUrl + "table/" + table, {
+          method: "POST",
+          body: JSON.stringify(newItem)
+        })
+      }else{
+        let form = new FormData();
+        form.append("username", newItem.username);
+        form.append("hashed_pass", newItem.password);
+        form.append("role", newItem.role);
+        let newnewItem = {
+          username: newItem.username,
+          hashed_pass: newItem.password,
+          role: newItem.role,
+        }
+        console.log(newnewItem);
+        const token = getCookie("token");
+        const signup_resp = await fetch(baseUrl + "signup/", {
+          method: "POST",
+          
+          body: JSON.stringify(newnewItem),
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        console.log(signup_resp);
+        console.log(await signup_resp.json())
+      }
+      
+      window.location.reload();
+    }else {
+      setData([...data, { ...newItem }]);
+      const dictionary = columns.reduce((acc, key) => {
+        acc[key] = "";
+        return acc;
+      }, {});
+      setNewItem(dictionary);
+      setShowForm(false); // Hide the form after adding
+    }
     
-    setData([...data, { ...newItem }]);
-    const dictionary = columns.reduce((acc, key) => {
-      acc[key] = "";
-      return acc;
-    }, {});
-    setNewItem(dictionary);
-    setShowForm(false); // Hide the form after adding
   };
 
   const handleDelete = async() => {
@@ -103,9 +137,11 @@ const DataTable = () => {
         await fetch(baseUrl + "table/" + table + "/" + itemToDelete, {
           method: "DELETE",
         })
-      }  
-      setData(data.filter((item) => item.id !== itemToDelete));
-      setShowModal(false); // Close modal after deletion
+      }else{
+        setData(data.filter((item) => item.id !== itemToDelete));
+        setShowModal(false); // Close modal after deletion
+      }
+      
     }
   };
 
@@ -282,8 +318,10 @@ const DataTable = () => {
           <Table striped bordered hover className="custom-table form-table">
             <thead>
               <tr>
-                {columns.filter(item => item !== "id").map(col => (
+                {columns.filter(item => item !== "id").map(col => col !== "hashed_pass" ? (
                   <th>{col}</th>
+                ) : (
+                  <th>Password</th>
                 ))}
               </tr>
             </thead>
@@ -291,13 +329,29 @@ const DataTable = () => {
               <tr>
                 {columns.length && columns.filter(item => item !== "id").map(
                   (col) =>
-                    (
+                    col !== "hashed_pass" ? (
                       <td>
                         <Form.Control
                           type="text"
                           placeholder={col}
                           name={col}
                           value={newItem[col]} // Provide a fallback to avoid uncontrolled input
+                          onChange={(e) => {
+                            setNewItem({
+                              ...newItem,
+                              [e.target.name]: e.target.value,
+                            });
+                          }}
+                        />
+                      </td>
+                    ) : 
+                    (
+                      <td>
+                        <Form.Control
+                          type="text"
+                          placeholder="Password"
+                          name="password"
+                          value={newItem["password"]} // Provide a fallback to avoid uncontrolled input
                           onChange={(e) => {
                             setNewItem({
                               ...newItem,
@@ -335,17 +389,17 @@ const DataTable = () => {
       <Table striped bordered hover className="custom-table">
         <thead>
           <tr>
-            {columns.filter(item => item !== "id").map((col, index) => (
+            {columns.filter(item => item !== "id" && item !== "hashed_pass").map((col, index) => (
               <th>{col}</th>
             ))}
-            <th>ویرایش</th>
-            <th>حذف</th>
+            {edit_permission && <th>ویرایش</th>}
+            {delete_permission && <th>حذف</th>}
           </tr>
         </thead>
         <tbody>
           {data.map((item) => (
             <tr>
-              {Object.keys(item).filter(item => item !== "id").map(key => (
+              {Object.keys(item).filter(item => item !== "id" && item !== "hashed_pass").map(key => (
                 <td name={item.id}>
                   {editMode === item.id ? (
                     <Form.Control
@@ -359,6 +413,7 @@ const DataTable = () => {
                   )}
                 </td>
               ))}
+              {edit_permission && 
               <td>
                 {editMode === item.id ? (
                   <div className="button-group">
@@ -382,11 +437,15 @@ const DataTable = () => {
                   </Button>
                 )}
               </td>
+              }
+              {delete_permission && 
               <td>
                 <Button variant="danger" onClick={() => openModal(item.id)}>
                   حذف
                 </Button>
               </td>
+              }
+              
             </tr>
           ))}
         </tbody>

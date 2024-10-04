@@ -2,18 +2,44 @@ import React, { useState } from 'react';
 import './Login.css';
 import logo from './golsar.png';
 import { useNavigate } from 'react-router-dom';
+import { baseUrl, setCookie } from './consts';
 
 const Login = () => {
   const navigate = useNavigate(); 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async(e) => {
     e.preventDefault();
     // Handle login logic here
     console.log('Username:', username);
     console.log('Password:', password);
-    navigate("/menu");
+    // const body = new FormData();
+    // body.append("username", username);
+    // body.append("password", password);
+    const body = new URLSearchParams({ // Encode the form data
+      username,
+      password,
+    })
+    console.log(body);
+
+    const login_resp = await fetch(baseUrl + "token", {
+      method: "POST",
+      body: body,
+      headers: {
+        "Content-type": "application/x-www-form-urlencoded"
+      }
+    });
+    const login_json = await login_resp.json();
+    console.log(login_resp);
+    console.log(login_json);
+    if(login_resp.ok){
+      navigate("/menu")
+      setCookie("token", login_json.access_token, 6000000);
+      setCookie("role", login_json.role, 6000000);
+    }else if(login_resp.status === 401){
+      window.alert("نام کاربری یا رمز اشتباه است")
+    }
   };
 
   return (
