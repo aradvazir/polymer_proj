@@ -116,8 +116,8 @@
 
 /* Calendar Component Styles */
 .react-calendar {
-  background-color: #2b3a47; /* Slightly darker background for better contrast */
-  border: 2px solid #013262; /* Solid border to frame the calendar */
+  background-color: #2f3f4e; /* Slightly darker background for better contrast */
+  border: 2px solid #000000; /* Solid border to frame the calendar */
   border-radius: 17px; /* Rounded corners for a modern look */
   color: var(--text-color); /* Text color */
   width: 36vw; /* Adjust to fit within the viewport */
@@ -152,17 +152,18 @@
 
 /* Weekday headers */
 .react-calendar__month-view__weekdays {
-  background-color: #0f2f4f79; /* Dark background for weekday headers */
+  background-color: #1022353a; /* Dark background for weekday headers */
   color: #ffffff; /* White text for clarity */
   font-weight: bold; /* Bold text for emphasis */
   text-transform: uppercase; /* Uppercase weekday names for style */
   padding: 10px 0; /* Add padding for better spacing */
   box-shadow: inset;
+  border-radius: 10px;
 }
 
 /* Navigation styles (arrows, month, year) */
 .react-calendar__navigation {
-  background-color: #002244; /* Match with other dark elements */
+  background-color: #dbe0eb78; /* Match with other dark elements */
   color: #ffffff; /* White text for contrast */
   padding: 10px; /* Add padding for navigation */
   border-radius: 12px; /* Match rounded corners */
@@ -170,7 +171,6 @@
 }
 
 .react-calendar__navigation:hover {
-  background-color: #06083489;
   color: #ffffff;
 }
 
@@ -359,13 +359,13 @@ input:focus, textarea:focus {
 }
 
 .form__toggle-button:hover {
-  background-color: #14c600;
+  background-color: #14c600bd;
   border-color: #0a045a;
   color: #ffffff;
 }
 
 .form__toggle-button.active {
-  background-color: #24b245;
+  background-color: #16a137;
   color: #fff;
   border-color: #0a045a;
 }
