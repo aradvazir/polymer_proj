@@ -207,7 +207,10 @@ const DataTable = () => {
     await fetchData(table_name, 0, 1000);
   }, [/* dependencies */]);
   useEffect(() => {
-    handleTableChange(null, table);
+    if(table){
+      handleTableChange(null, table);
+    }
+    
   }, [handleTableChange, table]);
   const toggleEditMode = async(id) => {
     if (editMode === id) {
@@ -299,7 +302,7 @@ const DataTable = () => {
 
   return (
     <Container className="datatable">
-      {/* {table !== "users" && */}{
+      {table !== "users" &&
         <div className="parent-container">
         <div className="input-group-special">
           <label htmlFor="table_id">نام جدول</label>
