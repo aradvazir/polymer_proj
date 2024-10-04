@@ -246,18 +246,20 @@ const DataTable = () => {
     if (editMode === id) {
       // If already in edit mode, save changes
       console.log("The edited: ");
-      const edit_form = new FormData();
+      const edit_json = {};
       Object.keys(tempItem).forEach(key => {
-        edit_form.append(key, tempItem[key]);
+        if(key !== "hashed_pass"){
+          edit_json[key] = tempItem[key];
+        }
       })
-      console.log(edit_form);
+      console.log(edit_json);
       if(baseUrl !== "/"){
         const edit_resp = await fetch(baseUrl + "table/" + table + "/" + editMode, {
           method: "PUT",
-          body: JSON.stringify(edit_form),
+          body: JSON.stringify(edit_json),
           headers: {
             'Authorization': `Bearer ${token}`,
-            // 'Content-Type': 'application/json'
+            'Content-Type': 'application/json'
           }
         });
         console.log(edit_resp);
