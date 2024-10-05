@@ -279,6 +279,33 @@ const Form = () => {
     <div className="form__form-container">
       <div style={{visibility: "hidden"}}>{JSON.stringify(defaultIngreds)}</div>
       <form onSubmit={handleSubmit} className="form__form">
+        <div className="redirect-container" style={{ marginBottom: '20px' }}>
+          <a
+            href="/#/Menu"
+            className="redirect-button"
+            style={{
+              display: "inline-block",
+              padding: "10px 20px",
+              backgroundColor: "#e10d0d",
+              color: "white",
+              textDecoration: "none",
+              borderRadius: "10px",
+              border: "1px solid black",
+              transition: "background-color 0.3s",
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = "#ba0d0d";
+              e.currentTarget.style.transform = "scale(1.05)";
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = "#e10d0d";
+              e.currentTarget.style.transform = "scale(1)";
+            }}
+          >
+            بازگشت به منو
+          </a>
+        </div>
+
         <h2>اطلاعات تولید</h2>
 
         <div className="form__input-group-special form__date">

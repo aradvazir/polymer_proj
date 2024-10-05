@@ -513,6 +513,11 @@ const DataTable = () => {
 
   return (
     <Container className="datatable">
+      <div className="redirect-container">
+        <a href="/#/Menu" className="redirect-button">
+            بازگشت به منو
+        </a>
+      </div>
       {table !== "users" && (
         <div className="parent-container">
           <div className="input-group-special">
