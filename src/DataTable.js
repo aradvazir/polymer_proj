@@ -129,7 +129,7 @@ const DataTable = () => {
     Object.keys(newItem).forEach((key) => {
       if (newItem[key] === "true") {
         newItem[key] = true;
-      } else if (newItem[key] === "false") {
+      } else if (newItem[key] === "false" || TYPES[dtypes[key]] === "boolean") {
         newItem[key] = false;
       }
     });
