@@ -8,7 +8,8 @@ import "jspdf-autotable";
 import "./DataTable.css";
 import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import nazaninFont from "./fonts/tnrNaz.ttf";
-import { baseUrl, getCookie, setCookie } from "./consts";
+import { baseUrl, getCookie, setCookie, TYPES } from "./consts";
+import { returnStatement } from "@babel/types";
 
 const role = getCookie("role");
 const token = getCookie("token");
@@ -111,7 +112,7 @@ const DataTable = () => {
   const translations = {
     allproducts: "همه محصولات",
     fittingproduct: "اتصالات",
-    machines: "دستگاه‌ها",
+    machines: "خطوط تولید",
     materials: "محصولات",
     operators: "اپراتور‌ها",
     pipeproduct: "لوله‌ها",
@@ -268,7 +269,7 @@ const DataTable = () => {
   };
 
   const toggleSearchInput = (column) => {
-    setSearchInputVisible((prev) => ({ ...prev, [column]: !prev[column] }));
+    setSearchInputVisible((prev) => ({ ...prev, [column]: true }));
     // Optionally reset the input when opened
     if (!searchInputVisible[column]) {
       setColumnFilters((prev) => ({ ...prev, [column]: "" }));
@@ -282,7 +283,26 @@ const DataTable = () => {
     // Close all search boxes
     setSearchInputVisible({});
   };
+  const checkType = (val, type) => {
+    console.log(`Val: ${val}, TYPE = ${type}`);
+    if (type === "number") {
+      let checkthat = parseInt(val);
 
+      if (checkthat == val) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (type === "boolean") {
+      if ("false".startsWith(val) || "true".startsWith(val)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
+  };
   const handleTableChange = useCallback(
     async (e, table_name = null) => {
       if (e) {
@@ -504,18 +524,41 @@ const DataTable = () => {
                       const col = Object.keys(dict).pop();
                       return col !== "hashed_pass" ? (
                         <td>
-                          <Form.Control
-                            type="text"
-                            placeholder={col}
-                            name={col}
-                            value={newItem[col]} // Provide a fallback to avoid uncontrolled input
-                            onChange={(e) => {
-                              setNewItem({
-                                ...newItem,
-                                [e.target.name]: e.target.value,
-                              });
-                            }}
-                          />
+                          {TYPES[dtypes[col]] === "boolean" ? (
+                            <Form.Check
+                              type="checkbox"
+                              checked={newItem[col] || false} // Ensure it is a boolean
+                              onChange={(e) => {
+                                const newValue = e.target.checked; // Get the checked state
+                                setNewItem({
+                                  ...newItem,
+                                  [col]: newValue,
+                                });
+                              }}
+                              // Optional: Add a label for the checkbox
+                            />
+                          ) : (
+                            <Form.Control
+                              type="text"
+                              placeholder={col}
+                              name={col}
+                              value={newItem[col] || ""} // Provide a fallback to avoid uncontrolled input
+                              onChange={(e) => {
+                                if (
+                                  checkType(e.target.value, TYPES[dtypes[col]])
+                                ) {
+                                  setNewItem({
+                                    ...newItem,
+                                    [e.target.name]: e.target.value,
+                                  });
+                                } else {
+                                  window.alert(
+                                    "مقادیر وارد شده از تایپ صحیح نمیباشد"
+                                  );
+                                }
+                              }}
+                            />
+                          )}
                         </td>
                       ) : (
                         <td>
@@ -576,7 +619,18 @@ const DataTable = () => {
         <thead>
           <tr>
             {columns
-              .filter((item) => !("id" in item) && !("hashed_pass" in item))
+              .filter(
+                (item) =>
+                  (!("id" in item) ||
+                    [
+                      "materials",
+                      "recipes",
+                      "rawmaterials",
+                      "operators",
+                      "lines",
+                    ].includes(table)) &&
+                  !("hashed_pass" in item)
+              )
               .map((dict) => {
                 const col = Object.keys(dict).pop();
                 return (
@@ -596,7 +650,18 @@ const DataTable = () => {
           </tr>
           <tr>
             {columns
-              .filter((item) => !("id" in item) && !("hashed_pass" in item))
+              .filter(
+                (item) =>
+                  (!("id" in item) ||
+                    [
+                      "materials",
+                      "recipes",
+                      "rawmaterials",
+                      "operators",
+                      "lines",
+                    ].includes(table)) &&
+                  !("hashed_pass" in item)
+              )
               .map((dict) => {
                 const col = Object.keys(dict).pop();
                 return (
@@ -636,18 +701,47 @@ const DataTable = () => {
           {filteredData.map((item) => (
             <tr>
               {Object.keys(item)
-                .filter((key) => key !== "id" && key !== "hashed_pass")
+                .filter(
+                  (key) =>
+                    (key !== "id" ||
+                      [
+                        "materials",
+                        "recipes",
+                        "rawmaterials",
+                        "operators",
+                        "lines",
+                      ].includes(table)) &&
+                    key !== "hashed_pass"
+                )
                 .map((key) => (
                   <td>
                     {editMode === item.id ? (
-                      <Form.Control
-                        type="text"
-                        value={tempItem[key]}
-                        onChange={(e) =>
-                          handleEdit(item.id, key, e.target.value)
-                        }
-                        className="edit-input"
-                      />
+                      TYPES[dtypes[key]] === "boolean" ? (
+                        <Form.Check
+                          type="checkbox"
+                          checked={tempItem[key] || false} // Ensure it is a boolean
+                          onChange={(e) => {
+                            const newValue = e.target.checked; // Get the checked state
+                            handleEdit(item.id, key, newValue);
+                          }}
+                          className="edit-input"
+                        />
+                      ) : (
+                        <Form.Control
+                          type="text"
+                          value={tempItem[key]}
+                          onChange={(e) => {
+                            if (checkType(e.target.value, TYPES[dtypes[key]])) {
+                              handleEdit(item.id, key, e.target.value);
+                            } else {
+                              window.alert(
+                                "مقادیر وارد شده از تایپ صحیح نمیباشد"
+                              );
+                            }
+                          }}
+                          className="edit-input"
+                        />
+                      )
                     ) : (
                       <span>
                         {item[key] != null ? item[key].toString() : ""}
