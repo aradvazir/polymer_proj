@@ -4,7 +4,7 @@ import DataTable from "./DataTable";
 import Login from "./Login";
 import Menu from "./Menu";
 import "./App.css";
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 
 function App() {
   return (
