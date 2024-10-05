@@ -10,6 +10,8 @@ import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import nazaninFont from "./fonts/tnrNaz.ttf";
 import { baseUrl, getCookie, setCookie, TYPES } from "./consts";
 import { returnStatement } from "@babel/types";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const role = getCookie("role");
 const token = getCookie("token");
@@ -283,6 +285,7 @@ const DataTable = () => {
     // Close all search boxes
     setSearchInputVisible({});
   };
+
   const checkType = (val, type) => {
     console.log(`Val: ${val}, TYPE = ${type}`);
     if (type === "number") {
@@ -607,7 +610,7 @@ const DataTable = () => {
         </Form>
       )}
 
-      {Object.keys(searchInputVisible).length && (
+      {Object.keys(searchInputVisible).length > 0 && (
         <div className="reset-button-container">
           <button onClick={resetFilters} className="reset-button">
             حذف فیلتر‌ها
@@ -645,54 +648,62 @@ const DataTable = () => {
                   </th>
                 );
               })}
+              
             {edit_permission && <th>ویرایش</th>}
             {delete_permission && <th>حذف</th>}
           </tr>
           <tr>
-            {columns
-              .filter(
-                (item) =>
-                  (!("id" in item) ||
-                    [
-                      "materials",
-                      "recipes",
-                      "rawmaterials",
-                      "operators",
-                      "lines",
-                    ].includes(table)) &&
-                  !("hashed_pass" in item)
-              )
-              .map((dict) => {
-                const col = Object.keys(dict).pop();
-                return (
-                  <th
-                    key={`input-${col}`}
-                    onClick={() => toggleSearchInput(col)}
-                  >
-                    {searchInputVisible[col] && (
-                      <input
-                        type="text"
-                        style={{
-                          textAlign: "center", // Horizontally center the text
-                          height: "30px", // Fixed height
-                          lineHeight: "30px", // Set line-height equal to height for vertical centering
-                          width: "100%", // Make input box fill the column width
-                          fontSize: "14px", // Adjust the font size as needed
-                          padding: "1px", // Remove default padding
-                          borderRadius: "10px",
-                          boxSizing: "border-box", // Ensure padding and border are included in the element's width and height
-                        }}
-                        placeholder={`Search ${col}`}
-                        value={columnFilters[col] || ""}
-                        onChange={(e) =>
-                          handleColumnSearch(col, e.target.value)
-                        }
-                        autoFocus
-                      />
-                    )}
-                  </th>
-                );
-              })}
+          {columns
+            .filter(
+              (item) =>
+                (!("id" in item) ||
+                  [
+                    "materials",
+                    "recipes",
+                    "rawmaterials",
+                    "operators",
+                    "lines",
+                  ].includes(table)) &&
+                !("hashed_pass" in item)
+            )
+            .map((dict) => {
+              const col = Object.keys(dict).pop();
+              return (
+                <th key={`input-${col}`} onClick={() => toggleSearchInput(col)}>
+                  {searchInputVisible[col] ? (
+                    // Search input box is visible
+                    <input
+                      type="text"
+                      style={{
+                        textAlign: "center", // Horizontally center the text
+                        height: "30px", // Fixed height
+                        lineHeight: "30px", // Set line-height equal to height for vertical centering
+                        width: "100%", // Make input box fill the column width
+                        fontSize: "14px", // Adjust the font size as needed
+                        padding: "1px", // Remove default padding
+                        borderRadius: "10px",
+                        boxSizing: "border-box", // Ensure padding and border are included in the element's width and height
+                      }}
+                      placeholder={`Search ${col}`}
+                      value={columnFilters[col] || ""}
+                      onChange={(e) => handleColumnSearch(col, e.target.value)}
+                      autoFocus
+                    />
+                  ) : (
+                    // Show magnifier icon when search input is not visible
+                    <FontAwesomeIcon
+                      icon={faSearch}
+                      style={{
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        color: "#999",
+                      }}
+                    />
+                  )}
+                </th>
+              );
+            })}
+
             {edit_permission && <th></th>}
             {delete_permission && <th></th>}
           </tr>

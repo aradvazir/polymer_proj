@@ -33,7 +33,7 @@
 
 /* General table styles */
 .custom-table {
-  width: 80vw;
+  width: 97%;
   border-radius: 20px;
   margin: auto;
   border-collapse: collapse; /* Collapsed borders for smooth edges */
@@ -55,10 +55,15 @@
 .custom-table.form-table th, .custom-table.form-table td  {
   min-width: fit-content;
   font-size: 12px;
+  text-align: center; /* Center horizontally */
+  vertical-align: middle;
 }
 
 .form-control {
   font-size: inherit;
+  text-align: center; /* Center text horizontally inside the input */
+  margin: 0 auto; /* Center input horizontally */
+  display: block; /* Necessary for margin auto */
 }
 
 .custom-table thead {
