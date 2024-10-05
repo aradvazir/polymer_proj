@@ -7,13 +7,14 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./DataTable.css";
 import { FaFileExcel, FaFilePdf } from "react-icons/fa";
-import nazaninFont from './fonts/tnrNaz.ttf';
+import nazaninFont from "./fonts/tnrNaz.ttf";
 import { baseUrl, getCookie, setCookie } from "./consts";
 
 const role = getCookie("role");
 const token = getCookie("token");
-const delete_permission = (role === "admin") || (role === "manager");
-const edit_permission =   (role === "admin") || (role === "manager") || (role === "editor");
+const delete_permission = role === "admin" || role === "manager";
+const edit_permission =
+  role === "admin" || role === "manager" || role === "editor";
 
 const DataTable = () => {
   const [data, setData] = useState([]);
@@ -26,27 +27,27 @@ const DataTable = () => {
   const [showToast, setShowToast] = useState(false); // For error toast
   const [tempItem, setTempItem] = useState({}); // Temporary item for edit
   const [columns, setCols] = useState([]);
-  const [table, setTable] = useState(getCookie("table")?getCookie("table") : "");
+  const [table, setTable] = useState(
+    getCookie("table") ? getCookie("table") : ""
+  );
   const [tables, setTables] = useState([]);
   const [showRightButtons, setShowRightButtons] = useState(true);
   const [filteredData, setFilteredData] = useState([]);
   const [columnFilters, setColumnFilters] = useState({});
   const [searchInputVisible, setSearchInputVisible] = useState({});
   const [columnSorts, setColumnSorts] = useState({});
-  
 
   useEffect(() => {
     const fetchData = async () => {
       const tables = await (await fetch(baseUrl + "tables")).json();
       setTables(tables);
       setFilteredData(data ? data : []);
-      
     };
     fetchData();
   }, [data]);
   const fetchCols = async (table_name) => {
     let cols = [];
-    if(!table_name){
+    if (!table_name) {
       setCols([]);
       return;
     }
@@ -62,7 +63,7 @@ const DataTable = () => {
       setNewItem(dictionary);
       const the_dtypes = {};
       const sortings = {};
-      cols.forEach(item => {
+      cols.forEach((item) => {
         const col_name = Object.keys(item)[0];
         the_dtypes[col_name] = item[col_name].type;
         sortings[col_name] = "no";
@@ -82,7 +83,7 @@ const DataTable = () => {
     order = "id",
     is_asc = "True"
   ) => {
-    if(!table_name) {
+    if (!table_name) {
       setData([]);
       return;
     }
@@ -98,14 +99,13 @@ const DataTable = () => {
       order +
       "/" +
       is_asc;
-    try{
+    try {
       const the_data = await (await fetch(url)).json();
       console.log(the_data);
       setData(the_data);
-    }catch(err){
+    } catch (err) {
       setData([]);
     }
-    
   };
 
   const translations = {
@@ -121,52 +121,52 @@ const DataTable = () => {
     // Add more translations as needed
   };
 
-  const handleAdd = async() => {
+  const handleAdd = async () => {
     console.log("Item 2 add: ");
     delete newItem.id;
     delete newItem.hashed_pass;
-    Object.keys(newItem).forEach(key => {
-      if(newItem[key] === "true"){
+    Object.keys(newItem).forEach((key) => {
+      if (newItem[key] === "true") {
         newItem[key] = true;
-      }else if(newItem[key] === "false"){
+      } else if (newItem[key] === "false") {
         newItem[key] = false;
       }
-    })
+    });
     console.log(newItem);
-    if(baseUrl !== "/"){
-      if(table !== "users"){
+    if (baseUrl !== "/") {
+      if (table !== "users") {
         const add_resp = await fetch(baseUrl + "table/" + table, {
           method: "POST",
           body: JSON.stringify(newItem),
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
         console.log(add_resp);
-      }else{
+      } else {
         let newnewItem = {
           username: newItem.username,
           hashed_pass: newItem.password,
           role: newItem.role,
-        }
+        };
         console.log(newnewItem);
         const signup_resp = await fetch(baseUrl + "signup/", {
           method: "POST",
-          
+
           body: JSON.stringify(newnewItem),
           headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         });
 
         console.log(signup_resp);
-        console.log(await signup_resp.json())
+        console.log(await signup_resp.json());
       }
-      
+
       window.location.reload();
-    }else {
+    } else {
       setData([...data, { ...newItem }]);
       const dictionary = columns.reduce((acc, item) => {
         const key = Object.keys(item).pop();
@@ -176,24 +176,26 @@ const DataTable = () => {
       setNewItem(dictionary);
       setShowForm(false); // Hide the form after adding
     }
-    
   };
 
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     if (itemToDelete) {
       console.log("Deleted Item: ");
       console.log(itemToDelete);
-      if(baseUrl !== "/"){
-        const delete_resp = await fetch(baseUrl + "table/" + table + "/" + itemToDelete, {
-          method: "DELETE",
-          headers: {
-            'Authorization': `Bearer ${token}`,
+      if (baseUrl !== "/") {
+        const delete_resp = await fetch(
+          baseUrl + "table/" + table + "/" + itemToDelete,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-        });
+        );
         console.log(delete_resp);
-        console.log(await delete_resp.json())
+        console.log(await delete_resp.json());
         setShowModal(false); // Close modal after deletion
-      }else{
+      } else {
         setData(data.filter((item) => item.id !== itemToDelete));
         setShowModal(false); // Close modal after deletion
       }
@@ -213,42 +215,56 @@ const DataTable = () => {
   const handleColumnSearch = (column, value) => {
     setColumnFilters((prevFilters) => {
       const updatedFilters = { ...prevFilters, [column]: value };
-      
+
       // Apply filtering for all active filters across all columns
       const filtered = data.filter((item) => {
         return Object.keys(updatedFilters).every((key) => {
           const filterValue = updatedFilters[key].toLowerCase();
-          return item[key] != null 
+          return item[key] != null
             ? item[key].toString().toLowerCase().includes(filterValue)
             : false;
         });
       });
-  
+
       // Update filteredData and column filters
       setFilteredData(filtered);
       return updatedFilters;
     });
   };
   const handleColumnSort = (column) => {
-    const new_sort_mode = columnSorts[column] === "no" ? "asc" : columnSorts[column] === "asc" ? "des" : "no";
+    let new_sort_mode = "";
+    if (columnSorts[column] === "no") {
+      new_sort_mode = "asc";
+    } else if (columnSorts[column] === "asc") {
+      new_sort_mode = "des";
+    } else if (columnSorts[column] === "des") {
+      new_sort_mode = "no";
+    }
+
     setColumnSorts((prevFilters) => {
       const updatedFilters = { ...prevFilters, [column]: new_sort_mode };
       return updatedFilters;
     });
-    if(new_sort_mode === "asc"){
-      const filtered = filteredData.sort((item1, item2) => {
+    const copyData = [...filteredData];
+    if (new_sort_mode === "asc") {
+      console.log("Asc");
+      const filtered = copyData.sort((item1, item2) => {
+        console.log("comparing " + item1[column] + item2[column]);
         return item2[column] > item1[column];
       });
+      console.log(filtered);
+      console.log(copyData);
       setFilteredData(filtered);
-    }else if(new_sort_mode === "des"){
-      const filtered = filteredData.sort((item1, item2) => {
+    } else if (new_sort_mode === "des") {
+      console.log("Des");
+      const filtered = copyData.sort((item1, item2) => {
+        console.log("comparing " + item2[column] + item1[column]);
         return item2[column] < item1[column];
       });
+      console.log(filtered);
+      console.log(copyData);
       setFilteredData(filtered);
     }
-    
-      
-    
   };
 
   const toggleSearchInput = (column) => {
@@ -261,59 +277,65 @@ const DataTable = () => {
 
   const resetFilters = () => {
     setColumnFilters({});
-    setFilteredData(data);  // Reset filtered data to the original data
-  
+    setFilteredData(data); // Reset filtered data to the original data
+
     // Close all search boxes
     setSearchInputVisible({});
   };
 
-  const handleTableChange = useCallback(async(e, table_name=null) => {
-    if(e){
-      table_name = e.target.value;
-    }else{
-      console.log("Table: " + table_name)
-    }
-    setTable(table_name);
-    setCookie("table", table_name);
-    await fetchCols(table_name);
-    await fetchData(table_name, 0, 1000);
-  }, [/* dependencies */]);
+  const handleTableChange = useCallback(
+    async (e, table_name = null) => {
+      if (e) {
+        table_name = e.target.value;
+      } else {
+        console.log("Table: " + table_name);
+      }
+      setTable(table_name);
+      setCookie("table", table_name);
+      await fetchCols(table_name);
+      await fetchData(table_name, 0, 1000);
+    },
+    [
+      /* dependencies */
+    ]
+  );
   useEffect(() => {
-    if(table){
+    if (table) {
       handleTableChange(null, table);
     }
-    
   }, [handleTableChange, table]);
-  const toggleEditMode = async(id) => {
+  const toggleEditMode = async (id) => {
     if (editMode === id) {
       // If already in edit mode, save changes
       console.log("The edited: ");
       const edit_json = {};
-      Object.keys(tempItem).forEach(key => {
-        if(key !== "hashed_pass"){
-          if(tempItem[key] === "true"){
+      Object.keys(tempItem).forEach((key) => {
+        if (key !== "hashed_pass") {
+          if (tempItem[key] === "true") {
             edit_json[key] = true;
-          }else if(tempItem[key] === "false"){
+          } else if (tempItem[key] === "false") {
             edit_json[key] = false;
-          }else{
+          } else {
             edit_json[key] = tempItem[key];
           }
-          
         }
-      })
+      });
       console.log(edit_json);
-      if(baseUrl !== "/"){
-        const edit_resp = await fetch(baseUrl + "table/" + table + "/" + editMode, {
-          method: "PUT",
-          body: JSON.stringify(edit_json),
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
+      if (baseUrl !== "/") {
+        const edit_resp = await fetch(
+          baseUrl + "table/" + table + "/" + editMode,
+          {
+            method: "PUT",
+            body: JSON.stringify(edit_json),
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
           }
-        });
+        );
         console.log(edit_resp);
         window.location.reload();
-      }  
+      }
       setData(
         data.map((item) => (item.id === id ? { ...item, ...tempItem } : item))
       );
@@ -324,7 +346,6 @@ const DataTable = () => {
       const itemToEdit = data.find((item) => item.id === id);
       setTempItem({ ...itemToEdit }); // Populate temp item
     }
-
   };
 
   const cancelEdit = () => {
@@ -342,88 +363,96 @@ const DataTable = () => {
     const doc = new jsPDF();
     // Fetch the font file
     fetch(nazaninFont)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.arrayBuffer();
-        })
-        .then(fontData => {
-            const fontArray = new Uint8Array(fontData);
-            const fontBase64 = btoa(String.fromCharCode(...fontArray));
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.arrayBuffer();
+      })
+      .then((fontData) => {
+        const fontArray = new Uint8Array(fontData);
+        const fontBase64 = btoa(String.fromCharCode(...fontArray));
 
-            // Add the Farsi font to the jsPDF instance
-            doc.addFileToVFS("Nazanin.ttf", fontBase64);
-            doc.addFont("Nazanin.ttf", "Nazanin", "normal");
-            doc.setFont("Nazanin"); // Set the initial font for Farsi
+        // Add the Farsi font to the jsPDF instance
+        doc.addFileToVFS("Nazanin.ttf", fontBase64);
+        doc.addFont("Nazanin.ttf", "Nazanin", "normal");
+        doc.setFont("Nazanin"); // Set the initial font for Farsi
 
-            // Define columns and data for autoTable
-            const columnsConfig = columns.map(col => ({
-                header: col, // Column headers
-                dataKey: col // Data key for mapping
-            }));
+        // Define columns and data for autoTable
+        const columnsConfig = columns.map((col) => ({
+          header: col, // Column headers
+          dataKey: col, // Data key for mapping
+        }));
 
-            const rows = data.map(item => {
-                const row = {};
-                columns.forEach(col => {
-                    row[col] = item[col]; // Map data
-                });
-                return row;
-            });
-
-            // Create the PDF table
-            doc.autoTable({
-                columns: columnsConfig,
-                body: rows,
-                styles: {
-                    fontSize: 60 / columns.length,
-                    font: "Nazanin", // Default font for the table (if not overridden per row)
-                },
-                margin: { top: 10 },
-            });
-
-            doc.save("table_data.pdf");
-        })
-        .catch(error => {
-            console.error("Error loading font or generating PDF:", error);
+        const rows = data.map((item) => {
+          const row = {};
+          columns.forEach((col) => {
+            row[col] = item[col]; // Map data
+          });
+          return row;
         });
+
+        // Create the PDF table
+        doc.autoTable({
+          columns: columnsConfig,
+          body: rows,
+          styles: {
+            fontSize: 60 / columns.length,
+            font: "Nazanin", // Default font for the table (if not overridden per row)
+          },
+          margin: { top: 10 },
+        });
+
+        doc.save("table_data.pdf");
+      })
+      .catch((error) => {
+        console.error("Error loading font or generating PDF:", error);
+      });
   };
 
   return (
     <Container className="datatable">
-      {table !== "users" &&
+      {table !== "users" && (
         <div className="parent-container">
-        <div className="input-group-special">
-          <label htmlFor="table_id">نام جدول</label>
-          <select
-            id="table_id"
-            name="table_id"
-            value={table}
-            onChange={handleTableChange}
-            required
-          >
-            <option value="">انتخاب کنید</option>
-            {tables.map((t) => (
-              <option key={t} value={t}>
-                {translations[t] || t} {/* Use the translation, fallback to original if not found */}
-              </option>
-            ))}
-          </select>
+          <div className="input-group-special">
+            <label htmlFor="table_id">نام جدول</label>
+            <select
+              id="table_id"
+              name="table_id"
+              value={table}
+              onChange={handleTableChange}
+              required
+            >
+              <option value="">انتخاب کنید</option>
+              {tables.map((t) => (
+                <option key={t} value={t}>
+                  {translations[t] || t}{" "}
+                  {/* Use the translation, fallback to original if not found */}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>}
+      )}
 
       <div className="button-container">
         {/* Top-right buttons */}
         {showRightButtons && (
           <div className="right-buttons">
-            <Button className="Excel-button" onClick={() => {
-              handleExcel();
-            }}>
+            <Button
+              className="Excel-button"
+              onClick={() => {
+                handleExcel();
+              }}
+            >
               <FaFileExcel size={20} />
             </Button>
-            <Button className="Pdf-button" onClick={() => {
-              handlePDF();
-            }}>
+            <Button
+              className="Pdf-button"
+              onClick={() => {
+                handlePDF();
+              }}
+            >
               <FaFilePdf size={20} />
             </Button>
           </div>
@@ -432,17 +461,21 @@ const DataTable = () => {
 
       <div className="button-container">
         {/* Centered plus button */}
-        {!showForm && <div className="center-button">
-          <Button
-            className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
-            onClick={() => {
-              setShowForm(!showForm);
-              setShowRightButtons(!showRightButtons); // Toggle visibility of right buttons
-            }}
-          >
-            <AiOutlinePlus size={30} />
-          </Button>
-        </div>}
+        {!showForm && (
+          <div className="center-button">
+            <Button
+              className={`custom-button ${
+                showForm ? "cancel-button" : "plus-button"
+              }`}
+              onClick={() => {
+                setShowForm(!showForm);
+                setShowRightButtons(!showRightButtons); // Toggle visibility of right buttons
+              }}
+            >
+              <AiOutlinePlus size={30} />
+            </Button>
+          </div>
+        )}
       </div>
 
       {showForm && (
@@ -450,70 +483,76 @@ const DataTable = () => {
           <Table striped bordered hover className="custom-table form-table">
             <thead>
               <tr>
-                {columns.filter(item => !("id" in item)).map(dict => {
-                  const col = Object.keys(dict).pop();
-                  return col !== "hashed_pass" ? (
-                    <th>{col}</th>
-                  ) : (
-                    <th>Password</th>
-                  );
-                }
-              )}
+                {columns
+                  .filter((item) => !("id" in item))
+                  .map((dict) => {
+                    const col = Object.keys(dict).pop();
+                    return col !== "hashed_pass" ? (
+                      <th>{col}</th>
+                    ) : (
+                      <th>Password</th>
+                    );
+                  })}
               </tr>
             </thead>
             <tbody>
               <tr>
-                {columns.length && columns.filter(item => !("id" in item)).map(
-                  (dict) => {
-                    const col = Object.keys(dict).pop();
-                    return col !== "hashed_pass" ? (
-                      <td>
-                        <Form.Control
-                          type="text"
-                          placeholder={col}
-                          name={col}
-                          value={newItem[col]} // Provide a fallback to avoid uncontrolled input
-                          onChange={(e) => {
-                            setNewItem({
-                              ...newItem,
-                              [e.target.name]: e.target.value,
-                            });
-                          }}
-                        />
-                      </td>
-                    ) : 
-                    (
-                      <td>
-                        <Form.Control
-                          type="text"
-                          placeholder="Password"
-                          name="password"
-                          value={newItem["password"]} // Provide a fallback to avoid uncontrolled input
-                          onChange={(e) => {
-                            setNewItem({
-                              ...newItem,
-                              [e.target.name]: e.target.value,
-                            });
-                          }}
-                        />
-                      </td>
-                    )
-                  }
-                    
-                )}
+                {columns.length &&
+                  columns
+                    .filter((item) => !("id" in item))
+                    .map((dict) => {
+                      const col = Object.keys(dict).pop();
+                      return col !== "hashed_pass" ? (
+                        <td>
+                          <Form.Control
+                            type="text"
+                            placeholder={col}
+                            name={col}
+                            value={newItem[col]} // Provide a fallback to avoid uncontrolled input
+                            onChange={(e) => {
+                              setNewItem({
+                                ...newItem,
+                                [e.target.name]: e.target.value,
+                              });
+                            }}
+                          />
+                        </td>
+                      ) : (
+                        <td>
+                          <Form.Control
+                            type="text"
+                            placeholder="Password"
+                            name="password"
+                            value={newItem["password"]} // Provide a fallback to avoid uncontrolled input
+                            onChange={(e) => {
+                              setNewItem({
+                                ...newItem,
+                                [e.target.name]: e.target.value,
+                              });
+                            }}
+                          />
+                        </td>
+                      );
+                    })}
               </tr>
             </tbody>
           </Table>
-            
+
           <div className="d-flex justify-content-center">
-            <Button className="Add-button" variant="success" onClick={async() => {
-              await handleAdd();
-              setShowRightButtons(true);
-            }}>
+            <Button
+              className="Add-button"
+              variant="success"
+              onClick={async () => {
+                await handleAdd();
+                setShowRightButtons(true);
+              }}
+            >
               افزودن
             </Button>
             <Button
-              className={`custom-button ${showForm ? "cancel-button" : "plus-button"}`}
+              className={`custom-button ${
+                showForm ? "cancel-button" : "plus-button"
+              }`}
               onClick={() => {
                 setShowForm(!showForm);
                 setShowRightButtons(!showRightButtons); // Toggle visibility of right buttons
@@ -525,53 +564,70 @@ const DataTable = () => {
         </Form>
       )}
 
-      {Object.keys(searchInputVisible).length && 
+      {Object.keys(searchInputVisible).length && (
         <div className="reset-button-container">
-          <button onClick={resetFilters} className="reset-button">حذف فیلتر‌ها</button>
+          <button onClick={resetFilters} className="reset-button">
+            حذف فیلتر‌ها
+          </button>
         </div>
-      }
+      )}
 
       <Table striped bordered hover className="custom-table">
-      <thead>
+        <thead>
           <tr>
-            {columns.filter(item => !("id" in item) && !("hashed_pass" in item)).map(dict => {
-              const col = Object.keys(dict).pop();
-              return (
-                <th key={col} style={{ cursor: "pointer" }} onClick={() => handleColumnSort(col)} >
-                  {col}
-                </th>
-              );
-            })}
+            {columns
+              .filter((item) => !("id" in item) && !("hashed_pass" in item))
+              .map((dict) => {
+                const col = Object.keys(dict).pop();
+                return (
+                  <th
+                    key={col}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      handleColumnSort(col);
+                    }}
+                  >
+                    {col}
+                  </th>
+                );
+              })}
             {edit_permission && <th>ویرایش</th>}
             {delete_permission && <th>حذف</th>}
           </tr>
           <tr>
-            {columns.filter(item => !("id" in item) && !("hashed_pass" in item)).map(dict => {
-              const col = Object.keys(dict).pop();
-              return (
-                <th key={`input-${col}`} onClick={() => toggleSearchInput(col)} >
-                  {searchInputVisible[col] && (
-                    <input
-                    type="text"
-                    style={{
-                      textAlign: 'center', // Horizontally center the text
-                      height: '30px',      // Fixed height
-                      lineHeight: '30px',   // Set line-height equal to height for vertical centering
-                      width: '100%',       // Make input box fill the column width
-                      fontSize: '14px',    // Adjust the font size as needed
-                      padding: '1px',          // Remove default padding
-                      borderRadius: '10px',
-                      boxSizing: 'border-box', // Ensure padding and border are included in the element's width and height
-                    }}
-                    placeholder={`Search ${col}`}
-                    value={columnFilters[col] || ""}
-                    onChange={(e) => handleColumnSearch(col, e.target.value)}
-                    autoFocus
-                  />
-                  )}
-                </th>
-              );
-            })}
+            {columns
+              .filter((item) => !("id" in item) && !("hashed_pass" in item))
+              .map((dict) => {
+                const col = Object.keys(dict).pop();
+                return (
+                  <th
+                    key={`input-${col}`}
+                    onClick={() => toggleSearchInput(col)}
+                  >
+                    {searchInputVisible[col] && (
+                      <input
+                        type="text"
+                        style={{
+                          textAlign: "center", // Horizontally center the text
+                          height: "30px", // Fixed height
+                          lineHeight: "30px", // Set line-height equal to height for vertical centering
+                          width: "100%", // Make input box fill the column width
+                          fontSize: "14px", // Adjust the font size as needed
+                          padding: "1px", // Remove default padding
+                          borderRadius: "10px",
+                          boxSizing: "border-box", // Ensure padding and border are included in the element's width and height
+                        }}
+                        placeholder={`Search ${col}`}
+                        value={columnFilters[col] || ""}
+                        onChange={(e) =>
+                          handleColumnSearch(col, e.target.value)
+                        }
+                        autoFocus
+                      />
+                    )}
+                  </th>
+                );
+              })}
             {edit_permission && <th></th>}
             {delete_permission && <th></th>}
           </tr>
@@ -579,52 +635,58 @@ const DataTable = () => {
         <tbody>
           {filteredData.map((item) => (
             <tr>
-              {Object.keys(item).filter(key => key !== "id" && key !== "hashed_pass").map(key => (
+              {Object.keys(item)
+                .filter((key) => key !== "id" && key !== "hashed_pass")
+                .map((key) => (
+                  <td>
+                    {editMode === item.id ? (
+                      <Form.Control
+                        type="text"
+                        value={tempItem[key]}
+                        onChange={(e) =>
+                          handleEdit(item.id, key, e.target.value)
+                        }
+                        className="edit-input"
+                      />
+                    ) : (
+                      <span>
+                        {item[key] != null ? item[key].toString() : ""}
+                      </span>
+                    )}
+                  </td>
+                ))}
+              {edit_permission && (
                 <td>
                   {editMode === item.id ? (
-                    <Form.Control
-                      type="text"
-                      value={tempItem[key]}
-                      onChange={(e) => handleEdit(item.id, key, e.target.value)}
-                      className="edit-input"
-                    />
+                    <div className="button-group">
+                      <Button
+                        variant="success"
+                        onClick={async () => await toggleEditMode(item.id)}
+                        className="save-button"
+                      >
+                        ذخیره
+                      </Button>
+                      <Button variant="secondary" onClick={cancelEdit}>
+                        انصراف
+                      </Button>
+                    </div>
                   ) : (
-                    <span>{item[key] != null ? item[key].toString() : ""}</span>
+                    <Button
+                      variant="warning"
+                      onClick={() => toggleEditMode(item.id)}
+                    >
+                      ویرایش
+                    </Button>
                   )}
                 </td>
-              ))}
-              {edit_permission && 
-              <td>
-                {editMode === item.id ? (
-                  <div className="button-group">
-                    <Button
-                      variant="success"
-                      onClick={async() => await toggleEditMode(item.id)}
-                      className="save-button"
-                    >
-                      ذخیره
-                    </Button>
-                    <Button variant="secondary" onClick={cancelEdit}>
-                      انصراف
-                    </Button>
-                  </div>
-                ) : (
-                  <Button
-                    variant="warning"
-                    onClick={() => toggleEditMode(item.id)}
-                  >
-                    ویرایش
+              )}
+              {delete_permission && (
+                <td>
+                  <Button variant="danger" onClick={() => openModal(item.id)}>
+                    حذف
                   </Button>
-                )}
-              </td>
-              }
-              {delete_permission && 
-              <td>
-                <Button variant="danger" onClick={() => openModal(item.id)}>
-                  حذف
-                </Button>
-              </td>
-              }
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
