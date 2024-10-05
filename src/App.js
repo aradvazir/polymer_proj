@@ -11,9 +11,9 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/#/menu" element={<Menu />} />
-        <Route path="/#/mixentry" element={<Form />} />
-        <Route path="/#/datatable" element={<DataTable />} />
+        <Route path="/menu" element={<Menu />} />
+        <Route path="/mixentry" element={<Form />} />
+        <Route path="/datatable" element={<DataTable />} />
       </Routes>
     </Router>
   );
