@@ -313,7 +313,7 @@ const DataTable = () => {
       setTable(table_name);
       setCookie("table", table_name);
       await fetchCols(table_name);
-      await fetchData(table_name, 0, 1000);
+      await fetchData(table_name, 0, 100000);
     },
     [
       /* dependencies */
@@ -711,7 +711,8 @@ const DataTable = () => {
                         "operators",
                         "lines",
                       ].includes(table)) &&
-                    key !== "hashed_pass"
+                    key !== "hashed_pass" &&
+                    (table !== "materials" || table["material"] !== null)
                 )
                 .map((key) => (
                   <td>
