@@ -233,16 +233,22 @@ const DataTable = () => {
     const new_sort_mode = columnSorts[column] === "no" ? "asc" : columnSorts[column] === "asc" ? "des" : "no";
     setColumnSorts((prevFilters) => {
       const updatedFilters = { ...prevFilters, [column]: new_sort_mode };
-      
-      // Apply filtering for all active filters across all columns
+      return updatedFilters;
+    });
+    if(new_sort_mode === "asc"){
       const filtered = filteredData.sort((item1, item2) => {
         return item2[column] > item1[column];
       });
-  
-      // Update filteredData and column filters
       setFilteredData(filtered);
-      return updatedFilters;
-    });
+    }else if(new_sort_mode === "des"){
+      const filtered = filteredData.sort((item1, item2) => {
+        return item2[column] < item1[column];
+      });
+      setFilteredData(filtered);
+    }
+    
+      
+    
   };
 
   const toggleSearchInput = (column) => {
