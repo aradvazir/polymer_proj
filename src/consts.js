@@ -1,6 +1,6 @@
 // export const baseUrl = "/";
 // export const baseUrl = "http://localhost:8000/";
-export const baseUrl = "localhost/api/";
+export const baseUrl = "/api/";
 
 export const setCookie = (name, value, mins = 60) => {
   let expires = "";
