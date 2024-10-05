@@ -10,7 +10,7 @@ export const setCookie = (name, value, mins = 60) => {
   // Construct the cookie string
   const cookieString = `${name}=${
     value || ""
-  }${expires}; path=/; SameSite=None; Secure`;
+  }${expires}; path=/; SameSite=None;`;
   document.cookie = cookieString;
 };
 
