@@ -17,6 +17,7 @@ const edit_permission =   (role === "admin") || (role === "manager") || (role ==
 
 const DataTable = () => {
   const [data, setData] = useState([]);
+  const [dtypes, setdtypes] = useState({});
   const [newItem, setNewItem] = useState({});
   const [editMode, setEditMode] = useState(null); // Track which row is in edit mode
   const [showForm, setShowForm] = useState(false); // Track whether to show the add item form
@@ -31,7 +32,8 @@ const DataTable = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [columnFilters, setColumnFilters] = useState({});
   const [searchInputVisible, setSearchInputVisible] = useState({});
-
+  const [columnSorts, setColumnSorts] = useState({});
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,6 +52,7 @@ const DataTable = () => {
     }
     try {
       cols = await (await fetch(baseUrl + "table/" + table_name)).json();
+      console.log(cols);
       setCols(cols);
       const dictionary = cols.reduce((acc, item) => {
         const key = Object.keys(item).pop();
@@ -57,6 +60,17 @@ const DataTable = () => {
         return acc;
       }, {});
       setNewItem(dictionary);
+      const the_dtypes = {};
+      const sortings = {};
+      cols.forEach(item => {
+        const col_name = Object.keys(item)[0];
+        the_dtypes[col_name] = item[col_name].type;
+        sortings[col_name] = "no";
+      });
+      console.log(the_dtypes);
+      console.log(sortings);
+      setdtypes(the_dtypes);
+      setColumnSorts(sortings);
     } catch (err) {
       setCols([]);
     }
@@ -111,6 +125,13 @@ const DataTable = () => {
     console.log("Item 2 add: ");
     delete newItem.id;
     delete newItem.hashed_pass;
+    Object.keys(newItem).forEach(key => {
+      if(newItem[key] === "true"){
+        newItem[key] = true;
+      }else if(newItem[key] === "false"){
+        newItem[key] = false;
+      }
+    })
     console.log(newItem);
     if(baseUrl !== "/"){
       if(table !== "users"){
@@ -144,7 +165,7 @@ const DataTable = () => {
         console.log(await signup_resp.json())
       }
       
-      // window.location.reload();
+      window.location.reload();
     }else {
       setData([...data, { ...newItem }]);
       const dictionary = columns.reduce((acc, item) => {
@@ -176,7 +197,7 @@ const DataTable = () => {
         setData(data.filter((item) => item.id !== itemToDelete));
         setShowModal(false); // Close modal after deletion
       }
-      
+      window.location.reload();
     }
   };
 
@@ -201,6 +222,21 @@ const DataTable = () => {
             ? item[key].toString().toLowerCase().includes(filterValue)
             : false;
         });
+      });
+  
+      // Update filteredData and column filters
+      setFilteredData(filtered);
+      return updatedFilters;
+    });
+  };
+  const handleColumnSort = (column) => {
+    const new_sort_mode = columnSorts[column] === "no" ? "asc" : columnSorts[column] === "asc" ? "des" : "no";
+    setColumnSorts((prevFilters) => {
+      const updatedFilters = { ...prevFilters, [column]: new_sort_mode };
+      
+      // Apply filtering for all active filters across all columns
+      const filtered = filteredData.sort((item1, item2) => {
+        return item2[column] > item1[column];
       });
   
       // Update filteredData and column filters
@@ -249,7 +285,14 @@ const DataTable = () => {
       const edit_json = {};
       Object.keys(tempItem).forEach(key => {
         if(key !== "hashed_pass"){
-          edit_json[key] = tempItem[key];
+          if(tempItem[key] === "true"){
+            edit_json[key] = true;
+          }else if(tempItem[key] === "false"){
+            edit_json[key] = false;
+          }else{
+            edit_json[key] = tempItem[key];
+          }
+          
         }
       })
       console.log(edit_json);
@@ -263,6 +306,7 @@ const DataTable = () => {
           }
         });
         console.log(edit_resp);
+        window.location.reload();
       }  
       setData(
         data.map((item) => (item.id === id ? { ...item, ...tempItem } : item))
@@ -487,7 +531,7 @@ const DataTable = () => {
             {columns.filter(item => !("id" in item) && !("hashed_pass" in item)).map(dict => {
               const col = Object.keys(dict).pop();
               return (
-                <th key={col} style={{ cursor: "pointer" }} onClick={() => toggleSearchInput(col)}>
+                <th key={col} style={{ cursor: "pointer" }} onClick={() => handleColumnSort(col)} >
                   {col}
                 </th>
               );
@@ -499,7 +543,7 @@ const DataTable = () => {
             {columns.filter(item => !("id" in item) && !("hashed_pass" in item)).map(dict => {
               const col = Object.keys(dict).pop();
               return (
-                <th key={`input-${col}`}>
+                <th key={`input-${col}`} onClick={() => toggleSearchInput(col)} >
                   {searchInputVisible[col] && (
                     <input
                     type="text"

@@ -42,8 +42,8 @@ const Login = () => {
     console.log(login_resp);
     console.log(login_json);
     if(login_resp.ok){
-      setCookie("token", login_json.access_token, 6000000);
-      setCookie("role", login_json.role, 6000000);
+      setCookie("token", login_json.access_token, 480);
+      setCookie("role", login_json.role, 480);
       navigate("/menu")
       
     }else if(login_resp.status === 401){

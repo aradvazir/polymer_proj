@@ -25,5 +25,6 @@ export const getCookie = (name) => {
 
 export const TYPES = {
     "character varying": "text",
-    "integer": "number"
+    "integer": "number",
+    "boolean": "bool"
 }
