@@ -39,12 +39,14 @@ const DataTable = () => {
   const [columnFilters, setColumnFilters] = useState({});
   const [searchInputVisible, setSearchInputVisible] = useState({});
   const [columnSorts, setColumnSorts] = useState({});
+  const [originalData, setOriginalData] = useState(data);
 
   useEffect(() => {
     const fetchData = async () => {
       const tables = await (await fetch(baseUrl + "tables")).json();
       setTables(tables);
       setFilteredData(data ? data : []);
+      setOriginalData(data); 
     };
     fetchData();
   }, [data]);
@@ -237,7 +239,7 @@ const DataTable = () => {
 
   const handleColumnSort = (column) => {
     let new_sort_mode = "";
-    
+
     // Determine new sort mode based on current state
     if (columnSorts[column] === "no") {
         new_sort_mode = "asc"; // Change from "no" to "asc"
@@ -253,8 +255,8 @@ const DataTable = () => {
         [column]: new_sort_mode,
     }));
 
-    // Copy the original data for sorting
-    const copyData = [...filteredData];
+    // Copy the filtered data for sorting
+    const copyData = [...filteredData]; // Work on the currently filtered data
 
     // Sorting Logic
     if (new_sort_mode === "asc") {
@@ -266,7 +268,7 @@ const DataTable = () => {
             }
             return item1[column].toString().localeCompare(item2[column].toString()); // String sort
         });
-        setFilteredData(sortedAsc);
+        setFilteredData(sortedAsc); // Update to sorted data
     } else if (new_sort_mode === "des") {
         const sortedDes = copyData.sort((item1, item2) => {
             if (item1[column] === null || item1[column] === undefined) return 1;
@@ -276,13 +278,20 @@ const DataTable = () => {
             }
             return item2[column].toString().localeCompare(item1[column].toString()); // String sort
         });
-        setFilteredData(sortedDes);
+        setFilteredData(sortedDes); // Update to sorted data
     } else if (new_sort_mode === "no") {
-        // If sorting is reset to "no", reset the data to original order
-        setFilteredData(data); // Assuming 'data' is your original unfiltered data
+        // When sorting is reset to "no", re-apply current filters to the original data
+        const filtered = originalData.filter(item => {
+            return Object.keys(columnFilters).every(key => {
+                // Check if each column filter applies
+                return item[key] && item[key].toString().toLowerCase().includes(columnFilters[key].toString().toLowerCase());
+            });
+        });
+
+        // Update filtered data without sorting
+        setFilteredData(filtered);
     }
   };
-
 
   const toggleSearchInput = (column) => {
     setSearchInputVisible((prev) => ({ ...prev, [column]: true }));
@@ -293,11 +302,66 @@ const DataTable = () => {
   };
 
   const resetFilters = () => {
+    // Reset all column filters to empty
     setColumnFilters({});
-    setFilteredData(data); // Reset filtered data to the original data
+
+    // Determine if there is any sorting applied
+    const sortedColumn = Object.keys(columnSorts).find(key => columnSorts[key] !== "no");
+    const sortMode = sortedColumn ? columnSorts[sortedColumn] : null;
+
+    // Reset to original data when no filters are applied
+    const filteredData = data.filter(item => {
+        return Object.keys(columnFilters).every(key => {
+            // No filters means include all items
+            return true; // Allow all items since we are resetting filters
+        });
+    });
+
+    // Sort the data if a sorting policy exists
+    if (sortedColumn && sortMode) {
+        const sortedFilteredData = filteredData.sort((item1, item2) => {
+            if (item1[sortedColumn] === null || item1[sortedColumn] === undefined) return 1;
+            if (item2[sortedColumn] === null || item2[sortedColumn] === undefined) return -1;
+
+            if (sortMode === "asc") {
+                return typeof item1[sortedColumn] === "number" && typeof item2[sortedColumn] === "number"
+                    ? item1[sortedColumn] - item2[sortedColumn] // Numeric sort (ascending)
+                    : item1[sortedColumn].toString().localeCompare(item2[sortedColumn].toString()); // String sort
+            } else {
+                return typeof item1[sortedColumn] === "number" && typeof item2[sortedColumn] === "number"
+                    ? item2[sortedColumn] - item1[sortedColumn] // Numeric sort (descending)
+                    : item2[sortedColumn].toString().localeCompare(item1[sortedColumn].toString()); // String sort
+            }
+        });
+
+        setFilteredData(sortedFilteredData); // Update the filtered data with sorted data
+    } else {
+        // If no sorting is applied, reset to original data
+        setFilteredData(data);
+    }
 
     // Close all search boxes
     setSearchInputVisible({});
+  };
+
+  const resetSorting = () => {
+    // Reset all column sorting to "no"
+    const resetSorts = Object.keys(columnSorts).reduce((acc, key) => {
+        acc[key] = "no"; // Set all to "no"
+        return acc;
+    }, {});
+
+    setColumnSorts(resetSorts); // Update sorting state
+
+    // Reset to the currently filtered data without applying any sorting
+    const filteredData = originalData.filter(item => {
+        return Object.keys(columnFilters).every(key => {
+            return item[key] && item[key].toString().toLowerCase().includes(columnFilters[key].toString().toLowerCase());
+        });
+    });
+
+    setFilteredData(filteredData); // Set filtered data based on current filters
+    // Do not close the search boxes when resetting sorting
   };
 
   const checkType = (val, type) => {
@@ -624,13 +688,19 @@ const DataTable = () => {
         </Form>
       )}
 
-      {Object.keys(searchInputVisible).length > 0 && (
-        <div className="reset-button-container">
-          <button onClick={resetFilters} className="reset-button">
-            حذف فیلتر‌ها
-          </button>
-        </div>
-      )}
+      <div className="reset-button-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          {Object.keys(columnFilters).length > 0 && (
+              <button onClick={resetFilters} className="reset-button">
+                  حذف فیلتر‌ها
+              </button>
+          )}
+
+          {Object.keys(columnSorts).some(key => columnSorts[key] !== "no") && (
+              <button onClick={resetSorting} className="reset-button" style={{ marginLeft: '10px' }}>
+                  حذف ترتیب
+              </button>
+          )}
+      </div>
 
       <Table striped bordered hover className="custom-table">
         <thead>

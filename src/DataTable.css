@@ -331,6 +331,12 @@ form input, form textarea, select {
   cursor: pointer;
   box-shadow: 0 4px 6px rgba(107, 12, 12, 0.338);
   transition: background-color 0.3s ease;
+  margin: 0;
+  width: 125px;
+}
+
+.reset-button:not(:last-child) {
+  margin-left: 10px; /* Add space between the two buttons if both are present */
 }
 
 .reset-button:hover {
