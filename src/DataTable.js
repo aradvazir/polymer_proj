@@ -11,7 +11,7 @@ import nazaninFont from "./fonts/tnrNaz.ttf";
 import { baseUrl, getCookie, setCookie, TYPES } from "./consts";
 import { returnStatement } from "@babel/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faSearch, faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 
 const role = getCookie("role");
 const token = getCookie("token");
@@ -234,41 +234,55 @@ const DataTable = () => {
       return updatedFilters;
     });
   };
+
   const handleColumnSort = (column) => {
     let new_sort_mode = "";
+    
+    // Determine new sort mode based on current state
     if (columnSorts[column] === "no") {
-      new_sort_mode = "asc";
+        new_sort_mode = "asc"; // Change from "no" to "asc"
     } else if (columnSorts[column] === "asc") {
-      new_sort_mode = "des";
+        new_sort_mode = "des"; // Change from "asc" to "des"
     } else if (columnSorts[column] === "des") {
-      new_sort_mode = "no";
+        new_sort_mode = "no"; // Change from "des" to "no"
     }
 
-    setColumnSorts((prevFilters) => {
-      const updatedFilters = { ...prevFilters, [column]: new_sort_mode };
-      return updatedFilters;
-    });
+    // Update the sort state for the column
+    setColumnSorts((prevFilters) => ({
+        ...prevFilters,
+        [column]: new_sort_mode,
+    }));
+
+    // Copy the original data for sorting
     const copyData = [...filteredData];
+
+    // Sorting Logic
     if (new_sort_mode === "asc") {
-      console.log("Asc");
-      const filtered = copyData.sort((item1, item2) => {
-        console.log("comparing " + item1[column] + item2[column]);
-        return item2[column] > item1[column];
-      });
-      console.log(filtered);
-      console.log(copyData);
-      setFilteredData(filtered);
+        const sortedAsc = copyData.sort((item1, item2) => {
+            if (item1[column] === null || item1[column] === undefined) return 1;
+            if (item2[column] === null || item2[column] === undefined) return -1;
+            if (typeof item1[column] === "number" && typeof item2[column] === "number") {
+                return item1[column] - item2[column]; // Numeric sort (ascending)
+            }
+            return item1[column].toString().localeCompare(item2[column].toString()); // String sort
+        });
+        setFilteredData(sortedAsc);
     } else if (new_sort_mode === "des") {
-      console.log("Des");
-      const filtered = copyData.sort((item1, item2) => {
-        console.log("comparing " + item2[column] + item1[column]);
-        return item2[column] < item1[column];
-      });
-      console.log(filtered);
-      console.log(copyData);
-      setFilteredData(filtered);
+        const sortedDes = copyData.sort((item1, item2) => {
+            if (item1[column] === null || item1[column] === undefined) return 1;
+            if (item2[column] === null || item2[column] === undefined) return -1;
+            if (typeof item1[column] === "number" && typeof item2[column] === "number") {
+                return item2[column] - item1[column]; // Numeric sort (descending)
+            }
+            return item2[column].toString().localeCompare(item1[column].toString()); // String sort
+        });
+        setFilteredData(sortedDes);
+    } else if (new_sort_mode === "no") {
+        // If sorting is reset to "no", reset the data to original order
+        setFilteredData(data); // Assuming 'data' is your original unfiltered data
     }
   };
+
 
   const toggleSearchInput = (column) => {
     setSearchInputVisible((prev) => ({ ...prev, [column]: true }));
@@ -291,7 +305,7 @@ const DataTable = () => {
     if (type === "number") {
       let checkthat = parseInt(val);
 
-      if (checkthat == val) {
+      if (checkthat === val) {
         return true;
       } else {
         return false;
@@ -621,34 +635,43 @@ const DataTable = () => {
       <Table striped bordered hover className="custom-table">
         <thead>
           <tr>
-            {columns
-              .filter(
-                (item) =>
-                  (!("id" in item) ||
-                    [
-                      "materials",
-                      "recipes",
-                      "rawmaterials",
-                      "operators",
-                      "lines",
-                    ].includes(table)) &&
-                  !("hashed_pass" in item)
-              )
-              .map((dict) => {
-                const col = Object.keys(dict).pop();
-                return (
-                  <th
-                    key={col}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      handleColumnSort(col);
-                    }}
-                  >
+          {columns
+            .filter(
+              (item) =>
+                (!("id" in item) ||
+                  [
+                    "materials",
+                    "recipes",
+                    "rawmaterials",
+                    "operators",
+                    "lines",
+                  ].includes(table)) &&
+                !("hashed_pass" in item)
+            )
+            .map((dict) => {
+              const col = Object.keys(dict).pop();
+              return (
+                <th
+                  key={col}
+                  style={{ cursor: "pointer" }} // Keep cursor pointer for interactivity
+                  onClick={() => {
+                    handleColumnSort(col); // Call sorting function on click
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
                     {col}
-                  </th>
-                );
-              })}
-              
+                    {/* Show the sorting icon based on the current sort mode */}
+                    {columnSorts[col] === "asc" && (
+                      <FontAwesomeIcon icon={faArrowUp} style={{ marginRight: "6px", fontSize: "14px", color: "red" }}/>
+                    )}
+                    {columnSorts[col] === "des" && (
+                      <FontAwesomeIcon icon={faArrowDown} style={{ marginRight: "6px", fontSize: "14px", color: "green" }}/>
+                    )}
+                  </div>
+                </th>
+              );
+            })}
+
             {edit_permission && <th>ویرایش</th>}
             {delete_permission && <th>حذف</th>}
           </tr>
