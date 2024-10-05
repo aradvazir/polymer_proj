@@ -18,17 +18,17 @@ const Menu = () => {
         {/* <h1 className="menu__title">منو</h1> */}
         <ul className="menu__options">
           <li>
-            <a href="/mixentry" className="menu__option">ورود اطلاعات میکس</a>
+            <a href="/#/mixentry" className="menu__option">ورود اطلاعات میکس</a>
           </li>
           <li>
-            <a href="/datatable" className="menu__option" onClick={() => {
+            <a href="/#/datatable" className="menu__option" onClick={() => {
               setCookie("table", "");
               navigate("/datatable")
             }}>مشاهده جدول ها</a>
           </li>
           {users_permission && 
           <li>
-            <a href="/datatable" className="menu__option" onClick={() => {
+            <a href="/#/datatable" className="menu__option" onClick={() => {
               setCookie("table", "users");
               navigate("/datatable")
             }}>کاربران</a>
