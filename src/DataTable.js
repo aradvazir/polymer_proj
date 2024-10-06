@@ -9,18 +9,25 @@ import "./DataTable.css";
 import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import nazaninFont from "./fonts/tnrNaz.ttf";
 import { baseUrl, getCookie, setCookie, TYPES } from "./consts";
-import { returnStatement } from "@babel/types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch, faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
-
-const role = getCookie("role");
-const token = getCookie("token");
-const delete_permission = role === "admin" || role === "manager";
-const edit_permission =
-  role === "admin" || role === "manager" || role === "editor";
+import {
+  faSearch,
+  faArrowUp,
+  faArrowDown,
+} from "@fortawesome/free-solid-svg-icons";
 
 const DataTable = () => {
   const [data, setData] = useState([]);
+  const [role, setRole] = useState(getCookie("role") ? getCookie("role") : "");
+  const [token, setToken] = useState(
+    getCookie("token") ? getCookie("token") : ""
+  );
+  const [edit_permission, setEditPerm] = useState(
+    role === "admin" || role === "manager"
+  );
+  const [delete_permission, setDeletePerm] = useState(
+    role === "admin" || role === "manager" || role === "editor"
+  );
   const [dtypes, setdtypes] = useState({});
   const [newItem, setNewItem] = useState({});
   const [editMode, setEditMode] = useState(null); // Track which row is in edit mode
@@ -46,10 +53,14 @@ const DataTable = () => {
       const tables = await (await fetch(baseUrl + "tables")).json();
       setTables(tables);
       setFilteredData(data ? data : []);
-      setOriginalData(data); 
+      setOriginalData(data);
     };
     fetchData();
-  }, [data]);
+    setRole(getCookie("role"));
+    setToken(getCookie("token"));
+    setEditPerm(role === "admin" || role === "manager");
+    setDeletePerm(role === "admin" || role === "manager" || role === "editor");
+  }, [data, role]);
   const fetchCols = async (table_name) => {
     let cols = [];
     if (!table_name) {
@@ -242,17 +253,17 @@ const DataTable = () => {
 
     // Determine new sort mode based on current state
     if (columnSorts[column] === "no") {
-        new_sort_mode = "asc"; // Change from "no" to "asc"
+      new_sort_mode = "asc"; // Change from "no" to "asc"
     } else if (columnSorts[column] === "asc") {
-        new_sort_mode = "des"; // Change from "asc" to "des"
+      new_sort_mode = "des"; // Change from "asc" to "des"
     } else if (columnSorts[column] === "des") {
-        new_sort_mode = "no"; // Change from "des" to "no"
+      new_sort_mode = "no"; // Change from "des" to "no"
     }
 
     // Update the sort state for the column
     setColumnSorts((prevFilters) => ({
-        ...prevFilters,
-        [column]: new_sort_mode,
+      ...prevFilters,
+      [column]: new_sort_mode,
     }));
 
     // Copy the filtered data for sorting
@@ -260,36 +271,48 @@ const DataTable = () => {
 
     // Sorting Logic
     if (new_sort_mode === "asc") {
-        const sortedAsc = copyData.sort((item1, item2) => {
-            if (item1[column] === null || item1[column] === undefined) return 1;
-            if (item2[column] === null || item2[column] === undefined) return -1;
-            if (typeof item1[column] === "number" && typeof item2[column] === "number") {
-                return item1[column] - item2[column]; // Numeric sort (ascending)
-            }
-            return item1[column].toString().localeCompare(item2[column].toString()); // String sort
-        });
-        setFilteredData(sortedAsc); // Update to sorted data
+      const sortedAsc = copyData.sort((item1, item2) => {
+        if (item1[column] === null || item1[column] === undefined) return 1;
+        if (item2[column] === null || item2[column] === undefined) return -1;
+        if (
+          typeof item1[column] === "number" &&
+          typeof item2[column] === "number"
+        ) {
+          return item1[column] - item2[column]; // Numeric sort (ascending)
+        }
+        return item1[column].toString().localeCompare(item2[column].toString()); // String sort
+      });
+      setFilteredData(sortedAsc); // Update to sorted data
     } else if (new_sort_mode === "des") {
-        const sortedDes = copyData.sort((item1, item2) => {
-            if (item1[column] === null || item1[column] === undefined) return 1;
-            if (item2[column] === null || item2[column] === undefined) return -1;
-            if (typeof item1[column] === "number" && typeof item2[column] === "number") {
-                return item2[column] - item1[column]; // Numeric sort (descending)
-            }
-            return item2[column].toString().localeCompare(item1[column].toString()); // String sort
-        });
-        setFilteredData(sortedDes); // Update to sorted data
+      const sortedDes = copyData.sort((item1, item2) => {
+        if (item1[column] === null || item1[column] === undefined) return 1;
+        if (item2[column] === null || item2[column] === undefined) return -1;
+        if (
+          typeof item1[column] === "number" &&
+          typeof item2[column] === "number"
+        ) {
+          return item2[column] - item1[column]; // Numeric sort (descending)
+        }
+        return item2[column].toString().localeCompare(item1[column].toString()); // String sort
+      });
+      setFilteredData(sortedDes); // Update to sorted data
     } else if (new_sort_mode === "no") {
-        // When sorting is reset to "no", re-apply current filters to the original data
-        const filtered = originalData.filter(item => {
-            return Object.keys(columnFilters).every(key => {
-                // Check if each column filter applies
-                return item[key] && item[key].toString().toLowerCase().includes(columnFilters[key].toString().toLowerCase());
-            });
+      // When sorting is reset to "no", re-apply current filters to the original data
+      const filtered = originalData.filter((item) => {
+        return Object.keys(columnFilters).every((key) => {
+          // Check if each column filter applies
+          return (
+            item[key] &&
+            item[key]
+              .toString()
+              .toLowerCase()
+              .includes(columnFilters[key].toString().toLowerCase())
+          );
         });
+      });
 
-        // Update filtered data without sorting
-        setFilteredData(filtered);
+      // Update filtered data without sorting
+      setFilteredData(filtered);
     }
   };
 
@@ -306,38 +329,48 @@ const DataTable = () => {
     setColumnFilters({});
 
     // Determine if there is any sorting applied
-    const sortedColumn = Object.keys(columnSorts).find(key => columnSorts[key] !== "no");
+    const sortedColumn = Object.keys(columnSorts).find(
+      (key) => columnSorts[key] !== "no"
+    );
     const sortMode = sortedColumn ? columnSorts[sortedColumn] : null;
 
     // Reset to original data when no filters are applied
-    const filteredData = data.filter(item => {
-        return Object.keys(columnFilters).every(key => {
-            // No filters means include all items
-            return true; // Allow all items since we are resetting filters
-        });
+    const filteredData = data.filter((item) => {
+      return Object.keys(columnFilters).every((key) => {
+        // No filters means include all items
+        return true; // Allow all items since we are resetting filters
+      });
     });
 
     // Sort the data if a sorting policy exists
     if (sortedColumn && sortMode) {
-        const sortedFilteredData = filteredData.sort((item1, item2) => {
-            if (item1[sortedColumn] === null || item1[sortedColumn] === undefined) return 1;
-            if (item2[sortedColumn] === null || item2[sortedColumn] === undefined) return -1;
+      const sortedFilteredData = filteredData.sort((item1, item2) => {
+        if (item1[sortedColumn] === null || item1[sortedColumn] === undefined)
+          return 1;
+        if (item2[sortedColumn] === null || item2[sortedColumn] === undefined)
+          return -1;
 
-            if (sortMode === "asc") {
-                return typeof item1[sortedColumn] === "number" && typeof item2[sortedColumn] === "number"
-                    ? item1[sortedColumn] - item2[sortedColumn] // Numeric sort (ascending)
-                    : item1[sortedColumn].toString().localeCompare(item2[sortedColumn].toString()); // String sort
-            } else {
-                return typeof item1[sortedColumn] === "number" && typeof item2[sortedColumn] === "number"
-                    ? item2[sortedColumn] - item1[sortedColumn] // Numeric sort (descending)
-                    : item2[sortedColumn].toString().localeCompare(item1[sortedColumn].toString()); // String sort
-            }
-        });
+        if (sortMode === "asc") {
+          return typeof item1[sortedColumn] === "number" &&
+            typeof item2[sortedColumn] === "number"
+            ? item1[sortedColumn] - item2[sortedColumn] // Numeric sort (ascending)
+            : item1[sortedColumn]
+                .toString()
+                .localeCompare(item2[sortedColumn].toString()); // String sort
+        } else {
+          return typeof item1[sortedColumn] === "number" &&
+            typeof item2[sortedColumn] === "number"
+            ? item2[sortedColumn] - item1[sortedColumn] // Numeric sort (descending)
+            : item2[sortedColumn]
+                .toString()
+                .localeCompare(item1[sortedColumn].toString()); // String sort
+        }
+      });
 
-        setFilteredData(sortedFilteredData); // Update the filtered data with sorted data
+      setFilteredData(sortedFilteredData); // Update the filtered data with sorted data
     } else {
-        // If no sorting is applied, reset to original data
-        setFilteredData(data);
+      // If no sorting is applied, reset to original data
+      setFilteredData(data);
     }
 
     // Close all search boxes
@@ -347,17 +380,23 @@ const DataTable = () => {
   const resetSorting = () => {
     // Reset all column sorting to "no"
     const resetSorts = Object.keys(columnSorts).reduce((acc, key) => {
-        acc[key] = "no"; // Set all to "no"
-        return acc;
+      acc[key] = "no"; // Set all to "no"
+      return acc;
     }, {});
 
     setColumnSorts(resetSorts); // Update sorting state
 
     // Reset to the currently filtered data without applying any sorting
-    const filteredData = originalData.filter(item => {
-        return Object.keys(columnFilters).every(key => {
-            return item[key] && item[key].toString().toLowerCase().includes(columnFilters[key].toString().toLowerCase());
-        });
+    const filteredData = originalData.filter((item) => {
+      return Object.keys(columnFilters).every((key) => {
+        return (
+          item[key] &&
+          item[key]
+            .toString()
+            .toLowerCase()
+            .includes(columnFilters[key].toString().toLowerCase())
+        );
+      });
     });
 
     setFilteredData(filteredData); // Set filtered data based on current filters
@@ -515,7 +554,7 @@ const DataTable = () => {
     <Container className="datatable">
       <div className="redirect-container">
         <a href="/#/Menu" className="redirect-button">
-            بازگشت به منو
+          بازگشت به منو
         </a>
       </div>
       {table !== "users" && (
@@ -693,114 +732,150 @@ const DataTable = () => {
         </Form>
       )}
 
-      <div className="reset-button-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          {Object.keys(columnFilters).length > 0 && (
-              <button onClick={resetFilters} className="reset-button">
-                  حذف فیلتر‌ها
-              </button>
-          )}
+      <div
+        className="reset-button-container"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {Object.keys(columnFilters).length > 0 && (
+          <button onClick={resetFilters} className="reset-button">
+            حذف فیلتر‌ها
+          </button>
+        )}
 
-          {Object.keys(columnSorts).some(key => columnSorts[key] !== "no") && (
-              <button onClick={resetSorting} className="reset-button" style={{ marginLeft: '10px' }}>
-                  حذف ترتیب
-              </button>
-          )}
+        {Object.keys(columnSorts).some((key) => columnSorts[key] !== "no") && (
+          <button
+            onClick={resetSorting}
+            className="reset-button"
+            style={{ marginLeft: "10px" }}
+          >
+            حذف ترتیب
+          </button>
+        )}
       </div>
 
       <Table striped bordered hover className="custom-table">
         <thead>
           <tr>
-          {columns
-            .filter(
-              (item) =>
-                (!("id" in item) ||
-                  [
-                    "materials",
-                    "recipes",
-                    "rawmaterials",
-                    "operators",
-                    "lines",
-                  ].includes(table)) &&
-                !("hashed_pass" in item)
-            )
-            .map((dict) => {
-              const col = Object.keys(dict).pop();
-              return (
-                <th
-                  key={col}
-                  style={{ cursor: "pointer" }} // Keep cursor pointer for interactivity
-                  onClick={() => {
-                    handleColumnSort(col); // Call sorting function on click
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    {col}
-                    {/* Show the sorting icon based on the current sort mode */}
-                    {columnSorts[col] === "asc" && (
-                      <FontAwesomeIcon icon={faArrowUp} style={{ marginRight: "6px", fontSize: "14px", color: "red" }}/>
-                    )}
-                    {columnSorts[col] === "des" && (
-                      <FontAwesomeIcon icon={faArrowDown} style={{ marginRight: "6px", fontSize: "14px", color: "green" }}/>
-                    )}
-                  </div>
-                </th>
-              );
-            })}
+            {columns
+              .filter(
+                (item) =>
+                  (!("id" in item) ||
+                    [
+                      "materials",
+                      "recipes",
+                      "rawmaterials",
+                      "operators",
+                      "lines",
+                    ].includes(table)) &&
+                  !("hashed_pass" in item)
+              )
+              .map((dict) => {
+                const col = Object.keys(dict).pop();
+                return (
+                  <th
+                    key={col}
+                    style={{ cursor: "pointer" }} // Keep cursor pointer for interactivity
+                    onClick={() => {
+                      handleColumnSort(col); // Call sorting function on click
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {col}
+                      {/* Show the sorting icon based on the current sort mode */}
+                      {columnSorts[col] === "asc" && (
+                        <FontAwesomeIcon
+                          icon={faArrowUp}
+                          style={{
+                            marginRight: "6px",
+                            fontSize: "14px",
+                            color: "red",
+                          }}
+                        />
+                      )}
+                      {columnSorts[col] === "des" && (
+                        <FontAwesomeIcon
+                          icon={faArrowDown}
+                          style={{
+                            marginRight: "6px",
+                            fontSize: "14px",
+                            color: "green",
+                          }}
+                        />
+                      )}
+                    </div>
+                  </th>
+                );
+              })}
 
             {edit_permission && <th>ویرایش</th>}
             {delete_permission && <th>حذف</th>}
           </tr>
           <tr>
-          {columns
-            .filter(
-              (item) =>
-                (!("id" in item) ||
-                  [
-                    "materials",
-                    "recipes",
-                    "rawmaterials",
-                    "operators",
-                    "lines",
-                  ].includes(table)) &&
-                !("hashed_pass" in item)
-            )
-            .map((dict) => {
-              const col = Object.keys(dict).pop();
-              return (
-                <th key={`input-${col}`} onClick={() => toggleSearchInput(col)}>
-                  {searchInputVisible[col] ? (
-                    // Search input box is visible
-                    <input
-                      type="text"
-                      style={{
-                        textAlign: "center", // Horizontally center the text
-                        height: "30px", // Fixed height
-                        lineHeight: "30px", // Set line-height equal to height for vertical centering
-                        width: "100%", // Make input box fill the column width
-                        fontSize: "14px", // Adjust the font size as needed
-                        padding: "1px", // Remove default padding
-                        borderRadius: "10px",
-                        boxSizing: "border-box", // Ensure padding and border are included in the element's width and height
-                      }}
-                      placeholder={`Search ${col}`}
-                      value={columnFilters[col] || ""}
-                      onChange={(e) => handleColumnSearch(col, e.target.value)}
-                      autoFocus
-                    />
-                  ) : (
-                    // Show magnifier icon when search input is not visible
-                    <FontAwesomeIcon
-                      icon={faSearch}
-                      style={{
-                        cursor: "pointer",
-                        fontSize: "14px",
-                        color: "#999",
-                      }}
-                    />
-                  )}
-                </th>
-              );
-            })}
+            {columns
+              .filter(
+                (item) =>
+                  (!("id" in item) ||
+                    [
+                      "materials",
+                      "recipes",
+                      "rawmaterials",
+                      "operators",
+                      "lines",
+                    ].includes(table)) &&
+                  !("hashed_pass" in item)
+              )
+              .map((dict) => {
+                const col = Object.keys(dict).pop();
+                return (
+                  <th
+                    key={`input-${col}`}
+                    onClick={() => toggleSearchInput(col)}
+                  >
+                    {searchInputVisible[col] ? (
+                      // Search input box is visible
+                      <input
+                        type="text"
+                        style={{
+                          textAlign: "center", // Horizontally center the text
+                          height: "30px", // Fixed height
+                          lineHeight: "30px", // Set line-height equal to height for vertical centering
+                          width: "100%", // Make input box fill the column width
+                          fontSize: "14px", // Adjust the font size as needed
+                          padding: "1px", // Remove default padding
+                          borderRadius: "10px",
+                          boxSizing: "border-box", // Ensure padding and border are included in the element's width and height
+                        }}
+                        placeholder={`Search ${col}`}
+                        value={columnFilters[col] || ""}
+                        onChange={(e) =>
+                          handleColumnSearch(col, e.target.value)
+                        }
+                        autoFocus
+                      />
+                    ) : (
+                      // Show magnifier icon when search input is not visible
+                      <FontAwesomeIcon
+                        icon={faSearch}
+                        style={{
+                          cursor: "pointer",
+                          fontSize: "14px",
+                          color: "#999",
+                        }}
+                      />
+                    )}
+                  </th>
+                );
+              })}
 
             {edit_permission && <th></th>}
             {delete_permission && <th></th>}
