@@ -649,7 +649,25 @@ const DataTable = () => {
                       const col = Object.keys(dict).pop();
                       return col !== "hashed_pass" ? (
                         <td>
-                          {TYPES[dtypes[col]] === "boolean" ? (
+                          {table === "users" && col === "role" ? (  // New condition for "users" table
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""} // Ensure it has a fallback
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              {/* Add your options here, for example: */}
+                              <option value="">انتخاب کنید</option>
+                              <option value="admin">Admin</option>
+                              <option value="editor">Editor</option>
+                              <option value="viewer">Viewer</option>
+                              {/* More options as needed */}
+                            </Form.Select>
+                          ) : TYPES[dtypes[col]] === "boolean" ? (
                             <Form.Check
                               type="checkbox"
                               checked={newItem[col] || false} // Ensure it is a boolean
@@ -660,7 +678,6 @@ const DataTable = () => {
                                   [col]: newValue,
                                 });
                               }}
-                              // Optional: Add a label for the checkbox
                             />
                           ) : (
                             <Form.Control
@@ -902,6 +919,7 @@ const DataTable = () => {
                   <td>
                     {editMode === item.id ? (
                       TYPES[dtypes[key]] === "boolean" ? (
+                        // Handle boolean fields with a checkbox
                         <Form.Check
                           type="checkbox"
                           checked={tempItem[key] || false} // Ensure it is a boolean
@@ -911,17 +929,33 @@ const DataTable = () => {
                           }}
                           className="edit-input"
                         />
+                      ) : table === "users" ? (
+                        // New condition for the "users" table with a select dropdown
+                        <Form.Select
+                          value={tempItem[key] || ""} // Provide a fallback value
+                          onChange={(e) => {
+                            handleEdit(item.id, key, e.target.value);
+                          }}
+                          className="edit-input"
+                        >
+                          {/* Define options for the users table */}
+                          <option value="">انتخاب کنید</option>
+                          <option value="admin">Admin</option>
+                          <option value="user">User</option>
+                          <option value="guest">Guest</option>
+                          {/* Add more options as needed */}
+                        </Form.Select>
                       ) : (
+                        // Default case for other field types, using a text input
                         <Form.Control
                           type="text"
-                          value={tempItem[key]}
+                          value={tempItem[key]} // Use value from the tempItem state
                           onChange={(e) => {
+                            // Check if the input matches the expected type
                             if (checkType(e.target.value, TYPES[dtypes[key]])) {
                               handleEdit(item.id, key, e.target.value);
                             } else {
-                              window.alert(
-                                "مقادیر وارد شده از تایپ صحیح نمیباشد"
-                              );
+                              window.alert("مقادیر وارد شده از تایپ صحیح نمیباشد");
                             }
                           }}
                           className="edit-input"
