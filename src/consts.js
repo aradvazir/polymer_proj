@@ -2,18 +2,6 @@
 // export const baseUrl = "http://localhost:8000/";
 export const baseUrl = "http://172.16.87.18/api/";
 
-export const setCookie = (name, value, mins = 60) => {
-  let expires = "";
-  const date = new Date();
-  date.setTime(date.getTime() + mins * 60 * 1000);
-  expires = "; expires=" + date.toUTCString();
-  // Construct the cookie string
-  const cookieString = `${name}=${
-    value || ""
-  }${expires}; path=/; SameSite=None;`;
-  document.cookie = cookieString;
-};
-
 export const getCookie = (name) => {
   const nameEQ = name + "="; // Create a string to search for
   const ca = document.cookie.split(";"); // Split cookies into an array
@@ -24,6 +12,25 @@ export const getCookie = (name) => {
   }
   return null; // Return null if cookie not found
 };
+
+export const setCookie = (name, value, mins = 60) => {
+  let expires = "";
+  const date = new Date();
+  date.setTime(date.getTime() + mins * 60 * 1000);
+  expires = "; expires=" + date.toUTCString();
+  // Construct the cookie string
+  let cookieString = `${name}=${
+    value || ""
+  }${expires}; path=/; SameSite=None;`;
+  document.cookie = cookieString;
+  if(getCookie(name) !== value){
+    cookieString = `${name}=${
+      value || ""
+    }${expires}; path=/; SameSite=None; Secure;`;
+    document.cookie = cookieString;
+  }
+};
+
 
 export const TYPES = {
   "character varying": "string",
