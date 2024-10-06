@@ -240,13 +240,14 @@ h1 {
   gap: 20px;
   width: 95%;
   justify-content: center;
+  position: relative;
 }
 
 .form__form h2 {
   text-align: center;
   width: 95%;
   font-size: 45px;
-  margin-top: 20px;
+  margin-top: 80px;
 }
 
 .form__auto-container {
@@ -376,25 +377,11 @@ input:focus, textarea:focus {
 
 .redirect-container {
   display: flex; /* Use flexbox for alignment */
-  justify-content: flex-end; /* Align items to the start (left) */
+  justify-content: flex-start; /* Align items to the start (left) */
   margin-bottom: 20px; /* Add some space below the button */
-}
+  position: relative;
+  direction: ltr;
 
-.redirect-button {
-  display: inline-block; /* Make it behave like a button */
-  padding: 10px 20px; /* Add padding */
-  background-color: #e10d0d; /* Button background color */
-  color: white; /* Text color */
-  text-decoration: none; /* Remove underline */
-  border-radius: 10px; /* Rounded corners */
-  text-align: center; /* Center the text */
-  border: 1px solid black;
-  transition: background-color 0.3s; /* Smooth transition */
-}
-
-.redirect-button:hover {
-  background-color: #ba0d0d; /* Darker shade on hover */
-  transform: scale(1.05);
 }
 
 @media only screen and (max-width: 768px) {

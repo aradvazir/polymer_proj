@@ -5,7 +5,6 @@ import "react-calendar/dist/Calendar.css";
 import "./Form.css";
 import { baseUrl, getCookie, setCookie } from "./consts";
 
-
 const Form = () => {
   const [formData, setFormData] = useState({
     date: moment().format("jYYYY-jMM-jDD"),
@@ -13,7 +12,9 @@ const Form = () => {
     operator_id: getCookie("operator_id") ? getCookie("operator_id") : "",
     shift: getCookie("shift") ? getCookie("shift") : "",
     line_id: getCookie("line_id") ? getCookie("line_id") : "",
-    productionAmount: getCookie("productionAmount") ? getCookie("productionAmount") : "",
+    productionAmount: getCookie("productionAmount")
+      ? getCookie("productionAmount")
+      : "",
     product_id: getCookie("product_id") ? getCookie("product_id") : "",
     recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "",
     recipe: {},
@@ -21,7 +22,9 @@ const Form = () => {
     fitting: getCookie("fitting") ? getCookie("fitting") : "True",
   });
 
-  const [isFitting, setFitting] = useState(getCookie("fitting") ? getCookie("fitting") : "True");
+  const [isFitting, setFitting] = useState(
+    getCookie("fitting") ? getCookie("fitting") : "True"
+  );
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
   const [operatorOptions, setOperatorOptions] = useState([]);
@@ -36,13 +39,19 @@ const Form = () => {
   // Automatically set date and time on component load
   useEffect(() => {
     const fetchOptions = async () => {
-      const products = await (await fetch(`${baseUrl}product/${isFitting}`)).json();
+      const products = await (
+        await fetch(`${baseUrl}product/${isFitting}`)
+      ).json();
       setProductOptions(products);
       const mix = await (await fetch(`${baseUrl}materials`)).json();
       setMixOptions(mix);
-      const operators = await (await fetch(`${baseUrl}operator/${isFitting}`)).json();
+      const operators = await (
+        await fetch(`${baseUrl}operator/${isFitting}`)
+      ).json();
       setOperatorOptions(operators);
-      const lines = await (await fetch(`${baseUrl}machine/${isFitting}`)).json();
+      const lines = await (
+        await fetch(`${baseUrl}machine/${isFitting}`)
+      ).json();
       setLineOptions(lines);
     };
 
@@ -57,7 +66,6 @@ const Form = () => {
       date: currentDate,
       time: currentTime,
     }));
-
   }, [isFitting]);
 
   useEffect(() => {
@@ -69,10 +77,10 @@ const Form = () => {
     start_recipe();
   }, []);
 
-  const handleRecipeCodeChange = async(e) => {
-    const value = e.target.value
+  const handleRecipeCodeChange = async (e) => {
+    const value = e.target.value;
     const ingred = await renderIngredients(value);
-    
+
     setIngredients(ingred);
     setFormData({
       ...formData,
@@ -82,12 +90,13 @@ const Form = () => {
     setCookie(e.target.name, value);
     window.location.reload();
   };
-  const handleRecipeChange = async(e) => {
-    const newKey = e.target.name.slice(7), newValue = parseFloat(e.target.value) || "";
+  const handleRecipeChange = async (e) => {
+    const newKey = e.target.name.slice(7),
+      newValue = parseFloat(e.target.value) || "";
     let defaults = JSON.parse(getCookie("defaultIngreds"));
     defaults[newKey] = newValue;
     setCookie("defaultIngreds", JSON.stringify(defaults));
-    
+
     setFormData({
       ...formData,
       recipe: {
@@ -101,9 +110,9 @@ const Form = () => {
   };
 
   const handleChange = async (e) => {
-    if(e.target.name.startsWith("recipe_")){
+    if (e.target.name.startsWith("recipe_")) {
       await handleRecipeChange(e);
-    }else {
+    } else {
       setFormData({
         ...formData,
         [e.target.name]: e.target.value,
@@ -140,7 +149,6 @@ const Form = () => {
   const openTimeInput = () => {
     document.getElementById("time-input").classList.remove("no");
     document.getElementById("time-text").classList.add("no");
-    
   };
 
   const closeTimeInput = () => {
@@ -148,7 +156,6 @@ const Form = () => {
     document.getElementById("time-input").classList.add("no");
     document.getElementById("time-text").classList.remove("no");
   };
-  
 
   const handleProductToggle = (isfit) => {
     setFitting(isfit);
@@ -162,89 +169,103 @@ const Form = () => {
   const handleSubmit = async (e) => {
     console.log(formData);
     e.preventDefault();
-    if(hasChanged){
-      let finalForm = {recipe: {}}; // it contains all the default keys, and rawmats are in the `recipe`
-      Object.keys(formData).forEach(key => {
-        if(key === "recipe_code" || key === "recipe"){
-          
-        } else if(key === "product_id" || key === "description" || key === "fitting"){
+    if (hasChanged) {
+      let finalForm = { recipe: {} }; // it contains all the default keys, and rawmats are in the `recipe`
+      Object.keys(formData).forEach((key) => {
+        if (key === "recipe_code" || key === "recipe") {
+        } else if (
+          key === "product_id" ||
+          key === "description" ||
+          key === "fitting"
+        ) {
           finalForm[key] = formData[key];
-        } else if(key === "date"){
+        } else if (key === "date") {
           finalForm[key] = formData[key] || selectedDate;
-        } else if(key === "time"){
+        } else if (key === "time") {
           finalForm[key] = formData[key] || timeInput;
         } else {
           finalForm[key] = parseInt(formData[key]);
         }
       });
-      Object.keys(formData.recipe).forEach(key => {
-        if(formData.recipe[key]){
+      Object.keys(formData.recipe).forEach((key) => {
+        if (formData.recipe[key]) {
           finalForm.recipe[key] = formData.recipe[key];
         }
-      })
-      console.log("Final Form (has changed): " + JSON.stringify(finalForm, null, 4));
+      });
+      console.log(
+        "Final Form (has changed): " + JSON.stringify(finalForm, null, 4)
+      );
 
       await fetch(baseUrl + "mixentry/other/", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       });
 
       // post to different endpoints
-    }else{
+    } else {
       let finalForm = {}; // it contains all the default keys, and rawmats are in the `recipe`
-      Object.keys(formData).forEach(key => {
-        if(key === "recipe"){
-          
-        } else if(key === "product_id" || key === "description" || key === "fitting"){
+      Object.keys(formData).forEach((key) => {
+        if (key === "recipe") {
+        } else if (
+          key === "product_id" ||
+          key === "description" ||
+          key === "fitting"
+        ) {
           finalForm[key] = formData[key];
-        } else if(key === "date"){
+        } else if (key === "date") {
           finalForm[key] = formData[key] || selectedDate;
-        } else if(key === "time"){
+        } else if (key === "time") {
           finalForm[key] = formData[key] || timeInput;
         } else {
           finalForm[key] = parseInt(formData[key]);
         }
-      })
-      console.log("Final Form (not changed): " + JSON.stringify(finalForm, null, 4));
+      });
+      console.log(
+        "Final Form (not changed): " + JSON.stringify(finalForm, null, 4)
+      );
 
       await fetch(baseUrl + "mixentry", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
-          "Content-Type": "application/json"
-        }
+          "Content-Type": "application/json",
+        },
       });
     }
-    
   };
 
   const renderIngredients = async (mixCode) => {
-    let ans = <div className="form__input-group-special auto">هیچ میکسی انتخاب نشده است.</div>;
+    let ans = (
+      <div className="form__input-group-special auto">
+        هیچ میکسی انتخاب نشده است.
+      </div>
+    );
     if (mixCode) {
       let mix_ingreds = null;
       try {
-        mix_ingreds = await (await fetch(`${baseUrl}material/${mixCode}`)).json();
+        mix_ingreds = await (
+          await fetch(`${baseUrl}material/${mixCode}`)
+        ).json();
       } catch (err) {
         return ans;
       }
-      
+
       function id_weight_Ingredients(ing_obj) {
         const newObj = {};
-        
-        Object.keys(ing_obj).forEach(key => {
+
+        Object.keys(ing_obj).forEach((key) => {
           newObj[ing_obj[key].rawmaterial.id] = parseFloat(ing_obj[key].weight);
-          
-        })
-        
+        });
+
         return newObj;
       }
-      
-      const defaults = id_weight_Ingredients(mix_ingreds)
-      setCookie("defaultIngreds", JSON.stringify(defaults))
-    
+
+      const defaults = id_weight_Ingredients(mix_ingreds);
+      setCookie("defaultIngreds", JSON.stringify(defaults));
+
       const newForm = {
         ...formData,
         recipe: {
@@ -254,11 +275,14 @@ const Form = () => {
       };
       setFormData(newForm);
       setDefaultIngreds(defaults);
-      
+
       return (
         <div className="form__auto-container">
           {mix_ingreds.map((ingred) => (
-            <div className="form__input-group-special auto" key={ingred.rawmaterial.id}>
+            <div
+              className="form__input-group-special auto"
+              key={ingred.rawmaterial.id}
+            >
               <label>{ingred.rawmaterial.rawmaterial}</label>
               <input
                 type="text"
@@ -277,14 +301,26 @@ const Form = () => {
 
   return (
     <div className="form__form-container">
-      <div style={{visibility: "hidden"}}>{JSON.stringify(defaultIngreds)}</div>
+      <div style={{ visibility: "hidden" }}>
+        {JSON.stringify(defaultIngreds)}
+      </div>
       <form onSubmit={handleSubmit} className="form__form">
-        <div className="redirect-container" style={{ marginBottom: '20px' }}>
+        <div
+          className="redirect-container"
+          style={{
+            marginBottom: "20px",
+            width: "125px",
+            position: "absolute",
+            top: "0px",
+            left: "0px",
+            display: "flex",
+          }}
+        >
           <a
             href="/#/Menu"
             className="redirect-button"
             style={{
-              display: "inline-block",
+              display: "inline-flex",
               padding: "10px 20px",
               backgroundColor: "#e10d0d",
               color: "white",
@@ -292,6 +328,8 @@ const Form = () => {
               borderRadius: "10px",
               border: "1px solid black",
               transition: "background-color 0.3s",
+              width: "100%",
+              fontSize: "16px",
             }}
             onMouseOver={(e) => {
               e.currentTarget.style.backgroundColor = "#ba0d0d";
@@ -331,25 +369,38 @@ const Form = () => {
               {moment(selectedDate).format("jYYYY/jMM/jDD")}
             </p>
           </div>
-          
         </div>
 
         <div className="form__input-group-special form__time">
           <label htmlFor="">زمان</label>
           <div className="form__clock-display">
-              <div id="time-input" className="no">
-                  <input
-                      type="time"
-                      value={timeInput}
-                      onChange={handleTimeInputChange}
-                      className="form__time-input"
-                  />
-                  <button type="button" className="form__action-button form__save-button" onClick={handleSaveTime}>ذخیره</button>
-                  <button type="button" className="form__action-button form__cancel-button" onClick={closeTimeInput}>لغو</button>
-              </div>
-              <div id="time-text">
-                  <p onClick={openTimeInput}>{moment(confirmedTime, "HH:mm").format("HH:mm")}</p>
-              </div>
+            <div id="time-input" className="no">
+              <input
+                type="time"
+                value={timeInput}
+                onChange={handleTimeInputChange}
+                className="form__time-input"
+              />
+              <button
+                type="button"
+                className="form__action-button form__save-button"
+                onClick={handleSaveTime}
+              >
+                ذخیره
+              </button>
+              <button
+                type="button"
+                className="form__action-button form__cancel-button"
+                onClick={closeTimeInput}
+              >
+                لغو
+              </button>
+            </div>
+            <div id="time-text">
+              <p onClick={openTimeInput}>
+                {moment(confirmedTime, "HH:mm").format("HH:mm")}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -357,13 +408,17 @@ const Form = () => {
           <label>محصول تولیدی</label>
           <div className="form__toggle-buttons">
             <div
-              className={`form__toggle-button ${isFitting === "True" ? "active" : ""}`}
+              className={`form__toggle-button ${
+                isFitting === "True" ? "active" : ""
+              }`}
               onClick={() => handleProductToggle("True")}
             >
               اتصالات
             </div>
             <div
-              className={`form__toggle-button ${isFitting === "False" ? "active" : ""}`}
+              className={`form__toggle-button ${
+                isFitting === "False" ? "active" : ""
+              }`}
               onClick={() => handleProductToggle("False")}
             >
               لوله
@@ -380,7 +435,7 @@ const Form = () => {
             onChange={handleChange}
             required
           >
-            <option value="">انتخاب کنید</option> 
+            <option value="">انتخاب کنید</option>
             {operatorOptions.map((operator) => (
               <option key={operator.id} value={operator.id}>
                 {operator.name}
@@ -388,7 +443,7 @@ const Form = () => {
             ))}
           </select>
         </div>
-        
+
         <div className="form__input-group-special">
           <label htmlFor="shift">شیفت</label>
           <select
@@ -461,7 +516,9 @@ const Form = () => {
             value={formData.recipe_code}
             onChange={handleRecipeCodeChange}
           >
-            <option key="16" value="16" >سایر</option>
+            <option key="16" value="16">
+              سایر
+            </option>
             {mixOptions.map((mix) => (
               <option key={mix.id} value={mix.id}>
                 {mix.material}
