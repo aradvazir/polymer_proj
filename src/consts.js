@@ -19,18 +19,13 @@ export const setCookie = (name, value, mins = 60) => {
   date.setTime(date.getTime() + mins * 60 * 1000);
   expires = "; expires=" + date.toUTCString();
   // Construct the cookie string
-  let cookieString = `${name}=${
-    value || ""
-  }${expires}; path=/; SameSite=None;`;
+  let cookieString = `${name}=${value || ""}${expires}; path=/; SameSite=None;`;
   document.cookie = cookieString;
-  if(getCookie(name) !== value){
-    cookieString = `${name}=${
-      value || ""
-    }${expires}; path=/; SameSite=None; Secure;`;
-    document.cookie = cookieString;
-  }
+  cookieString = `${name}=${
+    value || ""
+  }${expires}; path=/; SameSite=None; Secure;`;
+  document.cookie = cookieString;
 };
-
 
 export const TYPES = {
   "character varying": "string",
