@@ -941,8 +941,8 @@ const DataTable = () => {
                           {/* Define options for the users table */}
                           <option value="">انتخاب کنید</option>
                           <option value="admin">Admin</option>
-                          <option value="user">Editor</option>
-                          <option value="guest">Viewer</option>
+                          <option value="editor">Editor</option>
+                          <option value="viewer">Viewer</option>
                           {/* Add more options as needed */}
                         </Form.Select>
                       ) : (
