@@ -41,6 +41,7 @@ const Form = () => {
   const [ingredients, setIngredients] = useState();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
+  const [showToast, setShowToast] = useState(""); // For error toast
   const [confirmedTime, setConfirmedTime] = useState(timeInput);
   const [hasChanged, setHasChanged] = useState(false);
 
@@ -208,7 +209,7 @@ const Form = () => {
         "Final Form (has changed): " + JSON.stringify(finalForm, null, 4)
       );
 
-      await fetch(baseUrl + "mixentry/other/", {
+      const resp = await fetch(baseUrl + "mixentry/other/", {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
@@ -216,6 +217,10 @@ const Form = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      if(resp.ok){
+        window.alert("اطلاعات با موفقیت ثبت شد.")
+        window.location.reload();
+      }
 
       // post to different endpoints
     } else {
@@ -558,7 +563,17 @@ const Form = () => {
           ثبت
         </button>
       </form>
+      <Toast
+        onClose={() => setShowToast("")}
+        show={showToast.length > 0}
+        delay={3000}
+        autohide
+        style={{ position: "absolute", top: "20px", right: "20px" }}
+      >
+        <Toast.Body>showToast</Toast.Body>
+      </Toast>
     </div>
+    
   );
 };
 

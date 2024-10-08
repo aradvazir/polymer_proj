@@ -34,7 +34,7 @@ const DataTable = () => {
   const [showForm, setShowForm] = useState(false); // Track whether to show the add item form
   const [showModal, setShowModal] = useState(false); // For confirmation modal
   const [itemToDelete, setItemToDelete] = useState(null); // Store item to delete
-  const [showToast, setShowToast] = useState(false); // For error toast
+  const [showToast, setShowToast] = useState(""); // For error toast
   const [tempItem, setTempItem] = useState({}); // Temporary item for edit
   const [columns, setCols] = useState([]);
   const [table, setTable] = useState(
@@ -1025,13 +1025,13 @@ const DataTable = () => {
 
       {/* Toast Notification for Error Message */}
       <Toast
-        onClose={() => setShowToast(false)}
-        show={showToast}
+        onClose={() => setShowToast("")}
+        show={showToast.length > 0}
         delay={3000}
         autohide
         style={{ position: "absolute", top: "20px", right: "20px" }}
       >
-        <Toast.Body>لطفاً هر دو فیلد را قبل از افزودن مورد پر کنید.</Toast.Body>
+        <Toast.Body>showToast</Toast.Body>
       </Toast>
     </Container>
   );
