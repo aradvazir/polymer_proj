@@ -12,8 +12,8 @@ const Form = () => {
     operator_id: getCookie("operator_id") ? getCookie("operator_id") : "",
     shift: getCookie("shift") ? getCookie("shift") : "",
     line_id: getCookie("line_id") ? getCookie("line_id") : "",
-    productionAmount: getCookie("productionAmount")
-      ? getCookie("productionAmount")
+    amount: getCookie("amount")
+      ? getCookie("amount")
       : "",
     product_id: getCookie("product_id") ? getCookie("product_id") : "",
     recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "",
@@ -27,6 +27,14 @@ const Form = () => {
   );
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
+  const [role, setRole] = useState(getCookie("role") ? getCookie("role") : "");
+  const [token, setToken] = useState(
+    getCookie("token") ? getCookie("token") : ""
+  );
+  const [edit_permission, setEditPerm] = useState(
+    role === "admin" || role === "manager" || role === "editor"
+  );
+  
   const [operatorOptions, setOperatorOptions] = useState([]);
   const [lineOptions, setLineOptions] = useState([]);
   const [defaultIngreds, setDefaultIngreds] = useState({});
@@ -66,6 +74,10 @@ const Form = () => {
       date: currentDate,
       time: currentTime,
     }));
+    setRole(getCookie("role"));
+    setToken(getCookie("token"));
+    setEditPerm(role === "admin" || role === "manager" || role === "editor");
+    
   }, [isFitting]);
 
   useEffect(() => {
@@ -201,6 +213,7 @@ const Form = () => {
         body: JSON.stringify(formData),
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -231,6 +244,7 @@ const Form = () => {
         method: "POST",
         body: JSON.stringify(formData),
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       });
@@ -479,12 +493,12 @@ const Form = () => {
         </div>
 
         <div className="form__input-group-special">
-          <label htmlFor="productionAmount">مقدار تولید</label>
+          <label htmlFor="amount">مقدار تولید</label>
           <input
             type="number"
-            id="productionAmount"
-            name="productionAmount"
-            value={formData.productionAmount}
+            id="amount"
+            name="amount"
+            value={formData.amount}
             onChange={handleChange}
             required
           />

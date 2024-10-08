@@ -58,8 +58,8 @@ const DataTable = () => {
     fetchData();
     setRole(getCookie("role"));
     setToken(getCookie("token"));
-    setEditPerm(role === "admin" || role === "manager");
-    setDeletePerm(role === "admin" || role === "manager" || role === "editor");
+    setEditPerm(role === "admin" || role === "manager" || role === "editor");
+    setDeletePerm(role === "admin" || role === "manager");
   }, [data, role]);
   const fetchCols = async (table_name) => {
     let cols = [];
