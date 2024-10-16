@@ -35,6 +35,7 @@ const DataTable = () => {
   const [showModal, setShowModal] = useState(false); // For confirmation modal
   const [itemToDelete, setItemToDelete] = useState(null); // Store item to delete
   const [showToast, setShowToast] = useState(""); // For error toast
+  const [toastType, setToastType] = useState(""); // For error toast
   const [tempItem, setTempItem] = useState({}); // Temporary item for edit
   const [columns, setCols] = useState([]);
   const [table, setTable] = useState(
@@ -128,7 +129,7 @@ const DataTable = () => {
     allproducts: "همه محصولات",
     fittingproduct: "اتصالات",
     machines: "خطوط تولید",
-    materials: "محصولات",
+    materials: "گروه محصولات",
     operators: "اپراتور‌ها",
     pipeproduct: "لوله‌ها",
     rawmaterials: "مواد اولیه",
@@ -151,15 +152,33 @@ const DataTable = () => {
     console.log(newItem);
     if (baseUrl !== "/") {
       if (table !== "users") {
-        const add_resp = await fetch(baseUrl + "table/" + table, {
-          method: "POST",
-          body: JSON.stringify(newItem),
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        console.log(add_resp);
+        try{
+          const add_resp = await fetch(baseUrl + "table/" + table, {
+            method: "POST",
+            body: JSON.stringify(newItem),
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          console.log(add_resp);
+          if(add_resp.status == 401){
+            throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
+          }else if(add_resp.status == 422){
+            throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
+          }
+        }catch(err){
+          if(err instanceof ReferenceError || err instanceof SyntaxError){
+            setToastType("error");
+            setShowToast(err.message);
+          }else{
+            setToastType("error");
+            setShowToast("سرور دچار مشکل شده است. لطفا مجدد تلاش کنید");
+          }
+          
+          return;
+        }
+        
       } else {
         let newnewItem = {
           username: newItem.username,
@@ -167,18 +186,36 @@ const DataTable = () => {
           role: newItem.role,
         };
         console.log(newnewItem);
-        const signup_resp = await fetch(baseUrl + "signup/", {
-          method: "POST",
+        try{
+          const signup_resp = await fetch(baseUrl + "signup/", {
+            method: "POST",
 
-          body: JSON.stringify(newnewItem),
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+            body: JSON.stringify(newnewItem),
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
 
-        console.log(signup_resp);
-        console.log(await signup_resp.json());
+          console.log(signup_resp);
+          console.log(await signup_resp.json());
+          if(add_resp.status == 401){
+            throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
+          }else if(add_resp.status == 422){
+            throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
+          }
+        }catch(err){
+          if(err instanceof ReferenceError || err instanceof SyntaxError){
+            setToastType("error");
+            setShowToast(err.message);
+          }else{
+            setToastType("error");
+            setShowToast("سرور دچار مشکل شده است. لطفا مجدد تلاش کنید");
+          }
+          
+          return;
+        }
+        
       }
 
       window.location.reload();
@@ -404,7 +441,6 @@ const DataTable = () => {
   };
 
   const checkType = (val, type) => {
-    console.log(`Val: ${val}, TYPE = ${type}`);
     if (type === "number") {
       let checkthat = parseInt(val);
 
@@ -462,24 +498,43 @@ const DataTable = () => {
       });
       console.log(edit_json);
       if (baseUrl !== "/") {
-        const edit_resp = await fetch(
-          baseUrl + "table/" + table + "/" + editMode,
-          {
-            method: "PUT",
-            body: JSON.stringify(edit_json),
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+        try{
+          const edit_resp = await fetch(
+            baseUrl + "table/" + table + "/" + editMode,
+            {
+              method: "PUT",
+              body: JSON.stringify(edit_json),
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          console.log(edit_resp);
+          if(add_resp.status == 401){
+            throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
+          }else if(add_resp.status == 422){
+            throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
           }
-        );
-        console.log(edit_resp);
-        window.location.reload();
+          window.location.reload();
+          setData(
+            data.map((item) => (item.id === id ? { ...item, ...tempItem } : item))
+          );
+          setEditMode(null);
+        }catch(err){
+          if(err instanceof ReferenceError || err instanceof SyntaxError){
+            setToastType("error");
+            setShowToast(err.message);
+          }else{
+            setToastType("error");
+            setShowToast("سرور دچار مشکل شده است. لطفا مجدد تلاش کنید");
+          }
+          
+          return;
+        }
+        
       }
-      setData(
-        data.map((item) => (item.id === id ? { ...item, ...tempItem } : item))
-      );
-      setEditMode(null);
+      
     } else {
       // Set edit mode for the row
       setEditMode(id);
@@ -1058,13 +1113,13 @@ const DataTable = () => {
 
       {/* Toast Notification for Error Message */}
       <Toast
-        onClose={() => setShowToast("")}
+        onClose={() => {setShowToast(""); setToastType("")}}
         show={showToast.length > 0}
-        delay={3000}
+        delay={30000}
         autohide
-        style={{ position: "absolute", top: "20px", right: "20px" }}
+        style={{ position: "absolute", top: "20px", right: "20px", color: toastType === "error" ? "#9911225" : toastType === "success" ? "#11f0595" : "#ffffff5" }}
       >
-        <Toast.Body>showToast</Toast.Body>
+        <Toast.Body>{showToast}</Toast.Body>
       </Toast>
     </Container>
   );
