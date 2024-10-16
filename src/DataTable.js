@@ -46,6 +46,7 @@ const DataTable = () => {
   const [filteredData, setFilteredData] = useState([]);
   const [columnFilters, setColumnFilters] = useState({});
   const [searchInputVisible, setSearchInputVisible] = useState({});
+  const [searchIsExact, setSearchIsExact] = useState({});
   const [columnSorts, setColumnSorts] = useState({});
   const [originalData, setOriginalData] = useState(data);
 
@@ -66,7 +67,7 @@ const DataTable = () => {
     setToken(getCookie("token"));
     setEditPerm(role === "admin" || role === "manager" || role === "editor");
     setDeletePerm(role === "admin" || role === "manager");
-  }, [data, role]);
+  }, [data, role, token]);
   const fetchCols = async (table_name) => {
     let cols = [];
     if (!table_name) {
@@ -177,9 +178,9 @@ const DataTable = () => {
             },
           });
           console.log(add_resp);
-          if(add_resp.status == 401){
+          if(add_resp.status === 401){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
-          }else if(add_resp.status == 422){
+          }else if(add_resp.status === 422){
             throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
           }
         }catch(err){
@@ -214,9 +215,9 @@ const DataTable = () => {
 
           console.log(signup_resp);
           console.log(await signup_resp.json());
-          if(signup_resp.status == 401){
+          if(signup_resp.status === 401){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
-          }else if(signup_resp.status == 422){
+          }else if(signup_resp.status === 422){
             throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
           }
         }catch(err){
@@ -288,9 +289,12 @@ const DataTable = () => {
       const filtered = data.filter((item) => {
         return Object.keys(updatedFilters).every((key) => {
           const filterValue = updatedFilters[key].toLowerCase();
-          return item[key] != null
-            ? item[key].toString().toLowerCase().includes(filterValue)
-            : false;
+          if(searchIsExact[column]){
+            return item[key] != null && item[key].toString().toLowerCase() === filterValue;
+          }else{
+            return item[key] != null && item[key].toString().toLowerCase().includes(filterValue);
+          }
+          
         });
       });
 
@@ -375,6 +379,10 @@ const DataTable = () => {
       setColumnFilters((prev) => ({ ...prev, [column]: "" }));
     }
   };
+  const toggleSearchIsExact = (column) => {
+    setSearchIsExact((prev) => ({ ...prev, [column]: !searchIsExact[column] }));
+    
+  };
 
   const resetFilters = () => {
     // Reset all column filters to empty
@@ -427,6 +435,7 @@ const DataTable = () => {
 
     // Close all search boxes
     setSearchInputVisible({});
+    setSearchIsExact({});
   };
 
   const resetSorting = () => {
@@ -485,11 +494,7 @@ const DataTable = () => {
       setCookie("table", table_name);
       await fetchCols(table_name);
       await fetchData(table_name, 0, 100000);
-    },
-    [
-      /* dependencies */
-    ]
-  );
+    }, []);
   useEffect(() => {
     if (table) {
       handleTableChange(null, table);
@@ -526,9 +531,9 @@ const DataTable = () => {
             }
           );
           console.log(edit_resp);
-          if(edit_resp.status == 401){
+          if(edit_resp.status === 401){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
-          }else if(edit_resp.status == 422){
+          }else if(edit_resp.status === 422){
             throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
           }
           window.location.reload();
@@ -948,25 +953,28 @@ const DataTable = () => {
                   >
                     {searchInputVisible[col] ? (
                       // Search input box is visible
-                      <input
-                        type="text"
-                        style={{
-                          textAlign: "center", // Horizontally center the text
-                          height: "30px", // Fixed height
-                          lineHeight: "30px", // Set line-height equal to height for vertical centering
-                          width: "100%", // Make input box fill the column width
-                          fontSize: "14px", // Adjust the font size as needed
-                          padding: "1px", // Remove default padding
-                          borderRadius: "10px",
-                          boxSizing: "border-box", // Ensure padding and border are included in the element's width and height
-                        }}
-                        placeholder={`Search ${col}`}
-                        value={columnFilters[col] || ""}
-                        onChange={(e) =>
-                          handleColumnSearch(col, e.target.value)
-                        }
-                        autoFocus
-                      />
+                      <div className="search-input-container">
+                        <input
+                          type="text"
+                          style={{
+                            textAlign: "center", // Horizontally center the text
+                            height: "30px", // Fixed height
+                            lineHeight: "30px", // Set line-height equal to height for vertical centering
+                            width: "100%", // Make input box fill the column width
+                            fontSize: "14px", // Adjust the font size as needed
+                            padding: "1px", // Remove default padding
+                            borderRadius: "10px",
+                            boxSizing: "border-box", // Ensure padding and border are included in the element's width and height
+                          }}
+                          placeholder={`Search ${col}`}
+                          value={columnFilters[col] || ""}
+                          onChange={(e) =>
+                            handleColumnSearch(col, e.target.value)
+                          }
+                          autoFocus
+                        />
+                      </div>
+                      
                     ) : (
                       // Show magnifier icon when search input is not visible
                       <FontAwesomeIcon
@@ -1130,11 +1138,13 @@ const DataTable = () => {
       <Toast
         onClose={() => {setShowToast(""); setToastType("")}}
         show={showToast.length > 0}
-        delay={30000}
+        delay={3000}
         autohide
-        style={{ position: "absolute", top: "20px", right: "20px", color: toastType === "error" ? "#9911225" : toastType === "success" ? "#11f0595" : "#ffffff5" }}
+        style={{position: "absolute", top: "20px", right: "20px", backgroundColor: toastType === 'error' ? "rgba(153, 17, 34, 0.5)" : 
+          toastType === "success" ? "rgba(17, 240, 89, 0.5)" : 
+          "rgba(255, 255, 255, 0.5)", color: "black" }}
       >
-        <Toast.Body>{showToast}</Toast.Body>
+        <Toast.Body>{showToast + ", " + toastType}</Toast.Body>
       </Toast>
     </Container>
   );
