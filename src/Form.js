@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import moment from "moment-jalaali";
-import Calendar from "react-calendar";
-import "react-calendar/dist/Calendar.css";
+import DatePicker from "react-multi-date-picker"
+import persian from "react-date-object/calendars/persian"
+import persian_fa from "react-date-object/locales/persian_fa"
+import moment from "moment-jalaali"
 import "./Form.css";
 import { baseUrl, getCookie, setCookie } from "./consts";
 import { Toast } from "react-bootstrap";
@@ -9,7 +10,7 @@ import { Toast } from "react-bootstrap";
 
 const Form = () => {
   const [formData, setFormData] = useState({
-    date: moment().format("jYYYY-jMM-jDD"),
+    date: "",
     time: moment().format("HH:mm"),
     operator_id: getCookie("operator_id") ? getCookie("operator_id") : "",
     shift: getCookie("shift") ? getCookie("shift") : "",
@@ -41,11 +42,12 @@ const Form = () => {
   const [lineOptions, setLineOptions] = useState([]);
   const [defaultIngreds, setDefaultIngreds] = useState({});
   const [ingredients, setIngredients] = useState();
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState(null);
   const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
   const [showToast, setShowToast] = useState(""); // For error toast
   const [confirmedTime, setConfirmedTime] = useState(timeInput);
   const [hasChanged, setHasChanged] = useState(false);
+  const [operatorType, setOperatorType] = useState("میکسر");
 
   // Automatically set date and time on component load
   useEffect(() => {
@@ -57,7 +59,7 @@ const Form = () => {
       const mix = await (await fetch(`${baseUrl}materials`)).json();
       setMixOptions(mix);
       const operators = await (
-        await fetch(`${baseUrl}operator/${isFitting}`)
+        await fetch(`${baseUrl}operator/${operatorType}`)
       ).json();
       setOperatorOptions(operators);
       const lines = await (
@@ -68,13 +70,12 @@ const Form = () => {
 
     fetchOptions();
 
-    moment.loadPersian({ dialect: "persian-modern" });
-
-    const currentDate = moment().format("jYYYY-jMM-jDD"); // Persian date
+    setSelectedDate(new Date()); // Sets the selected date to today's date
+    const currentPersianDate = new Date().toLocaleDateString("fa-IR");
     const currentTime = moment().format("HH:mm"); // 24-hour time
     setFormData((prevData) => ({
       ...prevData,
-      date: currentDate,
+      date: currentPersianDate,
       time: currentTime,
     }));
     setRole(getCookie("role"));
@@ -138,18 +139,12 @@ const Form = () => {
 
   // Handle date change using the calendar
   const handleDateChange = (date) => {
+    const persianDate = date.format(); // Use the new Persian date
     setSelectedDate(date);
-    const formattedDate = moment(date).format("jYYYY-jMM-jDD"); // Convert to Jalali date
     setFormData((prevData) => ({
       ...prevData,
-      date: formattedDate,
+      date: persianDate, // Format as per Persian date
     }));
-
-    document.getElementsByClassName("react-calendar")[0].classList.add("no");
-    document
-      .getElementsByClassName("form__date-display")[0]
-      .getElementsByTagName("p")[0]
-      .classList.remove("no");
   };
 
   const handleTimeInputChange = (event) => {
@@ -369,27 +364,15 @@ const Form = () => {
 
         <div className="form__input-group-special form__date">
           <label htmlFor="date">تاریخ</label>
-          <div className="form__date-display">
-            <Calendar
-              onChange={handleDateChange}
-              value={selectedDate}
-              locale="fa-IR"
-              className="no"
-            />
-            <p
-              onClick={() => {
-                document
-                  .getElementsByClassName("react-calendar")[0]
-                  .classList.remove("no");
-                document
-                  .getElementsByClassName("form__date-display")[0]
-                  .getElementsByTagName("p")[0]
-                  .classList.add("no");
-              }}
-            >
-              {moment(selectedDate).format("jYYYY/jMM/jDD")}
-            </p>
-          </div>
+            <div className="form__date-display">
+              <DatePicker
+                value={selectedDate}
+                onChange={handleDateChange}
+                calendar={persian}
+                locale={persian_fa}
+                calendarPosition="bottom-right"
+              />
+            </div>
         </div>
 
         <div className="form__input-group-special form__time">
