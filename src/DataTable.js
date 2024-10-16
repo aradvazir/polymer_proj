@@ -667,6 +667,24 @@ const DataTable = () => {
                               <option value="viewer">Viewer</option>
                               {/* More options as needed */}
                             </Form.Select>
+                          ) : col === "fitting" ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""} // Ensure it has a fallback
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              {/* Add your options here, for example: */}
+                              <option value=""></option>
+                              <option value="لوله">لوله</option>
+                              <option value="اتصالات">اتصالات</option>
+                              <option value="میکسر">میکسر</option>
+                              {/* More options as needed */}
+                            </Form.Select>
                           ) : TYPES[dtypes[col]] === "boolean" ? (
                             <Form.Check
                               type="checkbox"
@@ -929,7 +947,7 @@ const DataTable = () => {
                           }}
                           className="edit-input"
                         />
-                      ) : table === "users" ? (
+                      ) : table === "users" && key === 'role' ? (
                         // New condition for the "users" table with a select dropdown
                         <Form.Select
                           value={tempItem[key] || ""} // Provide a fallback value
@@ -943,6 +961,21 @@ const DataTable = () => {
                           <option value="admin">Admin</option>
                           <option value="editor">Editor</option>
                           <option value="viewer">Viewer</option>
+                          {/* Add more options as needed */}
+                        </Form.Select>
+                      ): key === "type" ? (
+                        <Form.Select
+                          value={tempItem[key] || ""} // Provide a fallback value
+                          onChange={(e) => {
+                            handleEdit(item.id, key, e.target.value);
+                          }}
+                          className="edit-input"
+                        >
+                          {/* Define options for the users table */}
+                          <option value=""></option>
+                          <option value="لوله">لوله</option>
+                          <option value="اتصالات">اتصالات</option>
+                          <option value="میکسر">میکسر</option>
                           {/* Add more options as needed */}
                         </Form.Select>
                       ) : (
