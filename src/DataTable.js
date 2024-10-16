@@ -128,7 +128,7 @@ const DataTable = () => {
     allproducts: "همه محصولات",
     fittingproduct: "اتصالات",
     machines: "خطوط تولید",
-    materials: "محصولات",
+    materials: "گروه محصولات",
     operators: "اپراتور‌ها",
     pipeproduct: "لوله‌ها",
     rawmaterials: "مواد اولیه",
