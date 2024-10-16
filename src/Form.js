@@ -19,7 +19,7 @@ const Form = () => {
       ? getCookie("amount")
       : "",
     product_id: getCookie("product_id") ? getCookie("product_id") : "",
-    recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "",
+    recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "16",
     recipe: {},
     description: getCookie("description") ? getCookie("description") : "",
     fitting: getCookie("fitting") ? getCookie("fitting") : "True",
@@ -30,12 +30,8 @@ const Form = () => {
   );
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
-  const [role, setRole] = useState(getCookie("role") ? getCookie("role") : "");
   const [token, setToken] = useState(
     getCookie("token") ? getCookie("token") : ""
-  );
-  const [edit_permission, setEditPerm] = useState(
-    role === "admin" || role === "manager" || role === "editor"
   );
   
   const [operatorOptions, setOperatorOptions] = useState([]);
@@ -45,6 +41,7 @@ const Form = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
   const [showToast, setShowToast] = useState(""); // For error toast
+  const [toastType, setToastType] = useState(""); // For error toast
   const [confirmedTime, setConfirmedTime] = useState(timeInput);
   const [hasChanged, setHasChanged] = useState(false);
   const [operatorType, setOperatorType] = useState("میکسر");
@@ -78,20 +75,20 @@ const Form = () => {
       date: currentPersianDate,
       time: currentTime,
     }));
-    setRole(getCookie("role"));
     setToken(getCookie("token"));
-    setEditPerm(role === "admin" || role === "manager" || role === "editor");
+    setOperatorType("میکسر")
     
-  }, [isFitting]);
+  }, [isFitting, operatorType]);
 
   useEffect(() => {
     const start_recipe = async () => {
       const ingred = await renderIngredients(formData.recipe_code);
       setIngredients(ingred);
       setHasChanged(false);
+      setCookie("recipe_code", formData.recipe_code);
     };
     start_recipe();
-  }, []);
+  });
 
   const handleRecipeCodeChange = async (e) => {
     const value = e.target.value;
@@ -206,18 +203,33 @@ const Form = () => {
         "Final Form (has changed): " + JSON.stringify(finalForm, null, 4)
       );
 
-      const resp = await fetch(baseUrl + "mixentry/other/", {
-        method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      if(resp.ok){
-        window.alert("اطلاعات با موفقیت ثبت شد.")
-        window.location.reload();
+      try{
+        const resp = await fetch(baseUrl + "mixentry/other/", {
+          method: "POST",
+          body: JSON.stringify(formData),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if(resp.ok){
+          window.alert("اطلاعات با موفقیت ثبت شد.")
+          window.location.reload();
+        }else if(resp.status === 401){
+          throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
+        }
+      }catch(err){
+        if(err instanceof ReferenceError || err instanceof SyntaxError){
+          setToastType("error");
+          setShowToast(err.message);
+        }else{
+          setToastType("error");
+          setShowToast("سرور دچار مشکل شده است. لطفا مجدد تلاش کنید");
+        }
+        
+        return;
       }
+      
 
       // post to different endpoints
     } else {
@@ -549,13 +561,15 @@ const Form = () => {
         </button>
       </form>
       <Toast
-        onClose={() => setShowToast("")}
+        onClose={() => {setShowToast(""); setToastType("")}}
         show={showToast.length > 0}
         delay={3000}
         autohide
-        style={{ position: "absolute", top: "20px", right: "20px" }}
+        style={{position: "absolute", top: "20px", right: "20px", backgroundColor: toastType === 'error' ? "rgba(153, 17, 34, 0.5)" : 
+          toastType === "success" ? "rgba(17, 240, 89, 0.5)" : 
+          "rgba(255, 255, 255, 0.5)", color: "black" }}
       >
-        <Toast.Body>showToast</Toast.Body>
+        <Toast.Body>{showToast + ", " + toastType}</Toast.Body>
       </Toast>
     </div>
     
