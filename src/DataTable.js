@@ -51,7 +51,12 @@ const DataTable = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const tables = await (await fetch(baseUrl + "tables")).json();
+      const tables = await (await fetch(baseUrl + "tables", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })).json();
       setTables(tables);
       setFilteredData(data ? data : []);
       setOriginalData(data);
@@ -69,7 +74,12 @@ const DataTable = () => {
       return;
     }
     try {
-      cols = await (await fetch(baseUrl + "table/" + table_name)).json();
+      cols = await (await fetch(baseUrl + "table/" + table_name, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })).json();
       console.log(cols);
       setCols(cols);
       const dictionary = cols.reduce((acc, item) => {
@@ -117,7 +127,12 @@ const DataTable = () => {
       "/" +
       is_asc;
     try {
-      const the_data = await (await fetch(url)).json();
+      const the_data = await (await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })).json();
       console.log(the_data);
       setData(the_data);
     } catch (err) {
