@@ -7,20 +7,24 @@ const Menu = () => {
   const navigate = useNavigate(getCookie("role"));
   const [role, setRole] = useState();
   const [users_permission, setUsersPerm] = useState(false);
+  const [mix_permission, setMixPerm] = useState(false);
   useEffect(() => {
     setRole(getCookie("role"));
     setUsersPerm(role === "admin" || role === "manager");
+    setMixPerm(role === "admin" || role === "manager" || role === "editor");
+    
   }, [role]);
   return (
     <div className="menu__wrapper">
       <div className="menu__box">
         {/* <h1 className="menu__title">منو</h1> */}
         <ul className="menu__options">
+          {mix_permission && (
           <li>
             <a href="/#/mixentry" className="menu__option">
               ورود اطلاعات میکس
             </a>
-          </li>
+          </li>)}
           <li>
             <a
               href="/#/datatable"

@@ -25,9 +25,12 @@ const DataTable = () => {
     getCookie("token") ? getCookie("token") : ""
   );
   const [edit_permission, setEditPerm] = useState(
-    role === "admin" || role === "manager"
+    role === "admin" || role === "manager" || role === "editor"
   );
   const [delete_permission, setDeletePerm] = useState(
+    role === "admin" || role === "manager"
+  );
+  const [add_permission, setAddPerm] = useState(
     role === "admin" || role === "manager" || role === "editor"
   );
   const [dtypes, setdtypes] = useState({});
@@ -69,6 +72,7 @@ const DataTable = () => {
     setToken(getCookie("token"));
     setEditPerm(role === "admin" || role === "manager" || role === "editor");
     setDeletePerm(role === "admin" || role === "manager");
+    setAddPerm(role === "admin" || role === "manager" || role === "editor");
   }, [data, role, token]);
   const fetchCols = async (table_name) => {
     let cols = [];
@@ -771,7 +775,7 @@ const DataTable = () => {
 
       <div className="button-container">
         {/* Centered plus button */}
-        {!showForm && (
+        {!showForm && add_permission && (
           <div className="center-button">
             <Button
               className={`custom-button ${
