@@ -277,8 +277,44 @@ const DataTable = () => {
     setShowModal(true); // Show the confirmation modal
   };
 
-  const handleEdit = (id, key, value) => {
-    setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
+  const handleEdit = (id, key, value, image_name="") => {
+    if(key === "image"){
+      console.log(value);
+      console.log(image_name);
+      setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
+    }else{
+      setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
+    }
+    
+  };
+
+  const handleImageUpload = (e, mode, key="image", id="") => {
+    console.log(e.target);
+    const file = e.target.files[0];
+    if(!file.type.toString().startsWith("image/")){
+      setShowToast("لطفا یک عکس انتخاب نمایید");
+      setToastType("error");
+      return;
+    }else{
+      const file_name = e.target.value.split("/")[-1];
+      const reader = new FileReader();
+      if(mode === "edit"){
+        reader.onloadend = () => {
+          const arrayBuffer = reader.result; // This is the bytecode of the file
+          handleEdit(id, key, arrayBuffer, file_name);
+        };
+      }else if(mode === "add"){
+        reader.onloadend = () => {
+          const arrayBuffer = reader.result; // This is the bytecode of the file
+          setNewItem({
+            ...newItem,
+            [key]: arrayBuffer
+          });
+        };
+      }
+      
+      reader.readAsArrayBuffer(file);
+    }
   };
 
   const handleColumnSearch = (column, value) => {
@@ -742,7 +778,7 @@ const DataTable = () => {
                               <option value="viewer">Viewer</option>
                               {/* More options as needed */}
                             </Form.Select>
-                          ) : col === "fitting" ? (
+                          ) : col === "type" ? (
                             <Form.Select
                               name={col}
                               value={newItem[col] || ""} // Ensure it has a fallback
@@ -760,6 +796,17 @@ const DataTable = () => {
                               <option value="میکسر">میکسر</option>
                               {/* More options as needed */}
                             </Form.Select>
+                          ) : col === "image" ? (
+                            <Form.Control
+                              type="image"
+                              accept="image/"
+                              placeholder={col}
+                              name={col}
+                              value={newItem[col] || ""} // Provide a fallback to avoid uncontrolled input
+                              onChange={(e) => {
+                                handleImageUpload(e, "add", col)
+                              }}
+                            />
                           ) : TYPES[dtypes[col]] === "boolean" ? (
                             <Form.Check
                               type="checkbox"
@@ -1056,6 +1103,14 @@ const DataTable = () => {
                           <option value="میکسر">میکسر</option>
                           {/* Add more options as needed */}
                         </Form.Select>
+                      ) : key === "image" ? (
+                        <Form.Control
+                          type="file"
+                          accept="image/*"
+                          value={tempItem[key]} // Use value from the tempItem state
+                          onChange={(e) => {handleImageUpload(e, "edit", key, item.id)}}
+                          className="edit-input"
+                        />
                       ) : (
                         // Default case for other field types, using a text input
                         <Form.Control
