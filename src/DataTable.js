@@ -191,7 +191,7 @@ const DataTable = () => {
             },
           });
           console.log(add_resp);
-          if(add_resp.status === 401){
+          if(add_resp.status === 403){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
           }else if(add_resp.status === 422){
             throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
@@ -228,7 +228,7 @@ const DataTable = () => {
 
           console.log(signup_resp);
           console.log(await signup_resp.json());
-          if(signup_resp.status === 401){
+          if(signup_resp.status === 403){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
           }else if(signup_resp.status === 422){
             throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
@@ -608,7 +608,7 @@ const DataTable = () => {
             }
           );
           console.log(edit_resp);
-          if(edit_resp.status === 401){
+          if(edit_resp.status === 403){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
           }else if(edit_resp.status === 422){
             throw SyntaxError("لطفا فیلدها را به درستی پر کنید")
