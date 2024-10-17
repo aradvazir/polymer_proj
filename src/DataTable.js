@@ -640,8 +640,25 @@ const DataTable = () => {
     setEditMode(null); // Exit edit mode without saving
   };
 
-  const handleExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(data); // Convert data to worksheet
+  const handleExcel = async() => {
+    let the_data;
+    if(table === "recipes"){
+      try{
+        const url = baseUrl + "table/recipes";
+        the_data = await (await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })).json();
+        
+      }catch(err){
+        console.log(err);
+      }
+    }else {
+      the_data = data;
+    }
+    const worksheet = XLSX.utils.json_to_sheet(the_data); // Convert data to worksheet
     const workbook = XLSX.utils.book_new(); // Create a new workbook
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data"); // Append the worksheet
     XLSX.writeFile(workbook, "data.xlsx"); // Save the file
@@ -734,8 +751,8 @@ const DataTable = () => {
           <div className="right-buttons">
             <Button
               className="Excel-button"
-              onClick={() => {
-                handleExcel();
+              onClick={async() => {
+                await handleExcel();
               }}
             >
               <FaFileExcel size={20} />
