@@ -674,13 +674,15 @@ const DataTable = () => {
     let the_data;
     if(table === "recipes"){
       try{
-        const url = baseUrl + "table/recipes";
+        const url = baseUrl + "recipes";
         the_data = await (await fetch(url, {
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
         })).json();
+        console.log("Excel Recipess: ")
+        console.log(the_data)
         
       }catch(err){
         console.log(err);

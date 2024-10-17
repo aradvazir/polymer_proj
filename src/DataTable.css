@@ -21,6 +21,7 @@
 
 .datatable {
   width: 90%;
+  max-width: 90%;
   margin: 5vh auto;
   background: var(--background-gradient);
   border-radius: 20px;
