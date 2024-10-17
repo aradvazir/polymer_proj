@@ -35,3 +35,18 @@ export const TYPES = {
   "time without time zone": "string",
   date: "string",
 };
+
+function arrayBufferToBase64(buffer) {
+  const byteArray = new Uint8Array(buffer);
+  let binaryString = '';
+  for (let i = 0; i < byteArray.byteLength; i++) {
+      binaryString += String.fromCharCode(byteArray[i]);
+  }
+  return btoa(binaryString);
+}
+
+export function convertArrayBufferToBase64Text(arrayBuffer) {
+  const base64String = arrayBufferToBase64(arrayBuffer);
+  const dataUrl = `data:image/jpeg;base64,${base64String}`;
+  return dataUrl;
+}

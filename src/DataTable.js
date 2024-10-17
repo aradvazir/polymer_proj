@@ -8,7 +8,7 @@ import "jspdf-autotable";
 import "./DataTable.css";
 import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import nazaninFont from "./fonts/tnrNaz.ttf";
-import { baseUrl, getCookie, setCookie, TYPES } from "./consts";
+import { baseUrl, getCookie, setCookie, TYPES, convertArrayBufferToBase64Text } from "./consts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -83,12 +83,6 @@ const DataTable = () => {
       })).json();
       console.log(cols);
       setCols(cols);
-      const dictionary = cols.reduce((acc, item) => {
-        const key = Object.keys(item).pop();
-        acc[key] = key === "image" ? {} : "";
-        return acc;
-      }, {});
-      setNewItem(dictionary);
       const the_dtypes = {};
       const sortings = {};
       cols.forEach((item) => {
@@ -100,6 +94,19 @@ const DataTable = () => {
       console.log(sortings);
       setdtypes(the_dtypes);
       setColumnSorts(sortings);
+      const dictionary = cols.reduce((acc, item) => {
+        const key = Object.keys(item).pop();
+        if(key === "image"){
+          acc[key] = {};
+        }else if(TYPES[the_dtypes[key]] === "number"){
+          acc[key] = 0;
+        }else{
+          acc[key] = "";
+        }
+        return acc;
+      }, {});
+      setNewItem(dictionary);
+      
     } catch (err) {
       setCols([]);
     }
@@ -239,7 +246,13 @@ const DataTable = () => {
       setData([...data, { ...newItem }]);
       const dictionary = columns.reduce((acc, item) => {
         const key = Object.keys(item).pop();
-        acc[key] = key === "image" ? {} : "";
+        if(key === "image"){
+          acc[key] = {};
+        }else if(TYPES[dtypes[key]] === "number"){
+          acc[key] = 0;
+        }else{
+          acc[key] = "";
+        }
         return acc;
       }, {});
       setNewItem(dictionary);
@@ -283,6 +296,9 @@ const DataTable = () => {
       console.log(image_name);
       setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
     }else{
+      if(TYPES[dtypes[key]] === "number"){
+        value = parseFloat(value);
+      }
       setTempItem({ ...tempItem, [key]: value }); // Set temp item for editing
     }
     
@@ -302,20 +318,23 @@ const DataTable = () => {
       if(mode === "edit"){
         reader.onloadend = () => {
           const arrayBuffer = reader.result; // This is the bytecode of the file
+          const imgdata = convertArrayBufferToBase64Text(arrayBuffer);
           handleEdit(id, key, {
             "name": file_name,
-            "byte": arrayBuffer,
+            "byte": imgdata,
             "type": file_type
           }, file_name);
         };
       }else if(mode === "add"){
         reader.onloadend = () => {
           const arrayBuffer = reader.result; // This is the bytecode of the file
+          const imgdata = convertArrayBufferToBase64Text(arrayBuffer);
+          console.log(imgdata);
           setNewItem({
             ...newItem,
             "image": {
               "name": file_name,
-              "byte": arrayBuffer,
+              "byte": imgdata,
               "type": file_type
             }
           });
@@ -511,13 +530,7 @@ const DataTable = () => {
 
   const checkType = (val, type) => {
     if (type === "number") {
-      let checkthat = parseInt(val);
-
-      if (checkthat === val) {
-        return true;
-      } else {
-        return false;
-      }
+      return /^-?\d+(\.\d+)?$/.test(val.trim());
     } else if (type === "boolean") {
       if ("false".startsWith(val) || "true".startsWith(val)) {
         return true;
@@ -562,7 +575,6 @@ const DataTable = () => {
         }
       });
       console.log(edit_json);
-      return;
       if (baseUrl !== "/") {
         try{
           const edit_resp = await fetch(
@@ -830,17 +842,21 @@ const DataTable = () => {
                             />
                           ) : (
                             <Form.Control
-                              type="text"
+                              type= "text"
                               placeholder={col}
                               name={col}
-                              value={newItem[col] || ""} // Provide a fallback to avoid uncontrolled input
+                              value={newItem[col]} // Provide a fallback to avoid uncontrolled input
                               onChange={(e) => {
                                 if (
                                   checkType(e.target.value, TYPES[dtypes[col]])
                                 ) {
+                                  let val = e.target.value
+                                  if(TYPES[dtypes[e.target.name]] === "number"){
+                                    val = parseFloat(val);
+                                  }
                                   setNewItem({
                                     ...newItem,
-                                    [e.target.name]: e.target.value,
+                                    [e.target.name]: val,
                                   });
                                 } else {
                                   window.alert(
@@ -859,9 +875,10 @@ const DataTable = () => {
                             name="password"
                             value={newItem["password"]} // Provide a fallback to avoid uncontrolled input
                             onChange={(e) => {
+                              let val = e.target.value
                               setNewItem({
                                 ...newItem,
-                                [e.target.name]: e.target.value,
+                                [e.target.name]: val,
                               });
                             }}
                           />
@@ -1051,8 +1068,8 @@ const DataTable = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredData.map((item) => (
-            <tr>
+          {filteredData.filter(item => item.id).map((item) => (
+            <tr name={item.id}>
               {Object.keys(item)
                 .filter(
                   (key) =>
@@ -1202,13 +1219,13 @@ const DataTable = () => {
       <Toast
         onClose={() => {setShowToast(""); setToastType("")}}
         show={showToast.length > 0}
-        delay={3000}
+        delay={7000}
         autohide
         style={{position: "absolute", top: "20px", right: "20px", backgroundColor: toastType === 'error' ? "rgba(153, 17, 34, 0.5)" : 
           toastType === "success" ? "rgba(17, 240, 89, 0.5)" : 
           "rgba(255, 255, 255, 0.5)", color: "black" }}
       >
-        <Toast.Body>{showToast + ", " + toastType}</Toast.Body>
+        <Toast.Body>{showToast}</Toast.Body>
       </Toast>
     </Container>
   );
