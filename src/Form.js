@@ -4,7 +4,7 @@ import persian from "react-date-object/calendars/persian"
 import persian_fa from "react-date-object/locales/persian_fa"
 import moment from "moment-jalaali"
 import "./Form.css";
-import { baseUrl, getCookie, setCookie, sleep } from "./consts";
+import { baseUrl, getCookie, setCookie, sleep, convertFarsiDigitsToEnglish } from "./consts";
 import { Toast } from "react-bootstrap";
 
 
@@ -17,16 +17,16 @@ const Form = () => {
     line_id: getCookie("line_id") ? getCookie("line_id") : "",
     amount: getCookie("amount")
       ? getCookie("amount")
-      : "",
+      : 0,
     product_id: getCookie("product_id") ? getCookie("product_id") : "",
     recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "16",
     recipe: {},
     description: getCookie("description") ? getCookie("description") : "",
-    fitting: getCookie("fitting") ? getCookie("fitting") : "True",
+    fitting: getCookie("fitting") ? getCookie("fitting") : true,
   });
 
   const [isFitting, setFitting] = useState(
-    getCookie("fitting") ? getCookie("fitting") : "True"
+    getCookie("fitting") ? getCookie("fitting") : true
   );
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
@@ -128,7 +128,6 @@ const Form = () => {
   };
 
   const handleChange = async (e) => {
-    console.log("fuckkk")
     if (e.target.name.startsWith("recipe_")) {
       await handleRecipeChange(e);
     } else {
@@ -196,6 +195,7 @@ const Form = () => {
           finalForm[key] = formData[key];
         } else if (key === "date") {
           finalForm[key] = formData[key] || selectedDate;
+          finalForm[key] = convertFarsiDigitsToEnglish(finalForm[key]);
         } else if (key === "time") {
           finalForm[key] = formData[key] || timeInput;
         } else {
@@ -214,7 +214,7 @@ const Form = () => {
       try{
         const resp = await fetch(baseUrl + "mixentry/other/", {
           method: "POST",
-          body: JSON.stringify(formData),
+          body: JSON.stringify(finalForm),
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -254,6 +254,7 @@ const Form = () => {
           finalForm[key] = formData[key];
         } else if (key === "date") {
           finalForm[key] = formData[key] || selectedDate;
+          finalForm[key] = convertFarsiDigitsToEnglish(finalForm[key]);
         } else if (key === "time") {
           finalForm[key] = formData[key] || timeInput;
         } else {
@@ -267,7 +268,7 @@ const Form = () => {
       try{
         const resp = await fetch(baseUrl + "mixentry/", {
           method: "POST",
-          body: JSON.stringify(formData),
+          body: JSON.stringify(finalForm),
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -363,8 +364,8 @@ const Form = () => {
         {JSON.stringify(defaultIngreds)}
       </div>
       <form onSubmit={async (e) => {
-        console.log("bitch")
-        await handleSubmit(e)
+        console.log("bitch");
+        await handleSubmit(e);
       }} 
         className="form__form">
         <div
@@ -460,17 +461,17 @@ const Form = () => {
           <div className="form__toggle-buttons">
             <div
               className={`form__toggle-button ${
-                isFitting === "True" ? "active" : ""
+                isFitting === true ? "active" : ""
               }`}
-              onClick={() => handleProductToggle("True")}
+              onClick={() => handleProductToggle(true)}
             >
               اتصالات
             </div>
             <div
               className={`form__toggle-button ${
-                isFitting === "False" ? "active" : ""
+                isFitting === false ? "active" : ""
               }`}
-              onClick={() => handleProductToggle("False")}
+              onClick={() => handleProductToggle(false)}
             >
               لوله
             </div>
@@ -591,7 +592,9 @@ const Form = () => {
           ></textarea>
         </div>
 
-        <button type="submit" className="form__submit-btn">
+        <button type="submit" className="form__submit-btn" onClick={() => {
+          console.log("Submit");
+        }}>
           ثبت
         </button>
       </form>
@@ -604,7 +607,7 @@ const Form = () => {
           toastType === "success" ? "rgba(17, 240, 89, 0.5)" : 
           "rgba(255, 255, 255, 0.5)", color: "black" }}
       >
-        <Toast.Body>{showToast + ", " + toastType}</Toast.Body>
+        <Toast.Body>{showToast}</Toast.Body>
       </Toast>
     </div>
     
