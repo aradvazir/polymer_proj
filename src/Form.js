@@ -79,7 +79,6 @@ const Form = () => {
           date: currentPersianDate,
           time: currentTime,
       };
-      console.log("Initial formData on load:", updatedFormData); // Log initial formData
       return updatedFormData;
     });
     setToken(getCookie("token"));
@@ -148,7 +147,6 @@ const Form = () => {
             ...prevData,
             date: persianDate, // Format as per Persian date
         };
-        console.log("Updated formData with new date:", updatedFormData);
         return updatedFormData;
     });
   };
