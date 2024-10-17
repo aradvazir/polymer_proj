@@ -50,3 +50,7 @@ export function convertArrayBufferToBase64Text(arrayBuffer) {
   const dataUrl = `data:image/jpeg;base64,${base64String}`;
   return dataUrl;
 }
+
+export function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

@@ -4,7 +4,7 @@ import persian from "react-date-object/calendars/persian"
 import persian_fa from "react-date-object/locales/persian_fa"
 import moment from "moment-jalaali"
 import "./Form.css";
-import { baseUrl, getCookie, setCookie } from "./consts";
+import { baseUrl, getCookie, setCookie, sleep } from "./consts";
 import { Toast } from "react-bootstrap";
 
 
@@ -84,7 +84,7 @@ const Form = () => {
     setToken(getCookie("token"));
     setOperatorType("میکسر")
     
-  }, [isFitting, operatorType]);
+  }, []);
 
   useEffect(() => {
     const start_recipe = async () => {
@@ -93,7 +93,7 @@ const Form = () => {
       setHasChanged(false);
     };
     start_recipe();
-  });
+  }, []);
 
   const handleRecipeCodeChange = async (e) => {
     const value = e.target.value;
@@ -128,6 +128,7 @@ const Form = () => {
   };
 
   const handleChange = async (e) => {
+    console.log("fuckkk")
     if (e.target.name.startsWith("recipe_")) {
       await handleRecipeChange(e);
     } else {
@@ -220,9 +221,11 @@ const Form = () => {
           },
         });
         if(resp.ok){
-          window.alert("اطلاعات با موفقیت ثبت شد.")
+          setToastType("success");
+          setShowToast("با موفقیت ثبت شد");
+          await sleep(5000);
           window.location.reload();
-        }else if(resp.status === 401){
+        }else if(resp.status === 403){
           throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
         }
       }catch(err){
@@ -261,14 +264,34 @@ const Form = () => {
         "Final Form (not changed): " + JSON.stringify(finalForm, null, 4)
       );
 
-      await fetch(baseUrl + "mixentry", {
-        method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      try{
+        const resp = await fetch(baseUrl + "mixentry/", {
+          method: "POST",
+          body: JSON.stringify(formData),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if(resp.ok){
+          setToastType("success");
+          setShowToast("با موفقیت ثبت شد");
+          await sleep(5000);
+          window.location.reload();
+        }else if(resp.status === 403){
+          throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
+        }
+      }catch(err){
+        if(err instanceof ReferenceError || err instanceof SyntaxError){
+          setToastType("error");
+          setShowToast(err.message);
+        }else{
+          setToastType("error");
+          setShowToast("سرور دچار مشکل شده است. لطفا مجدد تلاش کنید");
+        }
+        
+        return;
+      }
     }
   };
 
@@ -339,7 +362,11 @@ const Form = () => {
       <div style={{ visibility: "hidden" }}>
         {JSON.stringify(defaultIngreds)}
       </div>
-      <form onSubmit={handleSubmit} className="form__form">
+      <form onSubmit={async (e) => {
+        console.log("bitch")
+        await handleSubmit(e)
+      }} 
+        className="form__form">
         <div
           className="redirect-container"
           style={{
