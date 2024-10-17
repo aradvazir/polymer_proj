@@ -85,7 +85,7 @@ const DataTable = () => {
       setCols(cols);
       const dictionary = cols.reduce((acc, item) => {
         const key = Object.keys(item).pop();
-        acc[key] = "";
+        acc[key] = key === "image" ? {} : "";
         return acc;
       }, {});
       setNewItem(dictionary);
@@ -239,7 +239,7 @@ const DataTable = () => {
       setData([...data, { ...newItem }]);
       const dictionary = columns.reduce((acc, item) => {
         const key = Object.keys(item).pop();
-        acc[key] = "";
+        acc[key] = key === "image" ? {} : "";
         return acc;
       }, {});
       setNewItem(dictionary);
@@ -291,24 +291,33 @@ const DataTable = () => {
   const handleImageUpload = (e, mode, key="image", id="") => {
     console.log(e.target);
     const file = e.target.files[0];
-    if(!file.type.toString().startsWith("image/")){
+    const file_type = file.type.toString()
+    if(!file_type.startsWith("image/")){
       setShowToast("لطفا یک عکس انتخاب نمایید");
       setToastType("error");
       return;
     }else{
-      const file_name = e.target.value.split("/")[-1];
+      const file_name = file["name"];
       const reader = new FileReader();
       if(mode === "edit"){
         reader.onloadend = () => {
           const arrayBuffer = reader.result; // This is the bytecode of the file
-          handleEdit(id, key, arrayBuffer, file_name);
+          handleEdit(id, key, {
+            "name": file_name,
+            "byte": arrayBuffer,
+            "type": file_type
+          }, file_name);
         };
       }else if(mode === "add"){
         reader.onloadend = () => {
           const arrayBuffer = reader.result; // This is the bytecode of the file
           setNewItem({
             ...newItem,
-            [key]: arrayBuffer
+            "image": {
+              "name": file_name,
+              "byte": arrayBuffer,
+              "type": file_type
+            }
           });
         };
       }
@@ -553,6 +562,7 @@ const DataTable = () => {
         }
       });
       console.log(edit_json);
+      return;
       if (baseUrl !== "/") {
         try{
           const edit_resp = await fetch(
@@ -798,11 +808,10 @@ const DataTable = () => {
                             </Form.Select>
                           ) : col === "image" ? (
                             <Form.Control
-                              type="image"
-                              accept="image/"
-                              placeholder={col}
+                              type="file"
+                              accept="image/*"
                               name={col}
-                              value={newItem[col] || ""} // Provide a fallback to avoid uncontrolled input
+                              // value={newItem[col]["name"] || ""} // Provide a fallback to avoid uncontrolled input
                               onChange={(e) => {
                                 handleImageUpload(e, "add", col)
                               }}
@@ -1107,7 +1116,7 @@ const DataTable = () => {
                         <Form.Control
                           type="file"
                           accept="image/*"
-                          value={tempItem[key]} // Use value from the tempItem state
+                          // value={tempItem[key]["name"] || ""} // Use value from the tempItem state
                           onChange={(e) => {handleImageUpload(e, "edit", key, item.id)}}
                           className="edit-input"
                         />
