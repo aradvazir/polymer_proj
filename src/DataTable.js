@@ -346,25 +346,26 @@ const DataTable = () => {
   };
 
   const handleColumnSearch = (column, value) => {
+    // Always get the latest value of searchIsExact
+    const currentExact = searchIsExact[column];
+
     setColumnFilters((prevFilters) => {
-      const updatedFilters = { ...prevFilters, [column]: value };
+        const updatedFilters = { ...prevFilters, [column]: value };
 
-      // Apply filtering for all active filters across all columns
-      const filtered = data.filter((item) => {
-        return Object.keys(updatedFilters).every((key) => {
-          const filterValue = updatedFilters[key].toLowerCase();
-          if(searchIsExact[column]){
-            return item[key] != null && item[key].toString().toLowerCase() === filterValue;
-          }else{
-            return item[key] != null && item[key].toString().toLowerCase().includes(filterValue);
-          }
-          
+        // Apply filtering for all active filters across all columns
+        const filtered = data.filter((item) => {
+            return Object.keys(updatedFilters).every((key) => {
+                const filterValue = updatedFilters[key].toLowerCase();
+                if (currentExact) {
+                    return item[key] != null && item[key].toString().toLowerCase() === filterValue;
+                } else {
+                    return item[key] != null && item[key].toString().toLowerCase().includes(filterValue);
+                }
+            });
         });
-      });
 
-      // Update filteredData and column filters
-      setFilteredData(filtered);
-      return updatedFilters;
+        setFilteredData(filtered);
+        return updatedFilters;
     });
   };
 
@@ -443,9 +444,21 @@ const DataTable = () => {
       setColumnFilters((prev) => ({ ...prev, [column]: "" }));
     }
   };
+
   const toggleSearchIsExact = (column) => {
-    setSearchIsExact((prev) => ({ ...prev, [column]: !searchIsExact[column] }));
-    
+    // Toggle the exact match state
+    const newExact = !searchIsExact[column];
+
+    // Update the searchIsExact state
+    setSearchIsExact((prev) => {
+        const updatedState = { ...prev, [column]: newExact };
+        
+        // Call handleColumnSearch with the current filter value after the state has been updated
+        const currentValue = columnFilters[column] || ""; // Get the current filter value
+        handleColumnSearch(column, currentValue); // Reapply the current filter
+
+        return updatedState; // Return the updated state
+    });
   };
 
   const resetFilters = () => {
@@ -1004,64 +1017,71 @@ const DataTable = () => {
             {delete_permission && <th>حذف</th>}
           </tr>
           <tr>
-            {columns
-              .filter(
-                (item) =>
-                  (!("id" in item) ||
-                    [
-                      "materials",
-                      "recipes",
-                      "rawmaterials",
-                      "operators",
-                      "lines",
-                    ].includes(table)) &&
-                  !("hashed_pass" in item)
-              )
-              .map((dict) => {
-                const col = Object.keys(dict).pop();
-                return (
-                  <th
-                    key={`input-${col}`}
-                    onClick={() => toggleSearchInput(col)}
-                  >
-                    {searchInputVisible[col] ? (
-                      // Search input box is visible
-                      <div className="search-input-container">
-                        <input
-                          type="text"
-                          style={{
-                            textAlign: "center", // Horizontally center the text
-                            height: "30px", // Fixed height
-                            lineHeight: "30px", // Set line-height equal to height for vertical centering
-                            width: "100%", // Make input box fill the column width
-                            fontSize: "14px", // Adjust the font size as needed
-                            padding: "1px", // Remove default padding
-                            borderRadius: "10px",
-                            boxSizing: "border-box", // Ensure padding and border are included in the element's width and height
-                          }}
-                          placeholder={`Search ${col}`}
-                          value={columnFilters[col] || ""}
-                          onChange={(e) =>
-                            handleColumnSearch(col, e.target.value)
-                          }
-                          autoFocus
-                        />
-                      </div>
-                      
-                    ) : (
-                      // Show magnifier icon when search input is not visible
-                      <FontAwesomeIcon
-                        icon={faSearch}
+          {columns
+            .filter(
+              (item) =>
+                (!("id" in item) ||
+                  [
+                    "materials",
+                    "recipes",
+                    "rawmaterials",
+                    "operators",
+                    "lines",
+                  ].includes(table)) &&
+                !("hashed_pass" in item)
+            )
+            .map((dict) => {
+              const col = Object.keys(dict).pop();
+              return (
+                <th key={`input-${col}`} onClick={() => toggleSearchInput(col)}>
+                  {searchInputVisible[col] ? (
+                    <div className="search-input-container">
+                      <input
+                        type="text"
                         style={{
-                          cursor: "pointer",
+                          textAlign: "center",
+                          height: "30px",
+                          lineHeight: "30px",
+                          width: "80%",
                           fontSize: "14px",
-                          color: "#999",
+                          padding: "1px",
+                          borderRadius: "10px",
+                          boxSizing: "border-box",
                         }}
+                        placeholder={`Search ${col}`}
+                        value={columnFilters[col] || ""}
+                        onChange={(e) => handleColumnSearch(col, e.target.value)}
+                        autoFocus
                       />
-                    )}
-                  </th>
-                );
-              })}
+                      <button
+                        onClick={() => toggleSearchIsExact(col)} // Toggle the search mode
+                        style={{
+                          marginLeft: "5px",
+                          cursor: "pointer",
+                          backgroundColor: "lightgray",
+                          border: "none",
+                          borderRadius: "5px",
+                          padding: "5px",
+                          fontSize: "12px",
+                        }}
+                      >
+                        {searchIsExact[col] ? "Exact" : "Partial"}
+                      </button>
+                    </div>
+                  ) : (
+                    <FontAwesomeIcon
+                      icon={faSearch}
+                      style={{
+                        cursor: "pointer",
+                        fontSize: "14px",
+                        color: "#999",
+                      }}
+                    />
+                  )}
+                </th>
+              );
+            })}
+
 
             {edit_permission && <th></th>}
             {delete_permission && <th></th>}
