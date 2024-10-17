@@ -12,8 +12,10 @@ import { baseUrl, getCookie, setCookie, TYPES, convertArrayBufferToBase64Text } 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
-  faArrowUp,
-  faArrowDown,
+  faChevronUp ,
+  faChevronDown ,
+  faEquals,
+  faFilter,
 } from "@fortawesome/free-solid-svg-icons";
 
 const DataTable = () => {
@@ -990,7 +992,7 @@ const DataTable = () => {
                       {/* Show the sorting icon based on the current sort mode */}
                       {columnSorts[col] === "asc" && (
                         <FontAwesomeIcon
-                          icon={faArrowUp}
+                          icon={faChevronUp }
                           style={{
                             marginRight: "6px",
                             fontSize: "14px",
@@ -1000,7 +1002,7 @@ const DataTable = () => {
                       )}
                       {columnSorts[col] === "des" && (
                         <FontAwesomeIcon
-                          icon={faArrowDown}
+                          icon={faChevronDown }
                           style={{
                             marginRight: "6px",
                             fontSize: "14px",
@@ -1035,7 +1037,7 @@ const DataTable = () => {
               return (
                 <th key={`input-${col}`} onClick={() => toggleSearchInput(col)}>
                   {searchInputVisible[col] ? (
-                    <div className="search-input-container">
+                    <div className="search-input-container" style={{ display: 'flex', alignItems: 'center' }}>
                       <input
                         type="text"
                         style={{
@@ -1047,26 +1049,32 @@ const DataTable = () => {
                           padding: "1px",
                           borderRadius: "10px",
                           boxSizing: "border-box",
+                          marginRight: "5px", // Space between input and button
                         }}
                         placeholder={`Search ${col}`}
                         value={columnFilters[col] || ""}
                         onChange={(e) => handleColumnSearch(col, e.target.value)}
                         autoFocus
                       />
-                      <button
+                      <div
                         onClick={() => toggleSearchIsExact(col)} // Toggle the search mode
                         style={{
-                          marginLeft: "5px",
                           cursor: "pointer",
                           backgroundColor: "lightgray",
                           border: "none",
                           borderRadius: "5px",
                           padding: "5px",
-                          fontSize: "12px",
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
                         }}
                       >
-                        {searchIsExact[col] ? "Exact" : "Partial"}
-                      </button>
+                        {searchIsExact[col] ? (
+                          <FontAwesomeIcon icon={faEquals} title="Exact Match" style={{ fontSize: '20px', color: '#999' }} />
+                        ) : (
+                          <FontAwesomeIcon icon={faFilter} title="Partial Match" style={{ fontSize: '20px', color: '#999' }} />
+                        )}
+                      </div>
                     </div>
                   ) : (
                     <FontAwesomeIcon
