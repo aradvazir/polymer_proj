@@ -46,6 +46,8 @@ const Form = () => {
   const [hasChanged, setHasChanged] = useState(false);
   const [operatorType, setOperatorType] = useState("میکسر");
 
+  const weekDays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+
   // Automatically set date and time on component load
   useEffect(() => {
     const fetchOptions = async () => {
@@ -67,15 +69,19 @@ const Form = () => {
 
     fetchOptions();
 
-    setSelectedDate(new Date()); // Sets the selected date to today's date
     const currentPersianDate = new Date().toLocaleDateString("fa-IR");
+    setSelectedDate(currentPersianDate);
 
     const currentTime = moment().format("HH:mm"); // 24-hour time
-    setFormData((prevData) => ({
-      ...prevData,
-      date: currentPersianDate,
-      time: currentTime,
-    }));
+    setFormData((prevData) => {
+      const updatedFormData = {
+          ...prevData,
+          date: currentPersianDate,
+          time: currentTime,
+      };
+      console.log("Initial formData on load:", updatedFormData); // Log initial formData
+      return updatedFormData;
+    });
     setToken(getCookie("token"));
     setOperatorType("میکسر")
     
@@ -137,10 +143,14 @@ const Form = () => {
   const handleDateChange = (date) => {
     const persianDate = date.format(); // Use the new Persian date
     setSelectedDate(date);
-    setFormData((prevData) => ({
-      ...prevData,
-      date: persianDate, // Format as per Persian date
-    }));
+    setFormData((prevData) => {
+        const updatedFormData = {
+            ...prevData,
+            date: persianDate, // Format as per Persian date
+        };
+        console.log("Updated formData with new date:", updatedFormData);
+        return updatedFormData;
+    });
   };
 
   const handleTimeInputChange = (event) => {
@@ -377,6 +387,7 @@ const Form = () => {
           <label htmlFor="date">تاریخ</label>
             <div className="form__date-display">
               <DatePicker
+                weekDays={weekDays}
                 value={selectedDate}
                 onChange={handleDateChange}
                 calendar={persian}
