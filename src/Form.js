@@ -39,9 +39,6 @@ const Form = () => {
   const [defaultIngreds, setDefaultIngreds] = useState({});
   const [ingredients, setIngredients] = useState();
   const [selectedDate, setSelectedDate] = useState(null);
-  const [isDateInputVisible, setDateInputVisible] = useState(false);
-  // const currentDate = moment().format("jYYYY/jMM/jDD");
-  const [confirmedDate, setConfirmedDate] = useState(false);
   const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
   const [showToast, setShowToast] = useState(""); // For error toast
   const [toastType, setToastType] = useState(""); // For error toast
@@ -70,21 +67,13 @@ const Form = () => {
 
     fetchOptions();
 
-    const initialConfirmedDate = localStorage.getItem('confirmedDate'); // Get saved date from local storage
-    if (initialConfirmedDate) {
-        setConfirmedDate(initialConfirmedDate);
-        // Convert the stored Persian date back to a JS Date object
-        const jsDate = moment(initialConfirmedDate, "jYYYY/jMM/jDD").toDate();
-        setSelectedDate(jsDate);
-    } else {
-        const today = moment().format("jYYYY/jMM/jDD");
-        setConfirmedDate(today);
-        setSelectedDate(moment().toDate()); // Today's date
-    }
+    setSelectedDate(new Date()); // Sets the selected date to today's date
+    const currentPersianDate = new Date().toLocaleDateString("fa-IR");
 
     const currentTime = moment().format("HH:mm"); // 24-hour time
     setFormData((prevData) => ({
       ...prevData,
+      date: currentPersianDate,
       time: currentTime,
     }));
     setToken(getCookie("token"));
@@ -145,32 +134,13 @@ const Form = () => {
     }
   };
 
-  // Handle date change using the calendar
   const handleDateChange = (date) => {
-    // When a new date is selected, update the selected and confirmed date states
-    const persianDate = moment(date).format("jYYYY/jMM/jDD");
+    const persianDate = date.format(); // Use the new Persian date
     setSelectedDate(date);
-    setConfirmedDate(persianDate);
-    console.log("Selected date:", persianDate); // Debug log
-  };
-
-  const saveDate = () => {
-    if (confirmedDate) {
-      console.log("Saving date:", confirmedDate); // Debug log
-      localStorage.setItem('confirmedDate', confirmedDate); // Save confirmed date to local storage
-    } else {
-      console.log("No date to save."); // Debug log
-    }
-    setDateInputVisible(false); // Hide the date input
-  };
-  
-
-  const cancelDateInput = () => {
-    setDateInputVisible(false); // Just hide the input without saving
-  };
-
-  const openDateInput = () => {
-    setDateInputVisible(true); // Show the input
+    setFormData((prevData) => ({
+      ...prevData,
+      date: persianDate, // Format as per Persian date
+    }));
   };
 
   const handleTimeInputChange = (event) => {
@@ -406,39 +376,14 @@ const Form = () => {
         <div className="form__input-group-special form__date">
           <label htmlFor="date">تاریخ</label>
             <div className="form__date-display">
-            {isDateInputVisible && (
-                <div id="date-input">
-                    <DatePicker
-                        selected={selectedDate}
-                        onChange={handleDateChange}
-                        calendar={persian}
-                        locale={persian_fa}
-                        calendarPosition="bottom-right"
-                    />
-                    <button
-                        type="button"
-                        className="form__action-button form__save-button"
-                        onClick={saveDate}
-                    >
-                        ذخیره
-                    </button>
-                    <button
-                        type="button"
-                        className="form__action-button form__cancel-button"
-                        onClick={cancelDateInput}
-                    >
-                        لغو
-                    </button>
-                </div>
-            )}
-            {!isDateInputVisible && (
-              <div id="date-text" onClick={openDateInput}>
-                <p>
-                  {confirmedDate}
-                </p>
-              </div>
-            )}
-          </div>
+              <DatePicker
+                value={selectedDate}
+                onChange={handleDateChange}
+                calendar={persian}
+                locale={persian_fa}
+                calendarPosition="bottom-right"
+              />
+            </div>
         </div>
 
         <div className="form__input-group-special form__time">
