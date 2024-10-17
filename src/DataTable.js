@@ -60,7 +60,7 @@ const DataTable = () => {
       })).json();
       setTables(tables);
       setFilteredData(data ? data : []);
-      setOriginalData(data);
+      setOriginalData(data ? data: []);
     };
     fetchData();
     setRole(getCookie("role"));
@@ -1174,9 +1174,13 @@ const DataTable = () => {
                         />
                       )
                     ) : (
-                      <span>
-                        {item[key] != null ? item[key].toString() : ""}
-                      </span>
+                        key !== "image" ?
+                        (<span>
+                          {item[key] != null ? item[key].toString() : ""}
+                        </span>) 
+                        : item[key] != null ?
+                        (<img src={baseUrl + "static/" + item[key]} alt={item[key]} />)
+                        : ""
                     )}
                   </td>
                 ))}

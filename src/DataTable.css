@@ -59,6 +59,11 @@
   vertical-align: middle;
 }
 
+td img {
+  max-height: 50px;
+  border-radius: 10px;
+}
+
 .form-control {
   font-size: inherit;
   text-align: center; /* Center text horizontally inside the input */
