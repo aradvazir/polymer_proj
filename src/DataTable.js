@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import "bootstrap/dist/css/bootstrap.min.css"; // For Bootstrap styles
 import { Table, Button, Form, Container, Modal, Toast } from "react-bootstrap";
 import { AiOutlinePlus } from "react-icons/ai";
@@ -54,8 +54,24 @@ const DataTable = () => {
   const [searchIsExact, setSearchIsExact] = useState({});
   const [columnSorts, setColumnSorts] = useState({});
   const [originalData, setOriginalData] = useState(data);
+  const [loading, setLoading] = useState(false);
+
+  const imageRef = useRef(null); // Create a ref for the image
+
+  const handleClickOutside = (event) => {
+      // Check if the clicked target is not the image
+      if (imageRef.current && !imageRef.current.contains(event.target)) {
+          // Perform your action here
+          console.log("Clicked outside the image!");
+          alert("You clicked outside the image!");
+      }
+  };
+  const grownImage = (event) => {
+    event.currentTarget.classList.toggle('grown');
+  };
 
   useEffect(() => {
+    document.addEventListener('click', handleClickOutside);
     const fetchData = async () => {
       const tables = await (await fetch(baseUrl + "tables", {
         headers: {
@@ -182,6 +198,9 @@ const DataTable = () => {
     if (baseUrl !== "/") {
       if (table !== "users") {
         try{
+          setShowToast("لطفا صبر کنید");
+          setToastType("");
+          setLoading(true);
           const add_resp = await fetch(baseUrl + "table/" + table, {
             method: "POST",
             body: JSON.stringify(newItem),
@@ -190,6 +209,8 @@ const DataTable = () => {
               "Content-Type": "application/json",
             },
           });
+          setShowToast("");
+          setLoading(false);
           console.log(add_resp);
           if(add_resp.status === 403){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
@@ -596,6 +617,9 @@ const DataTable = () => {
       console.log(edit_json);
       if (baseUrl !== "/") {
         try{
+          setShowToast("لطفا صبر کنید");
+          setToastType("");
+          setLoading(true);
           const edit_resp = await fetch(
             baseUrl + "table/" + table + "/" + editMode,
             {
@@ -607,6 +631,8 @@ const DataTable = () => {
               },
             }
           );
+          setShowToast("");
+          setLoading(false);
           console.log(edit_resp);
           if(edit_resp.status === 403){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
@@ -1208,7 +1234,7 @@ const DataTable = () => {
                           {item[key] != null ? item[key].toString() : ""}
                         </span>) 
                         : item[key] != null ?
-                        (<img src={baseUrl + "static/" + item[key]} alt={item[key]} />)
+                        (<img src={baseUrl + "static/" + item[key]} alt={item[key]} onDoubleClick={grownImage} />)
                         : ""
                     )}
                   </td>
@@ -1271,10 +1297,10 @@ const DataTable = () => {
       {/* Toast Notification for Error Message */}
       <Toast
         onClose={() => {setShowToast(""); setToastType("")}}
-        show={showToast.length > 0}
-        delay={7000}
+        show={loading || showToast.length > 0}
+        delay={loading ? 30000 : 5000}
         autohide
-        style={{position: "absolute", top: "20px", right: "20px", backgroundColor: toastType === 'error' ? "rgba(153, 17, 34, 0.5)" : 
+        style={{position: "fixed", top: "20px", right: "20px", backgroundColor: toastType === 'error' ? "rgba(153, 17, 34, 0.5)" : 
           toastType === "success" ? "rgba(17, 240, 89, 0.5)" : 
           "rgba(255, 255, 255, 0.5)", color: "black" }}
       >

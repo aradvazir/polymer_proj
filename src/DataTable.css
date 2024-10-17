@@ -64,6 +64,17 @@ td img {
   border-radius: 10px;
 }
 
+td img.grown {
+  position: fixed;
+  width: 90vw;
+  max-height: fit-content;
+  top: 5rem;
+  left: 5rem;
+  display: block;
+  object-fit: contain;
+  border-radius: 10px;
+}
+
 .form-control {
   font-size: inherit;
   text-align: center; /* Center text horizontally inside the input */
@@ -362,6 +373,9 @@ form input, form textarea, select {
   display: flex; /* Use flexbox for alignment */
   justify-content: flex-start; /* Align items to the start (left) */
   margin-bottom: 10px; /* Add some space below the button */
+  position: absolute;
+  left: 8rem;
+  top: 4rem;
 }
 
 .redirect-button {

@@ -603,7 +603,7 @@ const Form = () => {
         show={showToast.length > 0}
         delay={3000}
         autohide
-        style={{position: "absolute", top: "20px", right: "20px", backgroundColor: toastType === 'error' ? "rgba(153, 17, 34, 0.5)" : 
+        style={{position: "fixed", top: "20px", right: "20px", backgroundColor: toastType === 'error' ? "rgba(153, 17, 34, 0.5)" : 
           toastType === "success" ? "rgba(17, 240, 89, 0.5)" : 
           "rgba(255, 255, 255, 0.5)", color: "black" }}
       >
