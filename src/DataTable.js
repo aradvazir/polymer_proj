@@ -656,7 +656,7 @@ const DataTable = () => {
     }else {
       the_data = data;
     }
-    const worksheet = XLSX.utils.json_to_sheet(data); // Convert data to worksheet
+    const worksheet = XLSX.utils.json_to_sheet(the_data); // Convert data to worksheet
     const workbook = XLSX.utils.book_new(); // Create a new workbook
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data"); // Append the worksheet
     XLSX.writeFile(workbook, "data.xlsx"); // Save the file
@@ -749,8 +749,8 @@ const DataTable = () => {
           <div className="right-buttons">
             <Button
               className="Excel-button"
-              onClick={() => {
-                handleExcel();
+              onClick={async() => {
+                await handleExcel();
               }}
             >
               <FaFileExcel size={20} />
