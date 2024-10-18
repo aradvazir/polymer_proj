@@ -146,12 +146,6 @@ const Form = () => {
   const handleChange = async (e) => {
     if (e.target.name.startsWith("recipe_")) {
       await handleRecipeChange(e);
-    } else if(e.target.name === "line_id"){
-      console.log("machine url: " + `${baseUrl}machine/${isFitting}`);
-      const lines = await (
-        await fetch(`${baseUrl}machine/${isFitting}`)
-      ).json();
-      setLineOptions(lines);
     } else {
       setFormData({
         ...formData,
@@ -203,7 +197,13 @@ const Form = () => {
     const products = await (
       await fetch(`${baseUrl}product/${isFitting}`)
     ).json();
+    
     setProductOptions(products);
+    console.log("machine url: " + `${baseUrl}machine/${isFitting}`);
+    const lines = await (
+      await fetch(`${baseUrl}machine/${isFitting}`)
+    ).json();
+    setLineOptions(lines);
     
   };
 
