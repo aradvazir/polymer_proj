@@ -52,6 +52,7 @@ const Form = () => {
   useEffect(() => {
     const fetchOptions = async () => {
       try{
+        console.log("prod url: " + `${baseUrl}product/${isFitting}`);
         const products = await (
           await fetch(`${baseUrl}product/${isFitting}`)
         ).json();
@@ -68,6 +69,7 @@ const Form = () => {
           setToastType("error");
         }
         setOperatorOptions(operators);
+        console.log("machine url: " + `${baseUrl}machine/${isFitting}`);
         const lines = await (
           await fetch(`${baseUrl}machine/${isFitting}`)
         ).json();
@@ -144,6 +146,12 @@ const Form = () => {
   const handleChange = async (e) => {
     if (e.target.name.startsWith("recipe_")) {
       await handleRecipeChange(e);
+    } else if(e.target.name === "line_id"){
+      console.log("machine url: " + `${baseUrl}machine/${isFitting}`);
+      const lines = await (
+        await fetch(`${baseUrl}machine/${isFitting}`)
+      ).json();
+      setLineOptions(lines);
     } else {
       setFormData({
         ...formData,
@@ -185,13 +193,18 @@ const Form = () => {
     document.getElementById("time-text").classList.remove("no");
   };
 
-  const handleProductToggle = (isfit) => {
+  const handleProductToggle = async(isfit) => {
     setFitting(isfit);
     setFormData((prevData) => ({
       ...prevData,
       fitting: isfit,
     }));
     setCookie("fitting", isfit);
+    const products = await (
+      await fetch(`${baseUrl}product/${isFitting}`)
+    ).json();
+    setProductOptions(products);
+    
   };
 
   const handleSubmit = async (e) => {
@@ -481,7 +494,7 @@ const Form = () => {
               className={`form__toggle-button ${
                 isFitting === "True" ? "active" : ""
               }`}
-              onClick={() => handleProductToggle("True")}
+              onClick={async() => {await handleProductToggle("True")}}
             >
               اتصالات
             </div>
@@ -489,7 +502,7 @@ const Form = () => {
               className={`form__toggle-button ${
                 isFitting === "False" ? "active" : ""
               }`}
-              onClick={() => handleProductToggle("False")}
+              onClick={async() => {await handleProductToggle("False")}}
             >
               لوله
             </div>
