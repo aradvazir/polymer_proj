@@ -23,7 +23,7 @@
 }
 
 
-.form__input-group-special.form__date input, .form__input-group-special.form__time input {
+.form__input-group-special.form__time input {
   font-size: 22px;
   height: 60px;
   width: 90%;
@@ -34,6 +34,16 @@
   border-radius: 12px;
   text-align: center;
   justify-content: center;
+}
+
+.form__input-group-special.form__date input {
+  background-color: transparent;
+  border: none;
+  font-size: 22px;
+  color: var(--text-color);
+  text-align: center;
+  outline: none;
+  width: 100%;
 }
 
 .form__input-group-special.desc {
@@ -78,15 +88,6 @@
   color: #ffffff;
 }
 
-.form__date-display input {
-  background-color: transparent;
-  border: none;
-  font-size: 22px;
-  color: var(--text-color);
-  text-align: center;
-  outline: none;
-  width: 100%;
-}
 
 .form__time-input {
   background-color: rgba(255, 255, 255, 0.949);

@@ -6,7 +6,7 @@ import moment from "moment-jalaali"
 import "./Form.css";
 import { baseUrl, getCookie, setCookie, sleep, convertFarsiDigitsToEnglish } from "./consts";
 import { Toast } from "react-bootstrap";
-
+const connection_error = "متاسفانه اتصال با سرور برقرار نیست"
 
 const Form = () => {
   const [formData, setFormData] = useState({
@@ -51,24 +51,38 @@ const Form = () => {
   // Automatically set date and time on component load
   useEffect(() => {
     const fetchOptions = async () => {
-      const products = await (
-        await fetch(`${baseUrl}product/${isFitting}`)
-      ).json();
-      setProductOptions(products);
-      const mix = await (await fetch(`${baseUrl}materials`)).json();
-      setMixOptions(mix);
-      const operators = await (
-        await fetch(`${baseUrl}operator/${operatorType}`)
-      ).json();
-      setOperatorOptions(operators);
-      const lines = await (
-        await fetch(`${baseUrl}machine/${isFitting}`)
-      ).json();
-      setLineOptions(lines);
+      try{
+        const products = await (
+          await fetch(`${baseUrl}product/${isFitting}`)
+        ).json();
+        setProductOptions(products);
+        const mix = await (await fetch(`${baseUrl}materials`)).json();
+        setMixOptions(mix);
+        let operators = await (
+          await fetch(`${baseUrl}operator/${operatorType}`)
+        ).json();
+        if(operators.detail === "Operator not found"){
+          operators = [];
+          let err_msg = (showToast ? showToast + "\n" : "") + "اپراتوری یافت نشد"
+          setShowToast(err_msg);
+          setToastType("error");
+        }
+        setOperatorOptions(operators);
+        const lines = await (
+          await fetch(`${baseUrl}machine/${isFitting}`)
+        ).json();
+        setLineOptions(lines);
+      }catch(err){
+        console.log(err);
+        if(err instanceof TypeError){
+          setShowToast(connection_error);
+          setToastType("error")
+        }
+      }
+      
     };
-
     fetchOptions();
-
+    
     const currentPersianDate = new Date().toLocaleDateString("fa-IR");
     setSelectedDate(currentPersianDate);
 
@@ -202,9 +216,11 @@ const Form = () => {
           finalForm[key] = parseInt(formData[key]);
         }
       });
+      let weight = 0;
       Object.keys(formData.recipe).forEach((key) => {
-        if (formData.recipe[key]) {
-          finalForm.recipe[key] = formData.recipe[key];
+        weight = parseFloat(formData.recipe[key])
+        if (weight) {
+          finalForm.recipe[key] = weight;
         }
       });
       console.log(
@@ -311,7 +327,9 @@ const Form = () => {
       } catch (err) {
         return ans;
       }
-
+      if(mix_ingreds && mix_ingreds.detail === "Material not found"){
+        return ans;
+      }
       function id_weight_Ingredients(ing_obj) {
         const newObj = {};
 
@@ -488,7 +506,7 @@ const Form = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            {operatorOptions.map((operator) => (
+            {(operatorOptions || []).map((operator) => (
               <option key={operator.id} value={operator.id}>
                 {operator.name}
               </option>
@@ -601,7 +619,7 @@ const Form = () => {
       <Toast
         onClose={() => {setShowToast(""); setToastType("")}}
         show={showToast.length > 0}
-        delay={3000}
+        delay={7000}
         autohide
         style={{position: "fixed", top: "20px", right: "20px", backgroundColor: toastType === 'error' ? "rgba(153, 17, 34, 0.5)" : 
           toastType === "success" ? "rgba(17, 240, 89, 0.5)" : 
