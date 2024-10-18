@@ -204,7 +204,7 @@ h1 {
 .form__form input, .form__form textarea, select {
   width: 95%;
   max-width: 500px;
-  margin: 5px 0;
+  margin: 0;
   border: 3px solid var(--border-color);
   border-radius: 15px;
   outline: none;
