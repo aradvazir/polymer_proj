@@ -155,7 +155,7 @@ h1 {
 }
 
 .form__form-container {
-  width: 55vw;
+  width: 50vw;
   max-width: 800px;
   padding: 15px;
   font-size: 0.85rem;
@@ -201,9 +201,9 @@ h1 {
   font-size: 18px;
 }
 
-.form__form input, .form__form textarea, select {
+.form__form input, .form__form textarea, .form__input-group-special select {
   width: 95%;
-  max-width: 500px;
+  max-width: 400px;
   margin: 0;
   border: 3px solid var(--border-color);
   border-radius: 15px;

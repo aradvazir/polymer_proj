@@ -195,13 +195,12 @@ const Form = () => {
     }));
     setCookie("fitting", isfit);
     const products = await (
-      await fetch(`${baseUrl}product/${isFitting}`)
+      await fetch(`${baseUrl}product/${isfit}`)
     ).json();
     
     setProductOptions(products);
-    console.log("machine url: " + `${baseUrl}machine/${isFitting}`);
     const lines = await (
-      await fetch(`${baseUrl}machine/${isFitting}`)
+      await fetch(`${baseUrl}machine/${isfit}`)
     ).json();
     setLineOptions(lines);
     
