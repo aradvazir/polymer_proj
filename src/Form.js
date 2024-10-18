@@ -26,7 +26,7 @@ const Form = () => {
   });
 
   const [isFitting, setFitting] = useState(
-    getCookie("fitting") ? getCookie("fitting") : true
+    getCookie("fitting") ? getCookie("fitting") : "True"
   );
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
@@ -479,17 +479,17 @@ const Form = () => {
           <div className="form__toggle-buttons">
             <div
               className={`form__toggle-button ${
-                isFitting === true ? "active" : ""
+                isFitting === "True" ? "active" : ""
               }`}
-              onClick={() => handleProductToggle(true)}
+              onClick={() => handleProductToggle("True")}
             >
               اتصالات
             </div>
             <div
               className={`form__toggle-button ${
-                isFitting === false ? "active" : ""
+                isFitting === "False" ? "active" : ""
               }`}
-              onClick={() => handleProductToggle(false)}
+              onClick={() => handleProductToggle("False")}
             >
               لوله
             </div>
