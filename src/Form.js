@@ -372,7 +372,7 @@ const Form = () => {
               className="form__input-group-special auto"
               key={ingred.rawmaterial.id}
             >
-              <label>{ingred.rawmaterial.rawmaterial}</label>
+              <label>{ingred.rawmaterial.rawmaterial} {ingred.rawmaterial.company}</label>
               <input
                 type="text"
                 name={"recipe_" + ingred.rawmaterial.id}
