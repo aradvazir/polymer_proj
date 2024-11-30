@@ -43,4 +43,5 @@ You don't have to ever use `eject`. The curated feature set is suitable for smal
 ![](Images/3.png)
 ![](Images/4.png)
 
+Note that SACO is the name of our Team.
 
