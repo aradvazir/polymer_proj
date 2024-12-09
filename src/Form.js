@@ -125,8 +125,10 @@ const Form = () => {
     window.location.reload();
   };
   const handleRecipeChange = async (e) => {
-    const newKey = e.target.name.slice(7),
-      newValue = parseFloat(e.target.value) || "";
+    console.log("Recipe Target: ", e)
+    // const newKey = e.target.name.slice(7);
+    const newKey = e.target.nextSibling.value;
+    const newValue = parseFloat(e.target.value) || "";
     let defaults = JSON.parse(getCookie("defaultIngreds"));
     defaults[newKey] = newValue;
     setCookie("defaultIngreds", JSON.stringify(defaults));
@@ -364,21 +366,44 @@ const Form = () => {
       };
       setFormData(newForm);
       setDefaultIngreds(defaults);
-
+      const rawmaterials = {};
+      mix_ingreds.forEach(ingred => {
+        if(Object.keys(rawmaterials).includes(ingred.rawmaterial.rawmaterial)){
+          rawmaterials[ingred.rawmaterial.rawmaterial].push({
+            ...ingred.rawmaterial
+          })
+        }else{
+          rawmaterials[ingred.rawmaterial.rawmaterial] = [{
+            ...ingred.rawmaterial
+          }]
+        }
+      })
+      console.log(rawmaterials)
       return (
         <div className="form__auto-container">
-          {mix_ingreds.map((ingred) => (
+          {Object.keys(rawmaterials).map((ingred) => (
             <div
               className="form__input-group-special auto"
-              key={ingred.rawmaterial.id}
+              // key={ingred.rawmaterial.id}
             >
-              <label>{ingred.rawmaterial.rawmaterial} {ingred.rawmaterial.company}</label>
+              <label>{ingred}</label>
               <input
                 type="text"
-                name={"recipe_" + ingred.rawmaterial.id}
+                name={`recipe_`}
                 defaultValue={ingred.weight}
                 onChange={handleChange}
               />
+              <select
+                // onChange={}
+                defaultValue={rawmaterials[ingred][0].id}
+                required
+              >
+                {(rawmaterials[ingred] || []).map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.company}
+                  </option>
+                ))}
+              </select>
             </div>
           ))}
         </div>
