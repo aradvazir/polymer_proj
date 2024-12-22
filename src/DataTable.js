@@ -1012,6 +1012,7 @@ const DataTable = () => {
                 (item) =>
                   (!("id" in item) ||
                     [
+                      "machines",
                       "materials",
                       "recipes",
                       "rawmaterials",
@@ -1073,6 +1074,7 @@ const DataTable = () => {
               (item) =>
                 (!("id" in item) ||
                   [
+                    "machines",
                     "materials",
                     "recipes",
                     "rawmaterials",
@@ -1152,6 +1154,7 @@ const DataTable = () => {
                   (key) =>
                     (key !== "id" ||
                       [
+                        "machines",
                         "materials",
                         "recipes",
                         "rawmaterials",
