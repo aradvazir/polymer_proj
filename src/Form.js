@@ -184,7 +184,6 @@ const Form = () => {
   };
 
   const closeTimeInput = () => {
-    setTimeInput(confirmedTime); // Reset to confirmed time
     document.getElementById("time-input").classList.add("no");
     document.getElementById("time-text").classList.remove("no");
   };
