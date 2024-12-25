@@ -687,6 +687,22 @@ const DataTable = () => {
       }catch(err){
         console.log(err);
       }
+    }else if(table === "mixentries"){
+      try{
+        const url = baseUrl + "mixentry";
+        the_data = await (await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        })).json();
+        console.log("Excel Recipess: ")
+        console.log(the_data)
+        
+      }catch(err){
+        console.log(err);
+      }
+    
     }else {
       the_data = data;
     }
