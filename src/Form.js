@@ -175,6 +175,13 @@ const Form = () => {
 
   const handleSaveTime = () => {
     setConfirmedTime(timeInput); // Update confirmed time
+    setFormData((prevData) => {
+      const updatedFormData = {
+          ...prevData,
+          time: timeInput, // Format as per Persian date
+      };
+      return updatedFormData;
+    });
     closeTimeInput(); // Close input
   };
 
