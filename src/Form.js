@@ -10,8 +10,8 @@ const connection_error = "متاسفانه اتصال با سرور برقرار
 
 const Form = () => {
   const [formData, setFormData] = useState({
-    date: "",
-    time: moment().format("HH:mm"),
+    date: getCookie("date") ? getCookie('date') : "",
+    time: getCookie("time") ? getCookie('time') : moment().format("HH:mm"),
     operator_id: getCookie("operator_id") ? getCookie("operator_id") : "",
     shift: getCookie("shift") ? getCookie("shift") : "",
     line_id: getCookie("line_id") ? getCookie("line_id") : "",
@@ -85,10 +85,25 @@ const Form = () => {
     };
     fetchOptions();
     
-    const currentPersianDate = new Date().toLocaleDateString("fa-IR");
+    let currentPersianDate;
+    if (getCookie("date") === "") {
+      currentPersianDate = new Date().toLocaleDateString("fa-IR");
+    }else{
+      currentPersianDate = getCookie("date");
+    }
+    setCookie("date", currentPersianDate);
     setSelectedDate(currentPersianDate);
 
-    const currentTime = moment().format("HH:mm"); // 24-hour time
+    let currentTime;
+    if(getCookie("time") === ""){
+      currentTime = moment().format("HH:mm"); // 24-hour time
+    }else{
+      currentTime = getCookie('time');
+    }
+    setCookie('time', currentTime);
+    setConfirmedTime(currentTime);
+
+
     setFormData((prevData) => {
       const updatedFormData = {
           ...prevData,
@@ -167,6 +182,7 @@ const Form = () => {
         };
         return updatedFormData;
     });
+    setCookie("date", persianDate);
   };
 
   const handleTimeInputChange = (event) => {
@@ -182,6 +198,7 @@ const Form = () => {
       };
       return updatedFormData;
     });
+    setCookie("time", timeInput);
     closeTimeInput(); // Close input
   };
 
