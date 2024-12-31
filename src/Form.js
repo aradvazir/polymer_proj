@@ -26,7 +26,7 @@ const Form = () => {
   });
 
   const [isFitting, setFitting] = useState(
-    getCookie("fitting") ? getCookie("fitting") : "True"
+    getCookie("fitting") ? getCookie("fitting") : "اتصالات"
   );
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
@@ -56,7 +56,7 @@ const Form = () => {
         const products = await (
           await fetch(`${baseUrl}product/${isFitting}`)
         ).json();
-        setProductOptions(products);
+        setProductOptions(products || []);
         const mix = await (await fetch(`${baseUrl}materials`)).json();
         setMixOptions(mix);
         let operators = await (
@@ -442,7 +442,6 @@ const Form = () => {
         {JSON.stringify(defaultIngreds)}
       </div>
       <form onSubmit={async (e) => {
-        console.log("bitch");
         await handleSubmit(e);
       }} 
         className="form__form">
@@ -539,17 +538,17 @@ const Form = () => {
           <div className="form__toggle-buttons">
             <div
               className={`form__toggle-button ${
-                isFitting === "True" ? "active" : ""
+                isFitting === "اتصالات" ? "active" : ""
               }`}
-              onClick={async() => {await handleProductToggle("True")}}
+              onClick={async() => {await handleProductToggle("اتصالات")}}
             >
               اتصالات
             </div>
             <div
               className={`form__toggle-button ${
-                isFitting === "False" ? "active" : ""
+                isFitting === "لوله" ? "active" : ""
               }`}
-              onClick={async() => {await handleProductToggle("False")}}
+              onClick={async() => {await handleProductToggle("لوله")}}
             >
               لوله
             </div>
@@ -600,7 +599,7 @@ const Form = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            {lineOptions.map((line) => (
+            {lineOptions && lineOptions.length && lineOptions.map((line) => (
               <option key={line.id} value={line.id}>
                 {line.machine}
               </option>
@@ -630,7 +629,7 @@ const Form = () => {
             required
           >
             <option value="">انتخاب کنید</option>
-            {productOptions.map((product) => (
+            {productOptions && productOptions.length && productOptions.map((product) => (
               <option key={product.code} value={product.code}>
                 {product.name}
               </option>

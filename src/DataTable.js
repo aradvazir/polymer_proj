@@ -898,6 +898,23 @@ const DataTable = () => {
                               <option value="میکسر">میکسر</option>
                               {/* More options as needed */}
                             </Form.Select>
+                          ) : col === 'category' ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""} // Ensure it has a fallback
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              {/* Add your options here, for example: */}
+                              <option value=""></option>
+                              <option value="لوله">لوله</option>
+                              <option value="اتصالات">اتصالات</option>
+                              {/* More options as needed */}
+                            </Form.Select>
                           ) : col === "image" ? (
                             <Form.Control
                               type="file"
@@ -1223,6 +1240,20 @@ const DataTable = () => {
                           <option value="لوله">لوله</option>
                           <option value="اتصالات">اتصالات</option>
                           <option value="میکسر">میکسر</option>
+                          {/* Add more options as needed */}
+                        </Form.Select>
+                      ) : key === "category" ? (
+                        <Form.Select
+                          value={tempItem[key] || ""} // Provide a fallback value
+                          onChange={(e) => {
+                            handleEdit(item.id, key, e.target.value);
+                          }}
+                          className="edit-input"
+                        >
+                          {/* Define options for the users table */}
+                          <option value=""></option>
+                          <option value="لوله">لوله</option>
+                          <option value="اتصالات">اتصالات</option>
                           {/* Add more options as needed */}
                         </Form.Select>
                       ) : key === "image" ? (
