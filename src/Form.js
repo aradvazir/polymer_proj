@@ -22,11 +22,11 @@ const Form = () => {
     recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "16",
     recipe: {},
     description: getCookie("description") ? getCookie("description") : "",
-    fitting: getCookie("fitting") ? getCookie("fitting") : true,
+    category: getCookie("category") ? getCookie("category") : "اتصالات",
   });
 
-  const [isFitting, setFitting] = useState(
-    getCookie("fitting") ? getCookie("fitting") : "اتصالات"
+  const [iscategory, setcategory] = useState(
+    getCookie("category") ? getCookie("category") : "اتصالات"
   );
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
@@ -38,6 +38,7 @@ const Form = () => {
   const [lineOptions, setLineOptions] = useState([]);
   const [defaultIngreds, setDefaultIngreds] = useState({});
   const [ingredients, setIngredients] = useState();
+  const [modified_rawmaterials, setModifiedRawmaterials] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
   const [showToast, setShowToast] = useState(""); // For error toast
@@ -52,9 +53,9 @@ const Form = () => {
   useEffect(() => {
     const fetchOptions = async () => {
       try{
-        console.log("prod url: " + `${baseUrl}product/${isFitting}`);
+        console.log("prod url: " + `${baseUrl}product/${iscategory}`);
         const products = await (
-          await fetch(`${baseUrl}product/${isFitting}`)
+          await fetch(`${baseUrl}product/${iscategory}`)
         ).json();
         setProductOptions(products || []);
         const mix = await (await fetch(`${baseUrl}materials`)).json();
@@ -69,9 +70,9 @@ const Form = () => {
           setToastType("error");
         }
         setOperatorOptions(operators);
-        console.log("machine url: " + `${baseUrl}machine/${isFitting}`);
+        console.log("machine url: " + `${baseUrl}machine/${iscategory}`);
         const lines = await (
-          await fetch(`${baseUrl}machine/${isFitting}`)
+          await fetch(`${baseUrl}machine/${iscategory}`)
         ).json();
         setLineOptions(lines);
       }catch(err){
@@ -117,10 +118,61 @@ const Form = () => {
     
   }, []);
 
+  const updateIngredients = async (mixCode) => {
+    let mix_ingreds = null;
+    try {
+      mix_ingreds = await (
+        await fetch(`${baseUrl}material/${mixCode}`)
+      ).json();
+    } catch (err) {
+      setModifiedRawmaterials({});
+      return;
+    }
+    if(mix_ingreds && mix_ingreds.detail === "Material not found"){
+      setModifiedRawmaterials({});
+      return;
+    }
+    function id_weight_Ingredients(ing_obj) {
+      const newObj = {};
+
+      Object.keys(ing_obj).forEach((key) => {
+        newObj[ing_obj[key].rawmaterial.id] = parseFloat(ing_obj[key].weight);
+      });
+
+      return newObj;
+    }
+
+    const defaults = id_weight_Ingredients(mix_ingreds);
+    setCookie("defaultIngreds", JSON.stringify(defaults));
+
+    const newForm = {
+      ...formData,
+      recipe: {
+        ...mix_ingreds,
+        ...formData.recipe,
+      },
+    };
+    setFormData(newForm);
+    setDefaultIngreds(defaults);
+    const rawmaterials = {};
+    mix_ingreds.forEach(ingred => {
+      if(Object.keys(rawmaterials).includes(ingred.rawmaterial.rawmaterial)){
+        rawmaterials[ingred.rawmaterial.rawmaterial].push({
+          ...ingred.rawmaterial
+        })
+      }else{
+        rawmaterials[ingred.rawmaterial.rawmaterial] = [{
+          ...ingred.rawmaterial
+        }]
+      }
+    })
+    console.log(rawmaterials)
+    setModifiedRawmaterials(rawmaterials);
+    
+  }
   useEffect(() => {
     const start_recipe = async () => {
-      const ingred = await renderIngredients(formData.recipe_code);
-      setIngredients(ingred);
+      await updateIngredients(formData.recipe_code);
       setHasChanged(false);
     };
     start_recipe();
@@ -128,9 +180,7 @@ const Form = () => {
 
   const handleRecipeCodeChange = async (e) => {
     const value = e.target.value;
-    const ingred = await renderIngredients(value);
-
-    setIngredients(ingred);
+    await updateIngredients(value);
     setFormData({
       ...formData,
       [e.target.name]: value,
@@ -144,7 +194,7 @@ const Form = () => {
     // const newKey = e.target.name.slice(7);
     const newKey = e.target.nextSibling.value;
     const newValue = parseFloat(e.target.value) || "";
-    let defaults = JSON.parse(getCookie("defaultIngreds"));
+    let defaults = JSON.parse(getCookie("defaultIngreds")) || {};
     defaults[newKey] = newValue;
     setCookie("defaultIngreds", JSON.stringify(defaults));
 
@@ -213,12 +263,12 @@ const Form = () => {
   };
 
   const handleProductToggle = async(isfit) => {
-    setFitting(isfit);
+    setcategory(isfit);
     setFormData((prevData) => ({
       ...prevData,
-      fitting: isfit,
+      category: isfit,
     }));
-    setCookie("fitting", isfit);
+    setCookie("category", isfit);
     const products = await (
       await fetch(`${baseUrl}product/${isfit}`)
     ).json();
@@ -241,7 +291,7 @@ const Form = () => {
         } else if (
           key === "product_id" ||
           key === "description" ||
-          key === "fitting"
+          key === "category"
         ) {
           finalForm[key] = formData[key];
         } else if (key === "date") {
@@ -302,7 +352,7 @@ const Form = () => {
         } else if (
           key === "product_id" ||
           key === "description" ||
-          key === "fitting"
+          key === "category"
         ) {
           finalForm[key] = formData[key];
         } else if (key === "date") {
@@ -349,93 +399,7 @@ const Form = () => {
     }
   };
 
-  const renderIngredients = async (mixCode) => {
-    let ans = (
-      <div className="form__input-group-special auto">
-        هیچ میکسی انتخاب نشده است.
-      </div>
-    );
-    if (mixCode) {
-      let mix_ingreds = null;
-      try {
-        mix_ingreds = await (
-          await fetch(`${baseUrl}material/${mixCode}`)
-        ).json();
-      } catch (err) {
-        return ans;
-      }
-      if(mix_ingreds && mix_ingreds.detail === "Material not found"){
-        return ans;
-      }
-      function id_weight_Ingredients(ing_obj) {
-        const newObj = {};
-
-        Object.keys(ing_obj).forEach((key) => {
-          newObj[ing_obj[key].rawmaterial.id] = parseFloat(ing_obj[key].weight);
-        });
-
-        return newObj;
-      }
-
-      const defaults = id_weight_Ingredients(mix_ingreds);
-      setCookie("defaultIngreds", JSON.stringify(defaults));
-
-      const newForm = {
-        ...formData,
-        recipe: {
-          ...mix_ingreds,
-          ...formData.recipe,
-        },
-      };
-      setFormData(newForm);
-      setDefaultIngreds(defaults);
-      const rawmaterials = {};
-      mix_ingreds.forEach(ingred => {
-        if(Object.keys(rawmaterials).includes(ingred.rawmaterial.rawmaterial)){
-          rawmaterials[ingred.rawmaterial.rawmaterial].push({
-            ...ingred.rawmaterial
-          })
-        }else{
-          rawmaterials[ingred.rawmaterial.rawmaterial] = [{
-            ...ingred.rawmaterial
-          }]
-        }
-      })
-      console.log(rawmaterials)
-      return (
-        <div className="form__auto-container">
-          {Object.keys(rawmaterials).map((ingred) => (
-            <div
-              className="form__input-group-special auto"
-              // key={ingred.rawmaterial.id}
-            >
-              <label>{ingred}</label>
-              <input
-                type="text"
-                name={`recipe_`}
-                defaultValue={ingred.weight}
-                onChange={handleChange}
-              />
-              <select
-                // onChange={}
-                defaultValue={rawmaterials[ingred][0].id}
-                required
-              >
-                {(rawmaterials[ingred] || []).map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.company}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
-        </div>
-      );
-    } else {
-      return ans;
-    }
-  };
-
+  
   return (
     <div className="form__form-container">
       <div style={{ visibility: "hidden" }}>
@@ -538,7 +502,7 @@ const Form = () => {
           <div className="form__toggle-buttons">
             <div
               className={`form__toggle-button ${
-                isFitting === "اتصالات" ? "active" : ""
+                iscategory === "اتصالات" ? "active" : ""
               }`}
               onClick={async() => {await handleProductToggle("اتصالات")}}
             >
@@ -546,7 +510,7 @@ const Form = () => {
             </div>
             <div
               className={`form__toggle-button ${
-                isFitting === "لوله" ? "active" : ""
+                iscategory === "لوله" ? "active" : ""
               }`}
               onClick={async() => {await handleProductToggle("لوله")}}
             >
@@ -656,7 +620,41 @@ const Form = () => {
           </select>
         </div>
 
-        {ingredients}
+        {formData.recipe_code ? (
+          (
+            <div className="form__auto-container">
+              {Object.keys(modified_rawmaterials).map((ingred) => (
+                <div
+                  className="form__input-group-special auto"
+                  // key={ingred.rawmaterial.id}
+                >
+                  <label>{ingred}</label>
+                  <input
+                    type="text"
+                    name={`recipe_`}
+                    defaultValue={ingred.weight}
+                    onChange={handleChange}
+                  />
+                  <select
+                    // onChange={}
+                    defaultValue={modified_rawmaterials[ingred][0].id}
+                    required
+                  >
+                    {(modified_rawmaterials[ingred] || []).map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.company}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          <div className="form__input-group-special auto">
+            هیچ میکسی انتخاب نشده است.
+          </div>
+        )}
 
         <div className="form__input-group-special desc">
           <label htmlFor="description">توضیحات</label>
