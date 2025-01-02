@@ -187,7 +187,7 @@ const Form = () => {
     });
     setHasChanged(false);
     setCookie(e.target.name, value);
-    window.location.reload();
+    // window.location.reload();
   };
   const handleRecipeChange = async (e) => {
     console.log("Recipe Target: ", e)
