@@ -3,9 +3,10 @@ import DatePicker from "react-multi-date-picker"
 import persian from "react-date-object/calendars/persian"
 import persian_fa from "react-date-object/locales/persian_fa"
 import moment from "moment-jalaali"
-import "./Form.css";
+import SearchableDropdown from './SearchableDropdown';
 import { baseUrl, getCookie, setCookie, sleep, convertFarsiDigitsToEnglish } from "./consts";
 import { Toast } from "react-bootstrap";
+import "./Form.css";
 const connection_error = "متاسفانه اتصال با سرور برقرار نیست"
 
 const Form = () => {
@@ -585,7 +586,23 @@ const Form = () => {
 
         <div className="form__input-group-special">
           <label htmlFor="product_id">محصول</label>
-          <select
+          <SearchableDropdown
+           items={
+            productOptions.reduce((acc, prod) => {
+              acc[prod.code] = prod.name
+              return acc;
+            }, {})
+           }
+           onSelect={(prod_code) => {
+            setFormData({
+              ...formData,
+              product_id: prod_code,
+            });
+            setCookie('product_id', prod_code);
+           }}
+           id='product_id'
+          />
+          {/* <select
             id="product_id"
             name="product_id"
             value={formData.product_id}
@@ -598,7 +615,7 @@ const Form = () => {
                 {product.name}
               </option>
             ))}
-          </select>
+          </select> */}
         </div>
 
         <div className="form__input-group-special">
