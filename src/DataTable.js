@@ -223,7 +223,7 @@ const DataTable = () => {
             setShowToast(err.message);
           }else{
             setToastType("error");
-            setShowToast("سرور دچار مشکل شده است. لطفا مجدد تلاش کنید");
+            setShowToast("لطفا جاهای خالی را به طور مناسب پر کنید");
           }
           
           return;
@@ -591,7 +591,7 @@ const DataTable = () => {
       setTable(table_name);
       setCookie("table", table_name);
       await fetchCols(table_name);
-      await fetchData(table_name, 0, 100000);
+      await fetchData(table_name, 0, 1000000);
     }, []);
   useEffect(() => {
     if (table) {
