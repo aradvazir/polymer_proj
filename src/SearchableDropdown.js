@@ -22,13 +22,7 @@ const SearchableDropdown = ({ items, placeholder, onSelect }) => {
       }
     );
     const ans = filtered_keys.reduce((agg, key) => {
-      let finalKey;
-      try{
-        finalKey = parseInt(key)
-      }catch(_){
-        finalKey = key;
-      }
-      agg[finalKey] = items[finalKey];
+      agg[key] = items[key];
       return agg;
     }, {})
     console.log('After: ', ans);
