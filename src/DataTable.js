@@ -1281,13 +1281,19 @@ const DataTable = () => {
                         />
                       )
                     ) : (
-                        key !== "image" ?
-                        (<span>
-                          {item[key] != null ? item[key].toString() : ""}
-                        </span>) 
-                        : item[key] != null ?
-                        (<img src={baseUrl + "static/" + item[key]} alt={item[key]} onDoubleClick={grownImage} />)
-                        : ""
+                        key === "image" ?
+                          (item[key] != null ?
+                          (<img src={baseUrl + "static/" + item[key]} alt={item[key]} onDoubleClick={grownImage} />)
+                          : "") :
+                        ['marriage', 'export', 'active'].includes(key) ?
+                            (<span style={{
+                              color: item[key] ? '#1e2' : '#e12'
+                            }}>
+                              {item[key] ? '✓' : '✗'}
+                            </span>) :
+                          (<span>
+                            {item[key] != null ? item[key].toString() : ""}
+                          </span>) 
                     )}
                   </td>
                 ))}
