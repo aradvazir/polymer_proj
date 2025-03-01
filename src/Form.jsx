@@ -12,7 +12,8 @@ const connection_error = "متاسفانه اتصال با سرور برقرار
 const Form = () => {
   const [formData, setFormData] = useState({
     date: getCookie("date") ? getCookie('date') : "",
-    time: getCookie("time") ? getCookie('time') : moment().format("HH:mm"),
+    time_start: getCookie("time_start") ? getCookie('time_start') : moment().format("HH:mm"),
+    time_end: getCookie("time_end") ? getCookie('time_end') : moment().format("HH:mm"),
     operator_id: getCookie("operator_id") ? getCookie("operator_id") : "",
     shift: getCookie("shift") ? getCookie("shift") : "",
     line_id: getCookie("line_id") ? getCookie("line_id") : "",
@@ -40,10 +41,12 @@ const Form = () => {
   const [defaultIngreds, setDefaultIngreds] = useState({});
   const [modified_rawmaterials, setModifiedRawmaterials] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
-  const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
+  const [timeStartInput, setTimeStartInput] = useState(moment().format("HH:mm"));
+  const [timeEndInput, setTimeEndInput] = useState(moment().format("HH:mm"));
   const [showToast, setShowToast] = useState(""); // For error toast
   const [toastType, setToastType] = useState(""); // For error toast
-  const [confirmedTime, setConfirmedTime] = useState(timeInput);
+  const [confirmedTimeStart, setConfirmedTimeStart] = useState(timeStartInput);
+  const [confirmedTimeEnd, setConfirmedTimeEnd] = useState(timeEndInput);
   const [hasChanged, setHasChanged] = useState(false);
   const [operatorType, setOperatorType] = useState("میکسر");
 
@@ -57,10 +60,10 @@ const Form = () => {
           await fetch(`${baseUrl}product/${iscategory}`)
         ).json();
         setProductOptions(products || []);
-        const mix = await (await fetch(`${baseUrl}materials`)).json();
+        const mix = await (await fetch(`${baseUrl}materials/`)).json();
         setMixOptions(mix);
         let operators = await (
-          await fetch(`${baseUrl}operator/${operatorType}`)
+          await fetch(`${baseUrl}operator/${operatorType}/`)
         ).json();
         if(operators.detail === "Operator not found"){
           operators = [];
@@ -70,7 +73,7 @@ const Form = () => {
         }
         setOperatorOptions(operators);
         const lines = await (
-          await fetch(`${baseUrl}machine/${iscategory}`)
+          await fetch(`${baseUrl}machine/${iscategory}/`)
         ).json();
         setLineOptions(lines);
       }catch(err){
@@ -93,21 +96,29 @@ const Form = () => {
     setCookie("date", currentPersianDate);
     setSelectedDate(currentPersianDate);
 
-    let currentTime;
-    if(getCookie("time") === ""){
-      currentTime = moment().format("HH:mm"); // 24-hour time
+    let currentTimeStart;
+    if(!getCookie("time_start")){
+      currentTimeStart = moment().format("HH:mm"); // 24-hour time
     }else{
-      currentTime = getCookie('time');
+      currentTimeStart = getCookie('time');
     }
-    setCookie('time', currentTime);
-    setConfirmedTime(currentTime);
-
-
+    setCookie('time_start', currentTimeStart);
+    setConfirmedTimeStart(currentTimeStart);
+    let currentTimeEnd;
+    if(!getCookie("time_end")){
+      currentTimeEnd = moment().format("HH:mm"); // 24-hour time
+    }else{
+      currentTimeEnd = getCookie('time');
+    }
+    setCookie('time_end', currentTimeEnd);
+    setConfirmedTimeEnd(currentTimeEnd);
+    
     setFormData((prevData) => {
       const updatedFormData = {
           ...prevData,
           date: currentPersianDate,
-          time: currentTime,
+          time_start: currentTimeStart,
+          time_end: currentTimeEnd,
       };
       return updatedFormData;
     });
@@ -120,7 +131,7 @@ const Form = () => {
     let mix_ingreds = null;
     try {
       mix_ingreds = await (
-        await fetch(`${baseUrl}material/${mixCode}`)
+        await fetch(`${baseUrl}material/${mixCode}/`)
       ).json();
     } catch (err) {
       setModifiedRawmaterials({});
@@ -233,31 +244,55 @@ const Form = () => {
     setCookie("date", persianDate);
   };
 
-  const handleTimeInputChange = (event) => {
-    setTimeInput(event.target.value);
+  const handleTimeStartInputChange = (event) => {
+    setTimeStartInput(event.target.value);
+  };
+  const handleTimeEndInputChange = (event) => {
+    setTimeEndInput(event.target.value);
   };
 
-  const handleSaveTime = () => {
-    setConfirmedTime(timeInput); // Update confirmed time
+  const handleSaveTimeStart = () => {
+    setConfirmedTimeStart(timeStartInput); // Update confirmed time
     setFormData((prevData) => {
       const updatedFormData = {
           ...prevData,
-          time: timeInput, // Format as per Persian date
+          time_start: timeStartInput, // Format as per Persian date
       };
       return updatedFormData;
     });
-    setCookie("time", timeInput);
-    closeTimeInput(); // Close input
+    setCookie("time_start", timeStartInput);
+    closeTimeStartInput(); // Close input
+  };
+  const handleSaveTimeEnd = () => {
+    setConfirmedTimeEnd(timeEndInput); // Update confirmed time
+    setFormData((prevData) => {
+      const updatedFormData = {
+          ...prevData,
+          time_end: timeEndInput, // Format as per Persian date
+      };
+      return updatedFormData;
+    });
+    setCookie("time_end", timeEndInput);
+    closeTimeEndInput(); // Close input
   };
 
-  const openTimeInput = () => {
-    document.getElementById("time-input").classList.remove("no");
-    document.getElementById("time-text").classList.add("no");
+  const openTimeStartInput = () => {
+    document.getElementById("time-start-input").classList.remove("no");
+    document.getElementById("time-start-text").classList.add("no");
   };
 
-  const closeTimeInput = () => {
-    document.getElementById("time-input").classList.add("no");
-    document.getElementById("time-text").classList.remove("no");
+  const closeTimeStartInput = () => {
+    document.getElementById("time-start-input").classList.add("no");
+    document.getElementById("time-start-text").classList.remove("no");
+  };
+  const openTimeEndInput = () => {
+    document.getElementById("time-end-input").classList.remove("no");
+    document.getElementById("time-end-text").classList.add("no");
+  };
+
+  const closeTimeEndInput = () => {
+    document.getElementById("time-end-input").classList.add("no");
+    document.getElementById("time-end-text").classList.remove("no");
   };
 
   const handleProductToggle = async(isfit) => {
@@ -268,12 +303,12 @@ const Form = () => {
     }));
     setCookie("category", isfit);
     const products = await (
-      await fetch(`${baseUrl}product/${isfit}`)
+      await fetch(`${baseUrl}product/${isfit}/`)
     ).json();
     
     setProductOptions(products);
     const lines = await (
-      await fetch(`${baseUrl}machine/${isfit}`)
+      await fetch(`${baseUrl}machine/${isfit}/`)
     ).json();
     setLineOptions(lines);
     
@@ -298,8 +333,10 @@ const Form = () => {
         } else if (key === "date") {
           finalForm[key] = formData[key] || selectedDate;
           finalForm[key] = convertFarsiDigitsToEnglish(finalForm[key]);
-        } else if (key === "time") {
-          finalForm[key] = formData[key] || timeInput;
+        } else if (key === "time_start") {
+          finalForm[key] = formData[key] || timeStartInput;
+        } else if (key === "time_end") {
+          finalForm[key] = formData[key] || timeEndInput;
         } else {
           finalForm[key] = parseInt(formData[key]);
         }
@@ -359,8 +396,10 @@ const Form = () => {
         } else if (key === "date") {
           finalForm[key] = formData[key] || selectedDate;
           finalForm[key] = convertFarsiDigitsToEnglish(finalForm[key]);
-        } else if (key === "time") {
-          finalForm[key] = formData[key] || timeInput;
+        } else if (key === "time_start") {
+          finalForm[key] = formData[key] || timeStartInput;
+        } else if (key === "time_end") {
+          finalForm[key] = formData[key] || timeEndInput;
         } else {
           finalForm[key] = parseInt(formData[key]);
         }
@@ -466,33 +505,66 @@ const Form = () => {
         </div>
 
         <div className="form__input-group-special form__time">
-          <label htmlFor="">زمان</label>
+          <label htmlFor="">زمان شروع</label>
           <div className="form__clock-display">
-            <div id="time-input" className="no">
+            <div id="time-start-input" className="no">
               <input
                 type="time"
-                value={timeInput}
-                onChange={handleTimeInputChange}
+                value={timeStartInput}
+                onChange={handleTimeStartInputChange}
                 className="form__time-input"
               />
               <button
                 type="button"
                 className="form__action-button form__save-button"
-                onClick={handleSaveTime}
+                onClick={handleSaveTimeStart}
               >
                 ذخیره
               </button>
               <button
                 type="button"
                 className="form__action-button form__cancel-button"
-                onClick={closeTimeInput}
+                onClick={closeTimeStartInput}
               >
                 لغو
               </button>
             </div>
-            <div id="time-text">
-              <p onClick={openTimeInput}>
-                {moment(confirmedTime, "HH:mm").format("HH:mm")}
+            <div id="time-start-text">
+              <p onClick={openTimeStartInput}>
+                {moment(confirmedTimeStart, "HH:mm").format("HH:mm")}
+              </p>
+            </div>
+          </div>
+        </div>
+        
+        <div className="form__input-group-special form__time">
+          <label htmlFor="">زمان پایان</label>
+          <div className="form__clock-display">
+            <div id="time-end-input" className="no">
+              <input
+                type="time"
+                value={timeEndInput}
+                onChange={handleTimeEndInputChange}
+                className="form__time-input"
+              />
+              <button
+                type="button"
+                className="form__action-button form__save-button"
+                onClick={handleSaveTimeEnd}
+              >
+                ذخیره
+              </button>
+              <button
+                type="button"
+                className="form__action-button form__cancel-button"
+                onClick={closeTimeEndInput}
+              >
+                لغو
+              </button>
+            </div>
+            <div id="time-end-text">
+              <p onClick={openTimeEndInput}>
+                {moment(confirmedTimeEnd, "HH:mm").format("HH:mm")}
               </p>
             </div>
           </div>
