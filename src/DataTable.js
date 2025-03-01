@@ -55,6 +55,7 @@ const DataTable = () => {
   const [columnSorts, setColumnSorts] = useState({});
   const [originalData, setOriginalData] = useState(data);
   const [loading, setLoading] = useState(false);
+  const [mixExcel, setMixExce] = useState(true);
 
   const imageRef = useRef(null); // Create a ref for the image
 
@@ -73,13 +74,13 @@ const DataTable = () => {
   useEffect(() => {
     document.addEventListener('click', handleClickOutside);
     const fetchData = async () => {
-      const tables = await (await fetch(baseUrl + "tables", {
+      const tables = await (await fetch(baseUrl + "tables/", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       })).json();
-      setTables(tables);
+      setTables(tables.filter((value) => !["users", "allproducts", "recipes"].includes(value)));
       setFilteredData(data ? data : []);
       setOriginalData(data ? data: []);
     };
@@ -97,7 +98,7 @@ const DataTable = () => {
       return;
     }
     try {
-      cols = await (await fetch(baseUrl + "table/" + table_name, {
+      cols = await (await fetch(baseUrl + "table/" + table_name + "/", {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -155,7 +156,8 @@ const DataTable = () => {
       "/" +
       order +
       "/" +
-      is_asc;
+      is_asc +
+      "/";
     try {
       const the_data = await (await fetch(url, {
         headers: {
@@ -183,6 +185,53 @@ const DataTable = () => {
     // Add more translations as needed
   };
 
+  const translation_cols = {
+    material: "نام محصول",
+    weight: "وزن(کیلوگرم)",
+    material_id: "آیدی محصول",
+    rawmaterial_id: "آیدی ماده اولیه",
+    type: "نوع",
+    part: "بخش",
+    major: "معالیت",
+    education: "تحصیلات",
+    marriage: "تاهل",
+    personal_id: "کد ملی",
+    sex: "جنسیت",
+    father: "پدر",
+    name: "نام",
+    company: "شرکت",
+    rawmaterial: "نام ماده اولیه",
+    price: "قیمت",
+    active: "فعال",
+    image: "تصویر",
+    color: "رنگ",
+    length: "طول",
+    quality: "کیفیت",
+    tickness: "کلفتی",
+    size: "سایز",
+    export: "صادراتی",
+    usage: "مصرف",
+    unit: "واحد",
+    code: "کد",
+    model: "مدل",
+    entity: "محتوا",
+    number_pallet: "تعداد پالت",
+    number_box: "تعداد باکس",
+    amount: "مقدار",
+    category: "کتگوری",
+    date: "تاریخ",
+    time_start: "زمان شروع",
+    time_end: "زمان پایان",
+    recipe_code: "کد دستور تولید",
+    description: "توضیح",
+    product_id:"کد محصول",
+    line_id: "کد خط",
+    shift: "شیفت",
+    operator_id:"آیدی اپراتور",
+    machine: "نام دستگاه"
+    // Add more translations as needed
+  };
+
   const handleAdd = async () => {
     console.log("Item 2 add: ");
     delete newItem.id;
@@ -196,12 +245,12 @@ const DataTable = () => {
     });
     console.log(newItem);
     if (baseUrl !== "/") {
-      if (table !== "users") {
+      if (table !== "users" && table !== "allproducts" && table !== "recipes") {
         try{
           setShowToast("لطفا صبر کنید");
           setToastType("");
           setLoading(true);
-          const add_resp = await fetch(baseUrl + "table/" + table, {
+          const add_resp = await fetch(baseUrl + "table/" + table + "/", {
             method: "POST",
             body: JSON.stringify(newItem),
             headers: {
@@ -670,7 +719,7 @@ const DataTable = () => {
     setEditMode(null); // Exit edit mode without saving
   };
 
-  const handleExcel = async() => {
+  const handleExcel = async(e) => {
     let the_data;
     if(table === "recipes"){
       try{
@@ -688,19 +737,30 @@ const DataTable = () => {
         console.log(err);
       }
     }else if(table === "mixentries"){
-      try{
-        const url = baseUrl + "mixentry";
-        the_data = await (await fetch(url, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        })).json();
-        console.log("Excel Recipess: ")
-        console.log(the_data)
-        
-      }catch(err){
-        console.log(err);
+      if(mixExcel)
+      {
+        try{
+          let url = "";
+          if(e.target.id === "total")
+          {
+            url = baseUrl + "mixentry/?type=total";
+          }
+          else{
+            url = baseUrl + "mixentry/?type=one";
+          }
+          the_data = await (await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })).json();
+        }catch(err){
+          console.log(err);
+        }
+      }
+      else
+      {
+        setMixExce(true);
       }
     
     }else {
@@ -770,7 +830,7 @@ const DataTable = () => {
           بازگشت به منو
         </a>
       </div>
-      {table !== "users" && (
+      {(table !== "users" && table !== "allproducts" && table !== "recipes") && (
         <div className="parent-container">
           <div className="input-group-special">
             <label htmlFor="table_id">نام جدول</label>
@@ -797,22 +857,40 @@ const DataTable = () => {
         {/* Top-right buttons */}
         {showRightButtons && (
           <div className="right-buttons">
-            <Button
+            
+            {table !== 'mixentries' && (<Button
               className="Excel-button"
-              onClick={async() => {
-                await handleExcel();
+              onClick={async(e) => {
+                await handleExcel(e);
               }}
             >
               <FaFileExcel size={20} />
-            </Button>
-            <Button
-              className="Pdf-button"
-              onClick={() => {
-                handlePDF();
+            </Button>)}
+            {(table === 'mixentries') && (
+              <div className="buttons-excel-mix">
+              <Button
+              className="Excel-button"
+              id = "total"
+              title="گزارش کلی"
+              onClick={async(e) => {
+                await handleExcel(e);
               }}
-            >
-              <FaFilePdf size={20} />
-            </Button>
+              >
+              <span className="label">گزارش کلی</span>
+              <FaFileExcel size={20} />
+              </Button>
+              <Button
+              className="Excel-button"
+              id = "one"
+              title="گزارش تک بچ"
+              onClick={async(e) => {
+                await handleExcel(e);
+              }}
+              >
+              <span className="label">گزارش تک بچ</span>
+              <FaFileExcel size={20} />
+              </Button>
+              </div>)}
           </div>
         )}
       </div>
@@ -845,8 +923,8 @@ const DataTable = () => {
                   .filter((item) => !("id" in item))
                   .map((dict) => {
                     const col = Object.keys(dict).pop();
-                    return col !== "hashed_pass" ? (
-                      <th>{col}</th>
+                    return col !== "hashed_pass" && Object.keys(translation_cols).includes(col) ? (
+                      <th>{translation_cols[col]}</th>
                     ) : (
                       <th>Password</th>
                     );
@@ -1071,7 +1149,7 @@ const DataTable = () => {
                         justifyContent: "center",
                       }}
                     >
-                      {col}
+                      {translation_cols[col]}
                       {/* Show the sorting icon based on the current sort mode */}
                       {columnSorts[col] === "asc" && (
                         <FontAwesomeIcon
