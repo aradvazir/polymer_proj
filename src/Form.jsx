@@ -38,7 +38,6 @@ const Form = () => {
   const [operatorOptions, setOperatorOptions] = useState([]);
   const [lineOptions, setLineOptions] = useState([]);
   const [defaultIngreds, setDefaultIngreds] = useState({});
-  const [ingredients, setIngredients] = useState();
   const [modified_rawmaterials, setModifiedRawmaterials] = useState({});
   const [selectedDate, setSelectedDate] = useState(null);
   const [timeInput, setTimeInput] = useState(moment().format("HH:mm"));
@@ -54,7 +53,6 @@ const Form = () => {
   useEffect(() => {
     const fetchOptions = async () => {
       try{
-        console.log("prod url: " + `${baseUrl}product/${iscategory}`);
         const products = await (
           await fetch(`${baseUrl}product/${iscategory}`)
         ).json();
@@ -71,7 +69,6 @@ const Form = () => {
           setToastType("error");
         }
         setOperatorOptions(operators);
-        console.log("machine url: " + `${baseUrl}machine/${iscategory}`);
         const lines = await (
           await fetch(`${baseUrl}machine/${iscategory}`)
         ).json();
@@ -145,11 +142,10 @@ const Form = () => {
 
     const defaults = id_weight_Ingredients(mix_ingreds);
     setCookie("defaultIngreds", JSON.stringify(defaults));
-
     const newForm = {
       ...formData,
       recipe: {
-        ...mix_ingreds,
+        ...defaults,
         ...formData.recipe,
       },
     };
@@ -167,7 +163,7 @@ const Form = () => {
         }]
       }
     })
-    console.log(rawmaterials)
+    console.log({rawmaterials})
     setModifiedRawmaterials(rawmaterials);
     
   }
@@ -190,30 +186,31 @@ const Form = () => {
     setCookie(e.target.name, value);
     // window.location.reload();
   };
-  const handleRecipeChange = async (e) => {
-    console.log("Recipe Target: ", e)
-    // const newKey = e.target.name.slice(7);
-    const newKey = e.target.nextSibling.value;
-    const newValue = parseFloat(e.target.value) || "";
+  const handleRecipeChange = async (MaterialKey, weight) => {
     let defaults = JSON.parse(getCookie("defaultIngreds")) || {};
-    defaults[newKey] = newValue;
+    defaults[MaterialKey] = weight;
     setCookie("defaultIngreds", JSON.stringify(defaults));
-
+    const category = Object.keys(modified_rawmaterials)
+      .find(cat => modified_rawmaterials[cat].map(item => item.id).includes(parseInt(MaterialKey)));
+    const newRecipe = {
+      ...defaults,
+      ...defaultIngreds,
+      ...formData.recipe,
+    };
+    modified_rawmaterials[category].forEach(item => {
+      newRecipe[item.id] = 0;
+    });
+    newRecipe[MaterialKey] = weight;
     setFormData({
       ...formData,
-      recipe: {
-        ...defaults,
-        ...defaultIngreds,
-        ...formData.recipe,
-        [newKey]: newValue,
-      },
+      recipe: newRecipe,
     });
     setHasChanged(true);
   };
 
   const handleChange = async (e) => {
     if (e.target.name.startsWith("recipe_")) {
-      await handleRecipeChange(e);
+      await handleRecipeChange(e.target.nextSibling.value, parseFloat(e.target.value) || "");
     } else {
       setFormData({
         ...formData,
@@ -282,8 +279,11 @@ const Form = () => {
     
   };
 
+  useEffect(() => {
+    console.log({formData});
+    
+  }, [formData]);
   const handleSubmit = async (e) => {
-    console.log(formData);
     e.preventDefault();
     if (hasChanged) {
       let finalForm = { recipe: {} }; // it contains all the default keys, and rawmats are in the `recipe`
@@ -655,6 +655,11 @@ const Form = () => {
                   <select
                     // onChange={}
                     defaultValue={modified_rawmaterials[ingred][0].id}
+                    onChange={(e) => {
+                      const prevKey = e.currentTarget.key;
+                      e.target.previousSibling.value = null;
+                      handleRecipeChange(e.target.value, 0);
+                    }}
                     required
                   >
                     {(modified_rawmaterials[ingred] || []).map((item) => (
@@ -684,9 +689,7 @@ const Form = () => {
           ></textarea>
         </div>
 
-        <button type="submit" className="form__submit-btn" onClick={() => {
-          console.log("Submit");
-        }}>
+        <button type="submit" className="form__submit-btn">
           ثبت
         </button>
       </form>
