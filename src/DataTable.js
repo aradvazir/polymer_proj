@@ -6,9 +6,11 @@ import * as XLSX from "xlsx"; // Import XLSX
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "./DataTable.css";
+import OneRowModal from "./oneRowModal";
 import { FaFileExcel, FaFilePdf } from "react-icons/fa";
 import nazaninFont from "./fonts/tnrNaz.ttf";
 import { baseUrl, getCookie, setCookie, TYPES, convertArrayBufferToBase64Text } from "./consts";
+import { translation_cols, translations } from "./consts";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faSearch,
@@ -42,6 +44,8 @@ const DataTable = () => {
   const [showToast, setShowToast] = useState(""); // For error toast
   const [toastType, setToastType] = useState(""); // For error toast
   const [tempItem, setTempItem] = useState({}); // Temporary item for edit
+  const [isShowOneRowModalOpen, setIsShowOneRowModalOpen] = useState([]);
+  const [rowToShow, setRowToShow] = useState([]);
   const [columns, setCols] = useState([]);
   const [table, setTable] = useState(
     getCookie("table") ? getCookie("table") : ""
@@ -172,67 +176,6 @@ const DataTable = () => {
     }
   };
 
-  const translations = {
-    allproducts: "همه محصولات",
-    fittingproduct: "اتصالات",
-    machines: "خطوط تولید",
-    materials: "گروه محصولات",
-    operators: "اپراتور‌ها",
-    pipeproduct: "لوله‌ها",
-    rawmaterials: "مواد اولیه",
-    recipes: "دستور تولید",
-    mixentries: "اطلاعات میکسر",
-    // Add more translations as needed
-  };
-
-  const translation_cols = {
-    material: "نام محصول",
-    weight: "وزن(کیلوگرم)",
-    material_id: "آیدی محصول",
-    rawmaterial_id: "آیدی ماده اولیه",
-    type: "نوع",
-    part: "بخش",
-    major: "معالیت",
-    education: "تحصیلات",
-    marriage: "تاهل",
-    personal_id: "کد ملی",
-    sex: "جنسیت",
-    father: "پدر",
-    name: "نام",
-    company: "شرکت",
-    rawmaterial: "نام ماده اولیه",
-    price: "قیمت",
-    active: "فعال",
-    image: "تصویر",
-    color: "رنگ",
-    length: "طول",
-    quality: "کیفیت",
-    tickness: "کلفتی",
-    size: "سایز",
-    export: "صادراتی",
-    usage: "مصرف",
-    unit: "واحد",
-    code: "کد",
-    model: "مدل",
-    entity: "محتوا",
-    number_pallet: "تعداد پالت",
-    number_box: "تعداد باکس",
-    amount: "مقدار",
-    category: "کتگوری",
-    date: "تاریخ",
-    time_start: "زمان شروع",
-    time_end: "زمان پایان",
-    recipe_code: "کد دستور تولید",
-    description: "توضیح",
-    product_id:"کد محصول",
-    line_id: "کد خط",
-    shift: "شیفت",
-    operator_id:"آیدی اپراتور",
-    machine: "نام دستگاه",
-    confirm: "فعال",
-    // Add more translations as needed
-  };
-
   const handleAdd = async () => {
     console.log("Item 2 add: ");
     delete newItem.id;
@@ -336,7 +279,16 @@ const DataTable = () => {
       setShowForm(false); // Hide the form after adding
     }
   };
-
+  const closeShow = () => {
+    setRowToShow(null);
+    setIsShowOneRowModalOpen(false);
+  };
+  const navigateOneRow = (tablename, id) => {
+    setRowToShow({
+      id: id, tablename: tablename
+    });
+    setIsShowOneRowModalOpen(true);
+  };
   const handleDelete = async () => {
     if (itemToDelete) {
       console.log("Deleted Item: ");
@@ -1262,120 +1214,127 @@ const DataTable = () => {
           {filteredData.filter(item => item.id).map((item) => (
             <tr name={item.id}>
               {Object.keys(item)
-                .filter(
-                  (key) =>
-                    (key !== "id" ||
-                      [
-                        "machines",
-                        "materials",
-                        "recipes",
-                        "rawmaterials",
-                        "operators",
-                        "lines",
-                      ].includes(table)) &&
-                    key !== "hashed_pass" &&
-                    (table !== "materials" || table["material"] !== null)
-                )
-                .map((key) => (
-                  <td>
-                    {editMode === item.id ? (
-                      TYPES[dtypes[key]] === "boolean" ? (
-                        // Handle boolean fields with a checkbox
-                        <Form.Check
-                          type="checkbox"
-                          checked={tempItem[key] || false} // Ensure it is a boolean
-                          onChange={(e) => {
-                            const newValue = e.target.checked; // Get the checked state
-                            handleEdit(item.id, key, newValue);
-                          }}
-                          className="edit-input"
-                        />
-                      ) : table === "users" && key === 'role' ? (
-                        // New condition for the "users" table with a select dropdown
-                        <Form.Select
-                          value={tempItem[key] || ""} // Provide a fallback value
-                          onChange={(e) => {
-                            handleEdit(item.id, key, e.target.value);
-                          }}
-                          className="edit-input"
-                        >
-                          {/* Define options for the users table */}
-                          <option value="">انتخاب کنید</option>
-                          <option value="admin">Admin</option>
-                          <option value="editor">Editor</option>
-                          <option value="viewer">Viewer</option>
-                          {/* Add more options as needed */}
-                        </Form.Select>
-                      ): key === "type" ? (
-                        <Form.Select
-                          value={tempItem[key] || ""} // Provide a fallback value
-                          onChange={(e) => {
-                            handleEdit(item.id, key, e.target.value);
-                          }}
-                          className="edit-input"
-                        >
-                          {/* Define options for the users table */}
-                          <option value=""></option>
-                          <option value="لوله">لوله</option>
-                          <option value="اتصالات">اتصالات</option>
-                          <option value="میکسر">میکسر</option>
-                          {/* Add more options as needed */}
-                        </Form.Select>
-                      ) : key === "category" ? (
-                        <Form.Select
-                          value={tempItem[key] || ""} // Provide a fallback value
-                          onChange={(e) => {
-                            handleEdit(item.id, key, e.target.value);
-                          }}
-                          className="edit-input"
-                        >
-                          {/* Define options for the users table */}
-                          <option value=""></option>
-                          <option value="لوله">لوله</option>
-                          <option value="اتصالات">اتصالات</option>
-                          {/* Add more options as needed */}
-                        </Form.Select>
-                      ) : key === "image" ? (
-                        <Form.Control
-                          type="file"
-                          accept="image/*"
-                          // value={tempItem[key]["name"] || ""} // Use value from the tempItem state
-                          onChange={(e) => {handleImageUpload(e, "edit", key, item.id)}}
-                          className="edit-input"
-                        />
-                      ) : (
-                        // Default case for other field types, using a text input
-                        <Form.Control
-                          type="text"
-                          value={tempItem[key]} // Use value from the tempItem state
-                          onChange={(e) => {
-                            // Check if the input matches the expected type
-                            if (checkType(e.target.value, TYPES[dtypes[key]])) {
-                              handleEdit(item.id, key, e.target.value);
-                            } else {
-                              window.alert("مقادیر وارد شده از تایپ صحیح نمیباشد");
-                            }
-                          }}
-                          className="edit-input"
-                        />
-                      )
-                    ) : (
-                        key === "image" ?
-                          (item[key] != null ?
-                          (<img src={baseUrl + "static/" + item[key]} alt={item[key]} onDoubleClick={grownImage} />)
-                          : "") :
-                        ['marriage', 'export', 'active', 'confirm'].includes(key) ?
-                            (<span style={{
-                              color: item[key] ? '#1e2' : '#e12'
-                            }}>
-                              {item[key] ? '✓' : '✗'}
-                            </span>) :
-                          (<span>
-                            {item[key] != null ? item[key].toString() : ""}
-                          </span>) 
-                    )}
-                  </td>
-                ))}
+      .filter(
+        (key) =>
+          (key !== "id" ||
+            [
+              "machines",
+              "materials",
+              "recipes",
+              "rawmaterials",
+              "operators",
+              "lines",
+            ].includes(table)) &&
+          key !== "hashed_pass" &&
+          (table !== "materials" || table["material"] !== null)
+      )
+      .map((key) => (
+        <td key={key}>
+          {editMode === item.id ? (
+            TYPES[dtypes[key]] === "boolean" ? (
+              // Handle boolean fields with a checkbox
+              <Form.Check
+                type="checkbox"
+                checked={tempItem[key] || false} // Ensure it is a boolean
+                onChange={(e) => {
+                  const newValue = e.target.checked; // Get the checked state
+                  handleEdit(item.id, key, newValue);
+                }}
+                className="edit-input"
+              />
+            ) : table === "users" && key === 'role' ? (
+              // New condition for the "users" table with a select dropdown
+              <Form.Select
+                value={tempItem[key] || ""} // Provide a fallback value
+                onChange={(e) => {
+                  handleEdit(item.id, key, e.target.value);
+                }}
+                className="edit-input"
+              >
+                <option value="">انتخاب کنید</option>
+                <option value="admin">Admin</option>
+                <option value="editor">Editor</option>
+                <option value="viewer">Viewer</option>
+              </Form.Select>
+            ) : key === "type" ? (
+              <Form.Select
+                value={tempItem[key] || ""} // Provide a fallback value
+                onChange={(e) => {
+                  handleEdit(item.id, key, e.target.value);
+                }}
+                className="edit-input"
+              >
+                <option value=""></option>
+                <option value="لوله">لوله</option>
+                <option value="اتصالات">اتصالات</option>
+                <option value="میکسر">میکسر</option>
+              </Form.Select>
+            ) : key === "category" ? (
+              <Form.Select
+                value={tempItem[key] || ""} // Provide a fallback value
+                onChange={(e) => {
+                  handleEdit(item.id, key, e.target.value);
+                }}
+                className="edit-input"
+              >
+                <option value=""></option>
+                <option value="لوله">لوله</option>
+                <option value="اتصالات">اتصالات</option>
+              </Form.Select>
+            ) : key === "image" ? (
+              <Form.Control
+                type="file"
+                accept="image/*"
+                onChange={(e) => {handleImageUpload(e, "edit", key, item.id)}}
+                className="edit-input"
+              />
+            ) : (
+              // Default case for other field types, using a text input
+              <Form.Control
+                type="text"
+                value={tempItem[key]} // Use value from the tempItem state
+                onChange={(e) => {
+                  if (checkType(e.target.value, TYPES[dtypes[key]])) {
+                    handleEdit(item.id, key, e.target.value);
+                  } else {
+                    window.alert("مقادیر وارد شده از تایپ صحیح نمیباشد");
+                  }
+                }}
+                className="edit-input"
+              />
+            )
+          ) : (
+            key === "image" ?
+              (item[key] != null ?
+                (<img src={baseUrl + "static/" + item[key]} alt={item[key]} onDoubleClick={grownImage} />)
+                : "") :
+            ['marriage', 'export', 'active', 'confirm'].includes(key) ?
+                (<span style={{
+                  color: item[key] ? '#1e2' : '#e12'
+                }}>
+                  {item[key] ? '✓' : '✗'}
+                </span>) :
+            key.endsWith("_id") ? (
+              <div>
+                <span
+                  className="selectId"
+                  onClick={() => {
+                    let temp_key = `${key.slice(0, -3)}s`;
+                    if(temp_key === "lines")
+                      temp_key = "machines";
+                    navigateOneRow(temp_key, parseInt(item[key].toString()));
+                    console.log(temp_key, parseInt(item[key].toString()));
+                  }}
+                >
+                  {item[key]}
+                </span>
+              </div>
+            ) : (
+              <span>{item[key] != null ? item[key].toString() : ""}</span>
+            )
+          )}
+        </td>
+      ))}
               {edit_permission && (
                 <td>
                   {editMode === item.id ? (
@@ -1443,6 +1402,29 @@ const DataTable = () => {
       >
         <Toast.Body>{showToast}</Toast.Body>
       </Toast>
+      {isShowOneRowModalOpen && rowToShow ? (
+    <div
+        className="modal-overlay"
+        onClick={(e) => {
+            if (e.target === e.currentTarget) {
+                closeShow();
+            }
+        }}
+    >
+        <div className="show_modal">
+            {/* Ensure that rowToShow contains the expected data */}
+            {rowToShow.tablename && rowToShow.id ? (
+                <OneRowModal tableName={rowToShow.tablename} id={rowToShow.id} />
+            ) : (
+                <div>No data available</div> // Fallback if the data is missing
+            )}
+            <button onClick={closeShow} className="exit-button">
+                &#10005;
+            </button>
+        </div>
+    </div>
+) : null}
+
     </Container>
   );
 };

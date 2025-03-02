@@ -1,7 +1,68 @@
 // export const baseUrl = "/";
 // export const baseUrl = "http://localhost:8000/";
 // export const baseUrl = "https://37.255.233.131:4253/api/";
-export const baseUrl = "https://172.16.87.18/api/"
+export const baseUrl = "https://37.255.233.131:4253/api/"
+
+export const translations = {
+  allproducts: "همه محصولات",
+  fittingproduct: "اتصالات",
+  machines: "خطوط تولید",
+  materials: "گروه محصولات",
+  operators: "اپراتور‌ها",
+  pipeproduct: "لوله‌ها",
+  rawmaterials: "مواد اولیه",
+  recipes: "دستور تولید",
+  mixentries: "اطلاعات میکسر",
+  // Add more translations as needed
+};
+
+export const translation_cols = {
+  material: "نام محصول",
+  weight: "وزن(کیلوگرم)",
+  material_id: "آیدی محصول",
+  rawmaterial_id: "آیدی ماده اولیه",
+  type: "نوع",
+  part: "بخش",
+  major: "فعالیت",
+  education: "تحصیلات",
+  marriage: "تاهل",
+  personal_id: "کد ملی",
+  sex: "جنسیت",
+  father: "پدر",
+  name: "نام",
+  company: "شرکت",
+  rawmaterial: "نام ماده اولیه",
+  price: "قیمت",
+  active: "فعال",
+  image: "تصویر",
+  color: "رنگ",
+  length: "طول",
+  quality: "کیفیت",
+  tickness: "کلفتی",
+  size: "سایز",
+  export: "صادراتی",
+  usage: "مصرف",
+  unit: "واحد",
+  code: "کد",
+  model: "مدل",
+  entity: "محتوا",
+  number_pallet: "تعداد پالت",
+  number_box: "تعداد باکس",
+  amount: "مقدار",
+  category: "کتگوری",
+  date: "تاریخ",
+  time_start: "زمان شروع",
+  time_end: "زمان پایان",
+  recipe_code: "کد دستور تولید",
+  description: "توضیح",
+  product_id:"کد محصول",
+  line_id: "کد خط",
+  shift: "شیفت",
+  operator_id:"آیدی اپراتور",
+  machine: "نام دستگاه",
+  confirm: "فعال",
+  // Add more translations as needed
+};
 
 export const getCookie = (name) => {
   const nameEQ = name + "="; // Create a string to search for
