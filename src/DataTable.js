@@ -228,7 +228,8 @@ const DataTable = () => {
     line_id: "کد خط",
     shift: "شیفت",
     operator_id:"آیدی اپراتور",
-    machine: "نام دستگاه"
+    machine: "نام دستگاه",
+    confirm: "فعال",
     // Add more translations as needed
   };
 
@@ -1363,7 +1364,7 @@ const DataTable = () => {
                           (item[key] != null ?
                           (<img src={baseUrl + "static/" + item[key]} alt={item[key]} onDoubleClick={grownImage} />)
                           : "") :
-                        ['marriage', 'export', 'active'].includes(key) ?
+                        ['marriage', 'export', 'active', 'confirm'].includes(key) ?
                             (<span style={{
                               color: item[key] ? '#1e2' : '#e12'
                             }}>
