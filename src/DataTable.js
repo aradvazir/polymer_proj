@@ -59,7 +59,8 @@ const DataTable = () => {
   const [columnSorts, setColumnSorts] = useState({});
   const [originalData, setOriginalData] = useState(data);
   const [loading, setLoading] = useState(false);
-  const [mixExcel, setMixExce] = useState(true);
+  //const [mixExcel, setMixExce] = useState(true);
+  //const [isTotal, setIsTotal] = useState<Boolean|null>(null);
 
   const imageRef = useRef(null); // Create a ref for the image
 
@@ -690,8 +691,6 @@ const DataTable = () => {
         console.log(err);
       }
     }else if(table === "mixentries"){
-      if(mixExcel)
-      {
         try{
           let url = "";
           if(e.target.id === "total")
@@ -710,11 +709,6 @@ const DataTable = () => {
         }catch(err){
           console.log(err);
         }
-      }
-      else
-      {
-        setMixExce(true);
-      }
     
     }else {
       the_data = data;
