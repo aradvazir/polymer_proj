@@ -44,7 +44,7 @@ const DataTable = () => {
   const [showToast, setShowToast] = useState(""); // For error toast
   const [toastType, setToastType] = useState(""); // For error toast
   const [tempItem, setTempItem] = useState({}); // Temporary item for edit
-  const [isShowOneRowModalOpen, setIsShowOneRowModalOpen] = useState([]);
+  const [isShowOneRowModalOpen, setIsShowOneRowModalOpen] = useState(false);
   const [rowToShow, setRowToShow] = useState([]);
   const [columns, setCols] = useState([]);
   const [table, setTable] = useState(
