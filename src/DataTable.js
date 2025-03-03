@@ -675,6 +675,7 @@ const DataTable = () => {
 
   const handleExcel = async(e) => {
     let the_data;
+    const workbook = XLSX.utils.book_new(); // Create a new workbook
     if(table === "recipes"){
       try{
         const url = baseUrl + "recipes";
@@ -692,29 +693,38 @@ const DataTable = () => {
       }
     }else if(table === "mixentries"){
         try{
-          let url = "";
-          if(e.target.id === "total")
-          {
-            url = baseUrl + "mixentry/?type=total";
-          }
-          else{
-            url = baseUrl + "mixentry/?type=one";
-          }
-          the_data = await (await fetch(url, {
+          const url = baseUrl + "mixentry/?type=total";
+          const data = await (await fetch(url, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           })).json();
+          const worksheet = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'گزارش کلی')
         }catch(err){
           console.log(err);
         }
-    
+        try{
+          const url = baseUrl + "mixentry/?type=one";
+          const data = await (await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })).json();
+          const worksheet = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'گزارش تک بچ')
+        }catch(err){
+          console.log(err);
+        }
+        const d = new Date();
+        XLSX.writeFile(workbook, `Mixer Report (${d.toLocaleDateString()} ${d.toLocaleTimeString()}).xlsx`);
+        return;
     }else {
       the_data = data;
     }
     const worksheet = XLSX.utils.json_to_sheet(the_data); // Convert data to worksheet
-    const workbook = XLSX.utils.book_new(); // Create a new workbook
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data"); // Append the worksheet
     XLSX.writeFile(workbook, "data.xlsx"); // Save the file
   };
@@ -805,39 +815,15 @@ const DataTable = () => {
         {showRightButtons && (
           <div className="right-buttons">
             
-            {table !== 'mixentries' && (<Button
+            <Button
               className="Excel-button"
               onClick={async(e) => {
                 await handleExcel(e);
               }}
             >
               <FaFileExcel size={20} />
-            </Button>)}
-            {(table === 'mixentries') && (
-              <div className="buttons-excel-mix">
-              <Button
-              className="Excel-button"
-              id = "total"
-              title="گزارش کلی"
-              onClick={async(e) => {
-                await handleExcel(e);
-              }}
-              >
-              <span className="label">گزارش کلی</span>
-              <FaFileExcel size={20} />
-              </Button>
-              <Button
-              className="Excel-button"
-              id = "one"
-              title="گزارش تک بچ"
-              onClick={async(e) => {
-                await handleExcel(e);
-              }}
-              >
-              <span className="label">گزارش تک بچ</span>
-              <FaFileExcel size={20} />
-              </Button>
-              </div>)}
+            </Button>
+
           </div>
         )}
       </div>
