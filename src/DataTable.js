@@ -1302,6 +1302,10 @@ const DataTable = () => {
                     let temp_key = `${key.slice(0, -3)}s`;
                     if(temp_key === "lines")
                       temp_key = "machines";
+                    if(temp_key === "recipes")
+                      temp_key = "materials";
+                    if(temp_key === "products")
+                      temp_key = "allproducts";
                     navigateOneRow(temp_key, parseInt(item[key].toString()));
                     console.log(temp_key, parseInt(item[key].toString()));
                   }}
