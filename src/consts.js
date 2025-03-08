@@ -38,7 +38,7 @@ export const translation_cols = {
   color: "رنگ",
   length: "طول",
   quality: "کیفیت",
-  tickness: "کلفتی",
+  tickness: "ضخامت",
   size: "سایز",
   export: "صادراتی",
   usage: "مصرف",
