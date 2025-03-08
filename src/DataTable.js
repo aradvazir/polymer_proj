@@ -1299,7 +1299,15 @@ const DataTable = () => {
                 <span
                   className="selectId"
                   onClick={() => {
-                    let temp_key = `${key.slice(0, -3)}s`;
+                    let temp_key;
+                    if(key.endsWith("_id"))
+                    {
+                      temp_key = `${key.slice(0, -3)}s`;
+                    }
+                    else
+                    {
+                      temp_key = `${key.slice(0, -5)}s`;
+                    }
                     if(temp_key === "lines")
                       temp_key = "machines";
                     if(temp_key === "recipes")
