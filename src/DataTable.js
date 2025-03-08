@@ -1294,7 +1294,7 @@ const DataTable = () => {
                 }}>
                   {item[key] ? '✓' : '✗'}
                 </span>) :
-            key.endsWith("_id") ? (
+            key.endsWith("_id") || key === "recipe_code" ? (
               <div>
                 <span
                   className="selectId"
