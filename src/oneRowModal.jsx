@@ -14,7 +14,15 @@ const OneRowModal = ({ tableName, id }) => {
             setLoading(true); // Start loading when fetching data
             console.log(`Fetching data for ${id} in table ${tableName}`);
             try {
-                const result = await fetch(`${baseUrl}table/${tableName}/${id}/`);
+                let result;
+                if(tableName !== "allproducts")
+                {
+                    result = await fetch(`${baseUrl}table/${tableName}/${id}/`);
+                }
+                else
+                {
+                    result = await fetch(`${baseUrl}product/${id}/`);
+                }
                 const newRow = await result.json();
                 setRow(newRow);
                 setColumns(Object.keys(newRow));

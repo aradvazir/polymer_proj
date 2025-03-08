@@ -53,7 +53,7 @@ export const translation_cols = {
   date: "تاریخ",
   time_start: "زمان شروع",
   time_end: "زمان پایان",
-  recipe_code: "کد دستور تولید",
+  recipe_code: "کد گروه محصولات",
   description: "توضیح",
   product_id:"کد محصول",
   line_id: "کد خط",
