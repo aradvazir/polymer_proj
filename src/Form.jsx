@@ -691,7 +691,7 @@ const Form = () => {
         </div>
 
         <div className="form__input-group-special">
-          <label htmlFor="recipe_code">نام میکس</label>
+          <label htmlFor="recipe_code">گروه محصولات</label>
           <select
             id="recipe_code"
             name="recipe_code"
