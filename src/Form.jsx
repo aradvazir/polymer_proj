@@ -47,7 +47,7 @@ const Form = () => {
   const [toastType, setToastType] = useState(""); // For error toast
   const [confirmedTimeStart, setConfirmedTimeStart] = useState(timeStartInput);
   const [confirmedTimeEnd, setConfirmedTimeEnd] = useState(timeEndInput);
-  const [hasChanged, setHasChanged] = useState(false);
+  const [hasChanged, setHasChanged] = useState(true);
   const [operatorType, setOperatorType] = useState("میکسر");
 
   const weekDays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
@@ -181,7 +181,7 @@ const Form = () => {
   useEffect(() => {
     const start_recipe = async () => {
       await updateIngredients(formData.recipe_code);
-      setHasChanged(false);
+      // setHasChanged(false);
     };
     start_recipe();
   }, []);
@@ -193,7 +193,7 @@ const Form = () => {
       ...formData,
       [e.target.name]: value,
     });
-    setHasChanged(false);
+    // setHasChanged(false);
     setCookie(e.target.name, value);
     // window.location.reload();
   };
@@ -216,7 +216,7 @@ const Form = () => {
       ...formData,
       recipe: newRecipe,
     });
-    setHasChanged(true);
+    // setHasChanged(true);
   };
 
   const handleChange = async (e) => {
@@ -323,7 +323,7 @@ const Form = () => {
     if (hasChanged) {
       let finalForm = { recipe: {} }; // it contains all the default keys, and rawmats are in the `recipe`
       Object.keys(formData).forEach((key) => {
-        if (key === "recipe_code" || key === "recipe") {
+        if (key === "recipe") { // Now Also contains Recipe code after new order in 25-03-08
         } else if (
           key === "product_id" ||
           key === "description" ||
@@ -698,9 +698,6 @@ const Form = () => {
             value={formData.recipe_code}
             onChange={handleRecipeCodeChange}
           >
-            <option key="16" value="16">
-              سایر
-            </option>
             {mixOptions.map((mix) => (
               <option key={mix.id} value={mix.id}>
                 {mix.material}
