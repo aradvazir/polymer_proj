@@ -63,7 +63,7 @@ const Form = () => {
         const mix = await (await fetch(`${baseUrl}materials/`)).json();
         setMixOptions(mix);
         let operators = await (
-          await fetch(`${baseUrl}operator/${operatorType}/`)
+          await fetch(`${baseUrl}operator/${operatorType}`)
         ).json();
         if(operators.detail === "Operator not found"){
           operators = [];
@@ -73,7 +73,7 @@ const Form = () => {
         }
         setOperatorOptions(operators);
         const lines = await (
-          await fetch(`${baseUrl}machine/${iscategory}/`)
+          await fetch(`${baseUrl}machine/${iscategory}`)
         ).json();
         setLineOptions(lines);
       }catch(err){
@@ -707,45 +707,45 @@ const Form = () => {
         </div>
 
         {formData.recipe_code ? (
-          (
-            <div className="form__auto-container">
-              {Object.keys(modified_rawmaterials).map((ingred) => (
-                <div
-                  className="form__input-group-special auto"
-                  // key={ingred.rawmaterial.id}
-                >
-                  <label>{ingred}</label>
-                  <input
-                    type="text"
-                    name={`recipe_`}
-                    defaultValue={ingred.weight}
-                    onChange={handleChange}
-                  />
-                  <select
-                    // onChange={}
-                    defaultValue={modified_rawmaterials[ingred][0].id}
-                    onChange={(e) => {
-                      const prevKey = e.currentTarget.key;
-                      e.target.previousSibling.value = null;
-                      handleRecipeChange(e.target.value, 0);
-                    }}
-                    required
-                  >
-                    {(modified_rawmaterials[ingred] || []).map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.company}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
+  <div className="form__auto-container">
+        {Object.keys(modified_rawmaterials)
+          .sort((a, b) => {
+            const predefinedOrder = ["PVC", "کربنات کلسیم", "Stub", "Titan", "CPE", "PE WAX", "paraffin", "Acid", "White", "دوده", "Impact 1", "Impact 2", "ضایعات آسیابی"]; // Define your custom order
+            return (predefinedOrder.indexOf(a) === -1 ? Infinity : predefinedOrder.indexOf(a)) - 
+                  (predefinedOrder.indexOf(b) === -1 ? Infinity : predefinedOrder.indexOf(b));
+          })
+          .map((ingred) => (
+            <div className="form__input-group-special auto" key={ingred}>
+              <label>{ingred}</label>
+              <input
+                type="text"
+                name={`recipe_`}
+                defaultValue={modified_rawmaterials[ingred][0]?.weight || ""}
+                onChange={handleChange}
+              />
+              <select
+                defaultValue={modified_rawmaterials[ingred][0]?.id || ""}
+                onChange={(e) => {
+                  handleRecipeChange(e.target.value, 0);
+                  console.log("Updated raw materials:", modified_rawmaterials);
+                }}
+                required
+              >
+                {(modified_rawmaterials[ingred] || []).map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.company}
+                  </option>
+                ))}
+              </select>
             </div>
-          )
-        ) : (
-          <div className="form__input-group-special auto">
-            هیچ میکسی انتخاب نشده است.
-          </div>
-        )}
+          ))}
+      </div>
+    ) : (
+      <div className="form__input-group-special auto">
+        هیچ میکسی انتخاب نشده است.
+      </div>
+    )}
+
 
         <div className="form__input-group-special desc">
           <label htmlFor="description">توضیحات</label>
