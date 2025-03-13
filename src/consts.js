@@ -97,7 +97,6 @@ export const TYPES = {
   "time without time zone": "string",
   date: "string",
 };
-
 function arrayBufferToBase64(buffer) {
   const byteArray = new Uint8Array(buffer);
   let binaryString = '';

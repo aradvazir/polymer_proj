@@ -710,7 +710,8 @@ const Form = () => {
   <div className="form__auto-container">
     {Object.keys(modified_rawmaterials)
       .sort((a, b) => {
-        const predefinedOrder = ["sugar", "flour", "butter", "milk"]; // Define custom order
+        const predefinedOrder = ["PVC", "کربنات کلسیم", "Stub", "Titan", "CPE", "PE WAX", "paraffin", "Acid", "White", "دوده", "Impact 1", "Impact 2", "ضایعات آسیابی"];
+        // Define custom order
         return (predefinedOrder.indexOf(a) === -1 ? Infinity : predefinedOrder.indexOf(a)) - 
                (predefinedOrder.indexOf(b) === -1 ? Infinity : predefinedOrder.indexOf(b));
       })
