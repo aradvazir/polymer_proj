@@ -708,43 +708,55 @@ const Form = () => {
 
         {formData.recipe_code ? (
   <div className="form__auto-container">
-        {Object.keys(modified_rawmaterials)
-          .sort((a, b) => {
-            const predefinedOrder = ["PVC", "کربنات کلسیم", "Stub", "Titan", "CPE", "PE WAX", "paraffin", "Acid", "White", "دوده", "Impact 1", "Impact 2", "ضایعات آسیابی"]; // Define your custom order
-            return (predefinedOrder.indexOf(a) === -1 ? Infinity : predefinedOrder.indexOf(a)) - 
-                  (predefinedOrder.indexOf(b) === -1 ? Infinity : predefinedOrder.indexOf(b));
-          })
-          .map((ingred) => (
-            <div className="form__input-group-special auto" key={ingred}>
-              <label>{ingred}</label>
-              <input
-                type="text"
-                name={`recipe_`}
-                defaultValue={modified_rawmaterials[ingred][0]?.weight || ""}
-                onChange={handleChange}
-              />
-              <select
-                defaultValue={modified_rawmaterials[ingred][0]?.id || ""}
-                onChange={(e) => {
-                  handleRecipeChange(e.target.value, 0);
-                  console.log("Updated raw materials:", modified_rawmaterials);
-                }}
-                required
-              >
-                {(modified_rawmaterials[ingred] || []).map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.company}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
-      </div>
-    ) : (
-      <div className="form__input-group-special auto">
-        هیچ میکسی انتخاب نشده است.
-      </div>
-    )}
+    {Object.keys(modified_rawmaterials)
+      .sort((a, b) => {
+        const predefinedOrder = ["sugar", "flour", "butter", "milk"]; // Define custom order
+        return (predefinedOrder.indexOf(a) === -1 ? Infinity : predefinedOrder.indexOf(a)) - 
+               (predefinedOrder.indexOf(b) === -1 ? Infinity : predefinedOrder.indexOf(b));
+      })
+      .map((ingred) => {
+        // Remove duplicate objects based on `id`
+        const uniqueItems = Object.values(
+          modified_rawmaterials[ingred].reduce((acc, item) => {
+            acc[item.id] = item;
+            return acc;
+          }, {})
+        );
+
+        return (
+          <div className="form__input-group-special auto" key={ingred}>
+            <label>{ingred}</label>
+            <input
+              type="text"
+              name={`recipe_`}
+              defaultValue={uniqueItems[0]?.weight || ""}
+              onChange={handleChange}
+            />
+            <select
+              defaultValue={uniqueItems[0]?.id || ""}
+              onChange={(e) => {
+                handleRecipeChange(e.target.value, 0);
+                console.log("Updated raw materials:", modified_rawmaterials);
+              }}
+              required
+            >
+              {uniqueItems.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.company}
+                </option>
+              ))}
+            </select>
+          </div>
+        );
+      })}
+  </div>
+) : (
+  <div className="form__input-group-special auto">
+    هیچ میکسی انتخاب نشده است.
+  </div>
+)}
+
+
 
 
         <div className="form__input-group-special desc">
