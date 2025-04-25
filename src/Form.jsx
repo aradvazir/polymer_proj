@@ -152,7 +152,6 @@ const Form = () => {
     }
 
     const defaults = id_weight_Ingredients(mix_ingreds);
-    setCookie("defaultIngreds", JSON.stringify(defaults));
     const newForm = {
       ...formData,
       recipe: {
@@ -198,13 +197,9 @@ const Form = () => {
     // window.location.reload();
   };
   const handleRecipeChange = async (MaterialKey, weight) => {
-    let defaults = JSON.parse(getCookie("defaultIngreds")) || {};
-    defaults[MaterialKey] = weight;
-    setCookie("defaultIngreds", JSON.stringify(defaults));
     const category = Object.keys(modified_rawmaterials)
       .find(cat => modified_rawmaterials[cat].map(item => item.id).includes(parseInt(MaterialKey)));
     const newRecipe = {
-      ...defaults,
       ...defaultIngreds,
       ...formData.recipe,
     };
