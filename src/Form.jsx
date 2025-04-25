@@ -145,7 +145,9 @@ const Form = () => {
       const newObj = {};
 
       Object.keys(ing_obj).forEach((key) => {
-        newObj[ing_obj[key].rawmaterial.id] = parseFloat(ing_obj[key].weight);
+        // newObj[ing_obj[key].rawmaterial.id] = parseFloat(ing_obj[key].weight);
+        newObj[ing_obj[key].rawmaterial.id] = 0.0;
+        
       });
 
       return newObj;
