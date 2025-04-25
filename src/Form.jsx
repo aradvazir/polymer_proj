@@ -726,6 +726,7 @@ const Form = () => {
               type="text"
               name={`recipe_`}
               defaultValue={uniqueItems[0]?.weight || ""}
+              autoComplete={false}
               onChange={handleChange}
             />
             <select
