@@ -21,7 +21,8 @@ const Form = () => {
       ? getCookie("amount")
       : 0,
     product_id: getCookie("product_id") ? getCookie("product_id") : "",
-    recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "16",
+    //recipe_code: getCookie("recipe_code") ? getCookie("recipe_code") : "1",
+    recipe_code: "1",
     recipe: {},
     description: getCookie("description") ? getCookie("description") : "",
     category: getCookie("category") ? getCookie("category") : "اتصالات",
@@ -181,7 +182,7 @@ const Form = () => {
   }
   useEffect(() => {
     const start_recipe = async () => {
-      await updateIngredients(formData.recipe_code);
+      await updateIngredients("16");
       // setHasChanged(false);
     };
     start_recipe();
@@ -734,7 +735,8 @@ const Form = () => {
             <select
               defaultValue={uniqueItems[0]?.id || ""}
               onChange={(e) => {
-                handleRecipeChange(e.target.value, 0);
+                const inputValue = e.target.closest("div").querySelector('input[name="recipe_"]')?.value;
+                handleRecipeChange(e.target.value, parseFloat(inputValue) || 0);
                 console.log("Updated raw materials:", modified_rawmaterials);
               }}
               required
