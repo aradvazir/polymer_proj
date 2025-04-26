@@ -308,12 +308,12 @@ const Form = () => {
     }));
     setCookie("category", isfit);
     const products = await (
-      await fetch(`${baseUrl}product/${isfit}/`)
+      await fetch(`${baseUrl}product/${isfit}`)
     ).json();
     
     setProductOptions(products);
     const lines = await (
-      await fetch(`${baseUrl}machine/${isfit}/`)
+      await fetch(`${baseUrl}machine/${isfit}`)
     ).json();
     setLineOptions(lines);
     
