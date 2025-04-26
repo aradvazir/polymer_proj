@@ -621,6 +621,8 @@ const Form = () => {
             <option value="1">صبح</option>
             <option value="2">ظهر</option>
             <option value="3">شب</option>
+            <option value="4">دوازده ساعت روز</option>
+            <option value="5">دوازده ساعت شب</option>
           </select>
         </div>
 
