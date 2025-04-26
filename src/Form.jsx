@@ -12,8 +12,7 @@ const connection_error = "متاسفانه اتصال با سرور برقرار
 const Form = () => {
   const [formData, setFormData] = useState({
     date: getCookie("date") ? getCookie('date') : "",
-    time_start: getCookie("time_start") ? getCookie('time_start') : moment().format("HH:mm"),
-    time_end: getCookie("time_end") ? getCookie('time_end') : moment().format("HH:mm"),
+    time: 0,
     operator_id: getCookie("operator_id") ? getCookie("operator_id") : "",
     shift: getCookie("shift") ? getCookie("shift") : "",
     line_id: getCookie("line_id") ? getCookie("line_id") : "",
@@ -26,6 +25,8 @@ const Form = () => {
     recipe: {},
     description: getCookie("description") ? getCookie("description") : "",
     category: getCookie("category") ? getCookie("category") : "اتصالات",
+    stop_time: 0,
+    stop_id: null,
   });
 
   const [iscategory, setcategory] = useState(
@@ -50,6 +51,7 @@ const Form = () => {
   const [confirmedTimeEnd, setConfirmedTimeEnd] = useState(timeEndInput);
   const [hasChanged, setHasChanged] = useState(true);
   const [operatorType, setOperatorType] = useState("میکسر");
+  const [stops, setStops] = useState([]);
 
   const weekDays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
 
@@ -73,6 +75,11 @@ const Form = () => {
           setToastType("error");
         }
         setOperatorOptions(operators);
+        const stops = await (
+          await fetch(`${baseUrl}values/stops/0/100/id/true/`)
+        ).json();
+        setStops(stops);
+        console.log('amir', stops);
         const lines = await (
           await fetch(`${baseUrl}machine/${iscategory}`)
         ).json();
@@ -488,6 +495,22 @@ const Form = () => {
 
         <h2>اطلاعات تولید</h2>
 
+        <div className="form__input-group-special form__time">
+          <label htmlFor="time">مقدار میکس</label>
+          <select
+            id="time"
+            name="time"
+            value={formData.time}
+            onChange={handleChange}
+            required
+          >
+            <option value="0">انتخاب کنید</option>
+            <option value="15">صد کیلویی (15 دقیقه)</option>
+            <option value="20">سی‌صد کیلویی (20 دقیقه)</option>
+          </select>
+        </div>
+
+
         <div className="form__input-group-special form__date">
           <label htmlFor="date">تاریخ</label>
             <div className="form__date-display">
@@ -503,70 +526,38 @@ const Form = () => {
         </div>
 
         <div className="form__input-group-special form__time">
-          <label htmlFor="">زمان شروع</label>
-          <div className="form__clock-display">
-            <div id="time-start-input" className="no">
-              <input
-                type="time"
-                value={timeStartInput}
-                onChange={handleTimeStartInputChange}
-                className="form__time-input"
-              />
-              <button
-                type="button"
-                className="form__action-button form__save-button"
-                onClick={handleSaveTimeStart}
-              >
-                ذخیره
-              </button>
-              <button
-                type="button"
-                className="form__action-button form__cancel-button"
-                onClick={closeTimeStartInput}
-              >
-                لغو
-              </button>
-            </div>
-            <div id="time-start-text">
-              <p onClick={openTimeStartInput}>
-                {moment(confirmedTimeStart, "HH:mm").format("HH:mm")}
-              </p>
-            </div>
-          </div>
+          <label htmlFor="stop_time">میزان توقف</label>
+          <input
+            style={{backgroundColor: "white"}}
+            type="number"
+            id="stop_time"
+            name="stop_time"
+            value={formData.stop_time}
+            onChange={handleChange}
+            required
+          />
         </div>
-        
+
         <div className="form__input-group-special form__time">
-          <label htmlFor="">زمان پایان</label>
-          <div className="form__clock-display">
-            <div id="time-end-input" className="no">
-              <input
-                type="time"
-                value={timeEndInput}
-                onChange={handleTimeEndInputChange}
-                className="form__time-input"
-              />
-              <button
-                type="button"
-                className="form__action-button form__save-button"
-                onClick={handleSaveTimeEnd}
-              >
-                ذخیره
-              </button>
-              <button
-                type="button"
-                className="form__action-button form__cancel-button"
-                onClick={closeTimeEndInput}
-              >
-                لغو
-              </button>
-            </div>
-            <div id="time-end-text">
-              <p onClick={openTimeEndInput}>
-                {moment(confirmedTimeEnd, "HH:mm").format("HH:mm")}
-              </p>
-            </div>
-          </div>
+          <label htmlFor="stop_id">علت توقف</label>
+          <select
+            style={{backgroundColor: "white"}}
+            id="stop_id"
+            name="stop_id"
+            value={formData.stop_id}
+            onChange={handleChange}
+            required
+          >
+            <option value="">انتخاب کنید</option>
+            {(stops || []).map((stop) => (
+              <option key={stop.id} value={stop.id}>
+                {stop.stop_reason}
+              </option>
+            ))}
+          </select>
         </div>
+
+        
 
         <div className="form__input-group-special single-row">
           <label>محصول تولیدی</label>

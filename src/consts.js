@@ -13,6 +13,7 @@ export const translations = {
   rawmaterials: "مواد اولیه",
   recipes: "دستور تولید",
   mixentries: "اطلاعات میکسر",
+  stops: "توقف‌ها",
   // Add more translations as needed
 };
 
@@ -60,7 +61,11 @@ export const translation_cols = {
   shift: "شیفت",
   operator_id:"آیدی اپراتور",
   machine: "نام دستگاه",
+  stop_reason: "علت توقف",
+  stop_id: "کد توقف",
   confirm: "فعال",
+  time: "زمان میکس (دقیقه)",
+  stop_time: "زمان توقف (دقیقه)"
   // Add more translations as needed
 };
 
