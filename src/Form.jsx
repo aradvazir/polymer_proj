@@ -509,8 +509,8 @@ const Form = () => {
             required
           >
             <option value="0">انتخاب کنید</option>
-            <option value="15">صد کیلویی (15 دقیقه)</option>
-            <option value="20">سی‌صد کیلویی (20 دقیقه)</option>
+            <option value="13">صد کیلویی (13 دقیقه)</option>
+            <option value="17">سی‌صد کیلویی (17 دقیقه)</option>
           </select>
         </div>
 
