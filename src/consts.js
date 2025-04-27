@@ -59,6 +59,7 @@ export const translation_cols = {
   product_id:"کد محصول",
   line_id: "کد خط",
   shift: "شیفت",
+  mainstat: "آمار اصلی",
   operator_id:"آیدی اپراتور",
   machine: "نام دستگاه",
   stop_reason: "علت توقف",

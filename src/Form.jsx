@@ -27,10 +27,14 @@ const Form = () => {
     category: getCookie("category") ? getCookie("category") : "اتصالات",
     stop_time: 0,
     stop_id: 1,
+    mainstat: true,
   });
 
   const [iscategory, setcategory] = useState(
     getCookie("category") ? getCookie("category") : "اتصالات"
+  );
+  const [mainstat, setMainstat] = useState(
+    getCookie("mainstat") ? getCookie("mainstat") : true
   );
   const [productOptions, setProductOptions] = useState([]);
   const [mixOptions, setMixOptions] = useState([]);
@@ -187,6 +191,12 @@ const Form = () => {
     setModifiedRawmaterials(rawmaterials);
     
   }
+  // useEffect(() => {
+  //   if(mixId !== null){
+
+  //   }
+  // }, [mixId])
+
   useEffect(() => {
     const start_recipe = async () => {
       await updateIngredients("16");
@@ -319,6 +329,15 @@ const Form = () => {
     
   };
 
+  const handleMainToggle = (main = true) => {
+    setMainstat(main);
+    setFormData((prevData) => ({
+      ...prevData,
+      mainstat: main,
+    }));
+    setCookie("mainstat", main);
+  };
+
   useEffect(() => {
     console.log({formData});
     
@@ -332,7 +351,8 @@ const Form = () => {
         } else if (
           key === "product_id" ||
           key === "description" ||
-          key === "category"
+          key === "category" ||
+          key === "mainstat"
         ) {
           finalForm[key] = formData[key];
         } else if (key === "date") {
@@ -561,6 +581,27 @@ const Form = () => {
           </select>
         </div>
 
+        <div className="form__input-group-special single-row">
+          <label>نوع آمار</label>
+          <div className="form__toggle-buttons">
+            <div
+              className={`form__toggle-button ${
+                mainstat === true ? "active" : ""
+              }`}
+              onClick={async() => {await handleMainToggle(true)}}
+            >
+              اصلی
+            </div>
+            <div
+              className={`form__toggle-button ${
+                mainstat === false ? "active" : ""
+              }`}
+              onClick={async() => {await handleMainToggle(false)}}
+            >
+              تستی
+            </div>
+          </div>
+        </div>
         
 
         <div className="form__input-group-special single-row">

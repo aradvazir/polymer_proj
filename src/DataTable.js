@@ -1291,7 +1291,7 @@ const DataTable = () => {
               (item[key] != null ?
                 (<img src={baseUrl + "static/" + item[key]} alt={item[key]} onDoubleClick={grownImage} />)
                 : "") :
-            ['marriage', 'export', 'active', 'confirm'].includes(key) ?
+            ['marriage', 'export', 'active', 'confirm', 'mainstat'].includes(key) ?
                 (<span style={{
                   color: item[key] ? '#1e2' : '#e12'
                 }}>
