@@ -1058,6 +1058,7 @@ const DataTable = () => {
                     [
                       "machines",
                       "materials",
+                      "mixentries",
                       "recipes",
                       "rawmaterials",
                       "operators",
@@ -1120,6 +1121,7 @@ const DataTable = () => {
                   [
                     "machines",
                     "materials",
+                    "mixentries",
                     "recipes",
                     "rawmaterials",
                     "operators",
@@ -1200,6 +1202,7 @@ const DataTable = () => {
             [
               "machines",
               "materials",
+              "mixentries",
               "recipes",
               "rawmaterials",
               "operators",

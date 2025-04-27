@@ -8,6 +8,7 @@ const OneRowModal = ({ tableName, id }) => {
     const [row, setRow] = useState(null);
     const [columns, setColumns] = useState(null);
     const [loading, setLoading] = useState(true); // New loading state
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,9 +25,28 @@ const OneRowModal = ({ tableName, id }) => {
                     result = await fetch(`${baseUrl}product/${id}/`);
                 }
                 const newRow = await result.json();
-                setRow(newRow);
-                setColumns(Object.keys(newRow));
-                console.log(newRow);
+                if(1)
+                {
+                    const keyOrder = ["id", "name", "code"];
+                    // Sort the object keys based on the desired order
+                    const sortedRow = {};
+
+                    // Add keys in the desired order
+                    keyOrder.forEach((key) => {
+                    if (newRow.hasOwnProperty(key)) {
+                        sortedRow[key] = newRow[key];
+                    }
+                    });
+                    Object.keys(newRow).forEach((key) => {
+                        if (!keyOrder.includes(key)) {
+                          sortedRow[key] = newRow[key];
+                        }
+                      });
+                    setRow(sortedRow);
+                    setColumns(Object.keys(sortedRow));
+                    console.log(sortedRow);
+                }
+
             } catch (error) {
                 console.error("Error fetching data:", error);
             } finally {
