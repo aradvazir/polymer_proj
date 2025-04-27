@@ -26,7 +26,7 @@ const Form = () => {
     description: getCookie("description") ? getCookie("description") : "",
     category: getCookie("category") ? getCookie("category") : "اتصالات",
     stop_time: 0,
-    stop_id: null,
+    stop_id: 1,
   });
 
   const [iscategory, setcategory] = useState(
@@ -356,7 +356,11 @@ const Form = () => {
       console.log(
         "Final Form (has changed): " + JSON.stringify(finalForm, null, 4)
       );
-
+      if((formData.stop_time > 0) && (formData.stop_id <= 1 || !formData.stop_id)){
+        setToastType("error");
+        setShowToast("لطفا علت توقف را انتخاب کنید");
+        return;
+      }
       try{
         const resp = await fetch(baseUrl + "mixentry/other/", {
           method: "POST",
