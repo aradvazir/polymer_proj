@@ -47,6 +47,8 @@ const DataTable = () => {
   const [isShowOneRowModalOpen, setIsShowOneRowModalOpen] = useState(false);
   const [rowToShow, setRowToShow] = useState([]);
   const [columns, setCols] = useState([]);
+  const [rawmaterials, setRawmaterials] = useState([]);
+  const [materials, setMaterials] = useState([]);
   const [table, setTable] = useState(
     getCookie("table") ? getCookie("table") : ""
   );
@@ -85,7 +87,7 @@ const DataTable = () => {
           "Content-Type": "application/json",
         },
       })).json();
-      setTables(tables.filter((value) => !["users", "allproducts", "recipes"].includes(value)));
+      setTables(tables.filter((value) => !["users", "allproducts"].includes(value)));
       setFilteredData(data ? data : []);
       setOriginalData(data ? data: []);
     };
@@ -190,7 +192,7 @@ const DataTable = () => {
     });
     console.log(newItem);
     if (baseUrl !== "/") {
-      if (table !== "users" && table !== "allproducts" && table !== "recipes") {
+      if (table !== "users" && table !== "allproducts") {
         try{
           setShowToast("لطفا صبر کنید");
           setToastType("");
@@ -596,11 +598,38 @@ const DataTable = () => {
       await fetchCols(table_name);
       await fetchData(table_name, 0, 1000000);
     }, []);
-  useEffect(() => {
-    if (table) {
-      handleTableChange(null, table);
-    }
-  }, [handleTableChange, table]);
+
+    useEffect(() => {
+      const fetchRawmaterials = async (table_name) => {
+        try {
+          const url = `${baseUrl}values/${table_name}/0/1000000/id/True/`;
+          const response = await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+          const data = await response.json();
+          if(table_name === "rawmaterials")
+            setRawmaterials(data);
+          else if(table_name === "materials")
+            setMaterials(data);
+          console.log("fetched:", data);
+        } catch (error) {
+          console.error("Error fetching rawmaterials:", error);
+        }
+      };
+    
+      if (table === 'recipes') {
+        fetchRawmaterials("rawmaterials");
+        fetchRawmaterials("materials");
+      }
+
+    }, [table, token]);
+    
+
+
+
   const toggleEditMode = async (id) => {
     if (editMode === id) {
       // If already in edit mode, save changes
@@ -787,7 +816,7 @@ const DataTable = () => {
           بازگشت به منو
         </a>
       </div>
-      {(table !== "users" && table !== "allproducts" && table !== "recipes") && (
+      {(table !== "users" && table !== "allproducts") && (
         <div className="parent-container">
           <div className="input-group-special">
             <label htmlFor="table_id">نام جدول</label>
@@ -925,6 +954,42 @@ const DataTable = () => {
                               <option value="لوله">لوله</option>
                               <option value="اتصالات">اتصالات</option>
                               {/* More options as needed */}
+                            </Form.Select>
+                          ):  col === 'rawmaterial_id' ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""}
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              <option value="">انتخاب کنید</option> {/* Placeholder */}
+                              {rawmaterials.map((material) => (
+                                <option key={material.id} value={material.id}>
+                                  {material.rawmaterial + " " + material.company}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          ) :  col === 'material_id' ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""}
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              <option value="">انتخاب کنید</option> {/* Placeholder */}
+                              {materials.map((material) => (
+                                <option key={material.id} value={material.id}>
+                                  {material.material}
+                                </option>
+                              ))}
                             </Form.Select>
                           ) : col === "image" ? (
                             <Form.Control
@@ -1251,6 +1316,36 @@ const DataTable = () => {
                 <option value="لوله">لوله</option>
                 <option value="اتصالات">اتصالات</option>
                 <option value="میکسر">میکسر</option>
+              </Form.Select>
+            ) :  key === 'rawmaterial_id' ? (
+              <Form.Select
+                value={tempItem[key] || ""} // Provide a fallback value
+                onChange={(e) => {
+                  handleEdit(item.id, key, e.target.value);
+                }}
+                className="edit-input"
+              >
+                <option value="">انتخاب کنید</option> {/* Placeholder */}
+                {rawmaterials.map((material) => (
+                  <option key={material.id} value={material.id}>
+                    {material.rawmaterial + " " + material.company}
+                  </option>
+                ))}
+              </Form.Select>
+            ) :  key === 'material_id' ? (
+              <Form.Select
+                value={tempItem[key] || ""} // Provide a fallback value
+                onChange={(e) => {
+                  handleEdit(item.id, key, e.target.value);
+                }}
+                className="edit-input"
+              >
+                <option value="">انتخاب کنید</option> {/* Placeholder */}
+                {materials.map((material) => (
+                  <option key={material.id} value={material.id}>
+                    {material.material}
+                  </option>
+                ))}
               </Form.Select>
             ) : key === "category" ? (
               <Form.Select

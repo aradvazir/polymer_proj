@@ -18,6 +18,7 @@ export const translations = {
 };
 
 export const translation_cols = {
+  mixentries_id: "کد میکس",
   material: "نام محصول",
   weight: "وزن(کیلوگرم)",
   material_id: "آیدی محصول",
