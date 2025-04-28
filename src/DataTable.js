@@ -620,7 +620,7 @@ const DataTable = () => {
           }
         };
       
-        if (table === 'recipes') {
+        if (table === 'recipes' || table === "mixentries") {
           fetchRawmaterials("rawmaterials");
           fetchRawmaterials("materials");
         }
@@ -958,7 +958,7 @@ const DataTable = () => {
                                     </option>
                                   ))}
                                 </Form.Select>
-                              ) :  col === 'material_id' ? (
+                              ) :  (col === 'material_id' || col === "recipe_code") ? (
                                 <Form.Select
                                   name={col}
                                   value={newItem[col] || ""}
@@ -1321,7 +1321,7 @@ const DataTable = () => {
                         </option>
                       ))}
                     </Form.Select>
-                  ) :  key === 'material_id' ? (
+                  ) :  (key === 'material_id'  || key === "recipe_code") ? (
                     <Form.Select
                       value={tempItem[key] || ""} // Provide a fallback value
                       onChange={(e) => {
