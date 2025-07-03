@@ -25,6 +25,24 @@ const Menu = () => {
               ورود اطلاعات میکس
             </a>
           </li>)}
+          {mix_permission && (
+          <li>
+            <a href="/#/productmanager" className="menu__option">
+              دستور تولید
+            </a>
+          </li>)}
+          {mix_permission && (
+          <li>
+            <a href="/#/productoperator" className="menu__option">
+              اجرای تولید
+            </a>
+          </li>)}
+          {mix_permission && (
+          <li>
+            <a href="/#/stopsproduct" className="menu__option">
+              توقف‌های تولید
+            </a>
+          </li>)}
           <li>
             <a
               href="/#/datatable"

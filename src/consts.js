@@ -1,7 +1,7 @@
 // export const baseUrl = "/";
-// export const baseUrl = "http://localhost:8000/";
+export const baseUrl = "http://localhost:8000/api/";
 // export const baseUrl = "https://37.255.233.131:7007/api/";
-export const baseUrl = "https://172.16.87.18/api/"
+//export const baseUrl = "https://172.16.87.18/api/"
 
 export const translations = {
   allproducts: "همه محصولات",
@@ -13,7 +13,10 @@ export const translations = {
   rawmaterials: "مواد اولیه",
   recipes: "دستور تولید",
   mixentries: "اطلاعات میکسر",
-  stops: "توقف‌ها",
+  stops: "علل توقف",
+  finalproducts: "دستور تولید نهایی",
+  finalproductoperators: "اجرای تولید نهایی",
+  stopsfinalproducts: "توقف تولید نهایی"
   // Add more translations as needed
 };
 
@@ -67,7 +70,21 @@ export const translation_cols = {
   stop_id: "کد توقف",
   confirm: "فعال",
   time: "زمان میکس (دقیقه)",
-  stop_time: "زمان توقف (دقیقه)"
+  stop_time: "زمان توقف (دقیقه)",
+  finalproduct_id: "کد تولید نهایی",
+  start_date: "تاریخ شروع",
+  start_time: "زمان شروع",
+  end_date: "تاریخ پایان",
+  end_time: "زمان پایان",
+  mold: "قالب",
+  event: "رویداد",
+  cycle_tobe: "سیکل اسمی (دقیقه)",
+  cycle_practical: "سیکل واقعی (دقیقه)",
+  quantity_tobe: "تعداد تولید اسمی",
+  quantity_practical: "تعداد تولید واقعی",
+  cycle_description: "توضیح سیکل",
+  waste: "تعداد ضایعات",
+  waste_description: "توضیح ضایعات"
   // Add more translations as needed
 };
 

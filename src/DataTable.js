@@ -47,6 +47,9 @@ const DataTable = () => {
   const [isShowOneRowModalOpen, setIsShowOneRowModalOpen] = useState(false);
   const [rowToShow, setRowToShow] = useState([]);
   const [columns, setCols] = useState([]);
+  const [lines, setLines] = useState([]);
+  const [operators, setOperators] = useState([]);
+  const [stops, setStops] = useState([]);
   const [rawmaterials, setRawmaterials] = useState([]);
   const [materials, setMaterials] = useState([]);
   const [table, setTable] = useState(
@@ -614,7 +617,12 @@ const DataTable = () => {
               setRawmaterials(data);
             else if(table_name === "materials")
               setMaterials(data);
-            console.log("fetched:", data);
+            else if(table_name === "machines")
+              setLines(data);
+            else if(table_name === "operators")
+              setOperators(data);
+            else if(table_name === "stops")
+              setStops(data);
           } catch (error) {
             console.error("Error fetching rawmaterials:", error);
           }
@@ -624,7 +632,18 @@ const DataTable = () => {
           fetchRawmaterials("rawmaterials");
           fetchRawmaterials("materials");
         }
-  
+        if (table === 'mixentries' || table === "finalproducts") {
+          fetchRawmaterials("machines");
+        }
+        if(table === "stopsfinalproducts" || table === "finalproductoperators")
+        {
+          fetchRawmaterials("operators");
+        }
+        if(table === "stopsfinalproducts")
+        {
+          fetchRawmaterials("stops");
+        }
+
       }, [table, token]);
   
   useEffect(() => {
@@ -922,7 +941,7 @@ const DataTable = () => {
                               <option value="viewer">Viewer</option>
                               {/* More options as needed */}
                             </Form.Select>
-                          ) : col === "type" ? (
+                          ) : (col === "type" && table !== "finalproducts") ? (
                             <Form.Select
                               name={col}
                               value={newItem[col] || ""} // Ensure it has a fallback
@@ -940,7 +959,43 @@ const DataTable = () => {
                               <option value="میکسر">میکسر</option>
                               {/* More options as needed */}
                             </Form.Select>
-                          ) :  col === 'rawmaterial_id' ? (
+                          ) : col === "operator_id" ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""}
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              <option value="">انتخاب کنید</option> {/* Placeholder */}
+                              {operators.map((operator) => (
+                                <option key={operator.id} value={operator.id}>
+                                  {operator.name} {operator.lastName}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          ) : col === "stop_id" ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""}
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              <option value="">انتخاب کنید</option> {/* Placeholder */}
+                              {stops.map((stop) => (
+                                <option key={stop.id} value={stop.id}>
+                                  {stop.stop_reason}
+                                </option>
+                              ))}
+                            </Form.Select>
+                          ) : col === 'rawmaterial_id' ? (
                                 <Form.Select
                                   name={col}
                                   value={newItem[col] || ""}
@@ -976,7 +1031,7 @@ const DataTable = () => {
                                     </option>
                                   ))}
                                 </Form.Select>
-                              ) : col === 'category' ? (
+                              ) : (col === 'category') || (col === 'type' && table === "finalproducts") ? (
                             <Form.Select
                               name={col}
                               value={newItem[col] || ""} // Ensure it has a fallback
@@ -992,6 +1047,58 @@ const DataTable = () => {
                               <option value="لوله">لوله</option>
                               <option value="اتصالات">اتصالات</option>
                               {/* More options as needed */}
+                            </Form.Select>
+                          )  : col === "shift" ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""} // Ensure it has a fallback
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              <option value=""></option>
+                              <option value={1}>روز</option>
+                              <option value={2}>ظهر</option>
+                              <option value={3}>شب</option>
+                              <option value={4}>12 ساعت روز</option>
+                              <option value={5}>12 ساعت شب</option>
+                            </Form.Select>
+                          ) : col === "line_id" ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""}
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              <option value=""></option>
+                              <option value="لوله">لوله</option>
+                              <option value="اتصالات">اتصالات</option>
+                              {/* More options as needed */}
+                            </Form.Select>
+                          ) : col === "line_id" ? (
+                            <Form.Select
+                              name={col}
+                              value={newItem[col] || ""}
+                              onChange={(e) => {
+                                setNewItem({
+                                  ...newItem,
+                                  [e.target.name]: e.target.value,
+                                });
+                              }}
+                            >
+                              <option value=""></option>
+                              {lines.map((line) => (
+                                <option key={line.id} value={line.id}>
+                                  {line.machine}
+                                </option>
+                              ))}
                             </Form.Select>
                           ) : col === "image" ? (
                             <Form.Control
@@ -1129,6 +1236,7 @@ const DataTable = () => {
                       "recipes",
                       "rawmaterials",
                       "operators",
+                      "finalproducts",
                       "lines",
                     ].includes(table)) &&
                   !("hashed_pass" in item)
@@ -1192,6 +1300,7 @@ const DataTable = () => {
                     "recipes",
                     "rawmaterials",
                     "operators",
+                    "finalproducts",
                     "lines",
                   ].includes(table)) &&
                 !("hashed_pass" in item)
@@ -1273,6 +1382,7 @@ const DataTable = () => {
               "recipes",
               "rawmaterials",
               "operators",
+              "finalproducts",
               "lines",
             ].includes(table)) &&
           key !== "hashed_pass" &&
@@ -1336,7 +1446,52 @@ const DataTable = () => {
                         </option>
                       ))}
                     </Form.Select>
-                  ) : key === "type" ? (
+                  ):  key === 'line_id' ? (
+                    <Form.Select
+                      value={tempItem[key] || ""} // Provide a fallback value
+                      onChange={(e) => {
+                        handleEdit(item.id, key, e.target.value);
+                      }}
+                      className="edit-input"
+                    >
+                      <option value="">انتخاب کنید</option> {/* Placeholder */}
+                      {lines.map((line) => (
+                        <option key={line.id} value={line.id}>
+                          {line.machine}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  ) : key === "operator_id" ? (
+                    <Form.Select
+                      value={tempItem[key] || ""} // Provide a fallback value
+                      onChange={(e) => {
+                        handleEdit(item.id, key, e.target.value);
+                      }}
+                      className="edit-input"
+                    >
+                      <option value="">انتخاب کنید</option> {/* Placeholder */}
+                      {operators.map((operator) => (
+                        <option key={operator.id} value={operator.id}>
+                          {operator.name}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  ) : key === "stop_id" ? (
+                    <Form.Select
+                      value={tempItem[key] || ""} // Provide a fallback value
+                      onChange={(e) => {
+                        handleEdit(item.id, key, e.target.value);
+                      }}
+                      className="edit-input"
+                    >
+                      <option value="">انتخاب کنید</option> {/* Placeholder */}
+                      {stops.map((stop) => (
+                        <option key={stop.id} value={stop.id}>
+                          {stop.stop_reason}
+                        </option>
+                      ))}
+                    </Form.Select>
+                  ) : key === "type" && table !== "finalproducts" ? (
               <Form.Select
                 value={tempItem[key] || ""} // Provide a fallback value
                 onChange={(e) => {
@@ -1349,7 +1504,22 @@ const DataTable = () => {
                 <option value="اتصالات">اتصالات</option>
                 <option value="میکسر">میکسر</option>
               </Form.Select>
-            ) : key === "category" ? (
+            ) : key === "shift" ? (
+              <Form.Select
+                value={tempItem[key] || ""} // Provide a fallback value
+                onChange={(e) => {
+                  handleEdit(item.id, key, e.target.value);
+                }}
+                className="edit-input"
+              >
+                <option value=""></option>
+                <option value={1}>روز</option>
+                <option value={2}>ظهر</option>
+                <option value={3}>شب</option>
+                <option value={4}>12 ساعت روز</option>
+                <option value={5}>12 ساعت شب</option>
+              </Form.Select>
+            ) : key === "category" || (key === 'type' && table === "finalproducts") ? (
               <Form.Select
                 value={tempItem[key] || ""} // Provide a fallback value
                 onChange={(e) => {
