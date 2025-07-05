@@ -14,7 +14,7 @@ const ProductOperator = () => {
   mold: getCookie("mold") ? getCookie("mold") : "",
   product_id: getCookie("product_id") ? getCookie("product_id") : "",
   type: getCookie("type") ? getCookie("type") : "اتصالات",
-  color: getCookie("color") ? getCookie("color") : "",
+  // color: getCookie("color") ? getCookie("color") : "",
   cycle_tobe: getCookie("cycle_tobe") ? getCookie("cycle_tobe") : 0,
   quantity_tobe: getCookie("quantity_tobe") ? getCookie("quantity_tobe") : 0,
 });
@@ -271,17 +271,6 @@ const ProductOperator = () => {
           />
         </div>
 
-        <div className="form__input-group-special">
-          <label htmlFor="amount">رنگ</label>
-          <input
-            type="text"
-            id="color"
-            name="color"
-            value={formData.color}
-            onChange={handleChange}
-            required
-          />
-        </div>
 
         <div className="form__input-group-special">
           <label htmlFor="product_id">محصول</label>

@@ -771,7 +771,62 @@ const DataTable = () => {
         const d = new Date();
         XLSX.writeFile(workbook, `Mixer Report (${d.toLocaleDateString()} ${d.toLocaleTimeString()}).xlsx`);
         return;
-    }else {
+    } else if (table === "finalproducts")
+    {
+        try{
+          const url = baseUrl + "finalprod/";
+          const data = await (await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })).json();
+          const worksheet = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'گزارش کلی')
+        }catch(err){
+          console.log('kash', err);
+        }
+        const d = new Date();
+        XLSX.writeFile(workbook, `Final Product Report (${d.toLocaleDateString()} ${d.toLocaleTimeString()}).xlsx`);
+        return;
+    } else if(table === "stopsfinalproducts") {
+        try{
+          const url = baseUrl + "stopfinalprods/";
+          const data = await (await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })).json();
+          const worksheet = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'گزارش کلی')
+        }catch(err){
+          console.log('kash', err);
+        }
+        const d = new Date();
+        XLSX.writeFile(workbook, `Stops Final Products Report (${d.toLocaleDateString()} ${d.toLocaleTimeString()}).xlsx`);
+        return;
+    }
+    else if(table === "finalproductoperators")
+    {
+       try{
+          const url = baseUrl + "finalprodoperate/";
+          const data = await (await fetch(url, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })).json();
+          const worksheet = XLSX.utils.json_to_sheet(data);
+          XLSX.utils.book_append_sheet(workbook, worksheet, 'گزارش کلی')
+        }catch(err){
+          console.log('kash', err);
+        }
+        const d = new Date();
+        XLSX.writeFile(workbook, `Final Product Operators Report (${d.toLocaleDateString()} ${d.toLocaleTimeString()}).xlsx`);
+        return;
+    }
+     else {
       the_data = data;
     }
     const worksheet = XLSX.utils.json_to_sheet(the_data); // Convert data to worksheet

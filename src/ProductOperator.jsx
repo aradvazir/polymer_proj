@@ -226,6 +226,11 @@ const handleSaveTimeEnd = () => {
         setShowToast("زمان شروع باید قبل از زمان پایان باشد.");
         return;
       }
+      if (parseFloat(formData.waste) > parseFloat(formData.quantity_practical)) {
+        setToastType("error");
+        setShowToast("تعداد ضایعات باید کمتر از تعداد تولید کل باشد.");
+        return;
+      }
       let finalForm = formData; // it contains all the default keys, and rawmats are in the `recipe`
       Object.keys(formData).forEach((key) => {
       if (key === "start_date" || key === "end_date") {
