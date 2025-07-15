@@ -1,7 +1,7 @@
 // export const baseUrl = "/";
-export const baseUrl = "http://localhost:8000/api/";
+//export const baseUrl = "http://localhost:8000/api/";
 // export const baseUrl = "https://37.255.233.131:7007/api/";
-//export const baseUrl = "https://172.16.87.18/api/"
+export const baseUrl = "https://172.16.87.18/api/"
 
 export const translations = {
   allproducts: "همه محصولات",
