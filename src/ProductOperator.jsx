@@ -22,7 +22,8 @@ const ProductManager = () => {
     shift: getCookie("shift") ? getCookie("shift") : "",
     quantity_practical: getCookie("quantity_practical") ? getCookie("quantity_practical") : 0,
     waste: getCookie("waste") ? getCookie("waste") : 0,
-    waste_description: getCookie("waste_description") ? getCookie("waste_description") : ""
+    waste_description: getCookie("waste_description") ? getCookie("waste_description") : "",
+    waste_id: getCookie('waste_id') ? getCookie('waste_id') : ""
   });
 
   const [iscategory, setcategory] = useState(
@@ -48,6 +49,9 @@ const ProductManager = () => {
 
   const weekDays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
 
+  const [wasteOptions, setWasteOptions] = useState([]);
+  // Automatically set date and time on component load
+
   // Automatically set date and time on component load
   useEffect(() => {
     const fetchOptions = async () => {
@@ -56,12 +60,15 @@ const ProductManager = () => {
           await fetch(`${baseUrl}product/${iscategory}`)
         ).json();
         setProductOptions(products || []);
+        const wastes = await (
+            await fetch(`${baseUrl}table/wastes`)
+        )
+        setWasteOptions(wastes)
         const mix = await (await fetch(`${baseUrl}materials/`)).json();
         setMixOptions(mix);
         let operators = await (
           await fetch(`${baseUrl}operator/${iscategory}`)
         ).json();
-        console.log('ahhhhhh', iscategory);
         if(operators.detail === "Operator not found"){
           operators = [];
           let err_msg = (showToast ? showToast + "\n" : "") + "اپراتوری یافت نشد"
@@ -121,7 +128,6 @@ const ProductManager = () => {
         try {
           const response = await fetch(`${baseUrl}table/finalproducts/${formData.finalproduct_id}`);
           const data = await response.json();
-          console.log('asghar', data);
           if (data?.type) {
             setcategory(data?.type);
           }
@@ -505,6 +511,24 @@ const handleSaveTimeEnd = () => {
             onChange={handleChange}
             required
           />
+        </div>
+
+        <div className="form__input-group-special">
+          <label htmlFor="waste_id">علت ضایعات</label>
+          <select
+            id="waste_id"
+            name="waste_id"
+            value={formData.waste_id}
+            onChange={handleChange}
+            required
+          >
+            <option value="">انتخاب کنید</option>
+            {wasteOptions && wasteOptions.length && wasteOptions.map((waste) => (
+              <option key={waste.id} value={waste.id}>
+                {waste.waste_reason}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="form__input-group-special desc">
