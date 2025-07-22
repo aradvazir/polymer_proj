@@ -3,7 +3,6 @@ import DatePicker from "react-multi-date-picker"
 import persian from "react-date-object/calendars/persian"
 import persian_fa from "react-date-object/locales/persian_fa"
 import moment from "moment-jalaali"
-import SearchableDropdown from './SearchableDropdown';
 import { baseUrl, getCookie, setCookie, sleep, convertFarsiDigitsToEnglish } from "./consts";
 import { Toast } from "react-bootstrap";
 import "./Form.css";
@@ -44,6 +43,36 @@ const StopsProduct = () => {
   const [stops, setStops] = useState([]);
 
   const weekDays = ["ش", "ی", "د", "س", "چ", "پ", "ج"];
+
+  useEffect(() => {
+      const fetchFinalProductData = async () => {
+        if (formData.finalproduct_id !== null) {
+          try {
+            const response = await fetch(`${baseUrl}table/finalproducts/${formData.finalproduct_id}`);
+            const data = await response.json();
+            if (data?.type) {
+              setcategory(data?.type);
+            }
+            if (!response.ok)
+            {
+              setToastType("warning");
+              setShowToast(`کد تولید ${formData.finalproduct_id} یافت نشد`);
+              sleep(1000);
+            }
+            else {
+              setToastType("success");
+              setShowToast(`کد تولید ${formData.finalproduct_id} یافت شد`);
+              sleep(1000);
+            }
+          } catch (error) {
+            setToastType("warning");
+            setShowToast(`کد تولید ${formData.finalproduct_id} یافت نشد`);
+            sleep(1000);
+          }
+        }
+      };
+      fetchFinalProductData();
+    }, [formData.finalproduct_id]);
 
   // Automatically set date and time on component load
   useEffect(() => {
@@ -135,7 +164,7 @@ const StopsProduct = () => {
 
     };
     fetchFinalProductData();
-  }, [formData.finalproduct_id]);
+  }, [formData.finalproduct_id, formData.operator_id]);
 
   const handleChange = async (e) => {
       setFormData({
@@ -240,11 +269,14 @@ const handleSaveTimeEnd = () => {
         },
       });
     const data = await response.json();
-    console.log('asghar', data);
+    if (!data?.ok) {
+      setToastType("error");
+      setShowToast("اپراتور موردنظر برای دستورتولید ورودی یافت نشد!");
+      return;
+    }
     const {start_time, end_time, start_date, end_date} = data;
     const startDateTimeProduct = moment(`${convertFarsiDigitsToEnglish(start_date)} ${start_time}`, "jYYYY/jMM/jDD HH:mm");
     const endDateTimeProduct = moment(`${convertFarsiDigitsToEnglish(end_date)} ${end_time}`, "jYYYY/jMM/jDD HH:mm");
-    console.log('aaaaa', startDateTimeProduct, startDateTime)
     if (startDateTime.isBefore(startDateTimeProduct) || endDateTimeProduct.isBefore(endDateTime)) {
       setToastType("error");
       setShowToast("توقف باید در بازه زمان تولید رخ داده باشد.");

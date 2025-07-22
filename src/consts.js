@@ -1,7 +1,7 @@
 // export const baseUrl = "/";
-//export const baseUrl = "http://localhost:8000/api/";
-// export const baseUrl = "https://37.255.233.131:7007/api/";
-export const baseUrl = "https://172.16.87.18/api/"
+export const baseUrl = "http://localhost:8000/api/";
+//export const baseUrl = "https://37.255.233.131:7007/api/";
+//export const baseUrl = "https://172.16.87.18/api/"
 
 export const translations = {
   allproducts: "همه محصولات",
@@ -16,7 +16,8 @@ export const translations = {
   stops: "علل توقف",
   finalproducts: "دستور تولید نهایی",
   finalproductoperators: "اجرای تولید نهایی",
-  stopsfinalproducts: "توقف تولید نهایی"
+  stopsfinalproducts: "توقف تولید نهایی",
+  wastes: 'علل ضایعات'
   // Add more translations as needed
 };
 
@@ -25,9 +26,11 @@ export const translation_cols = {
   material: "نام محصول",
   weight: "وزن(کیلوگرم)",
   material_id: "آیدی محصول",
+  waste_id: "آیدی علت ضایعات",
   rawmaterial_id: "آیدی ماده اولیه",
   type: "نوع",
   part: "بخش",
+  waste_reason: "علت ضایعات",
   major: "فعالیت",
   education: "تحصیلات",
   marriage: "تاهل",

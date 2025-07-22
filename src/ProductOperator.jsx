@@ -52,6 +52,10 @@ const ProductManager = () => {
   const [wasteOptions, setWasteOptions] = useState([]);
   // Automatically set date and time on component load
 
+  useEffect(() => {
+    console.log({wasteOptions})
+  }, [wasteOptions])
+
   // Automatically set date and time on component load
   useEffect(() => {
     const fetchOptions = async () => {
@@ -61,8 +65,13 @@ const ProductManager = () => {
         ).json();
         setProductOptions(products || []);
         const wastes = await (
-            await fetch(`${baseUrl}table/wastes`)
-        )
+            await fetch(`${baseUrl}values/wastes/0/1000/id/true`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+        })
+        ).json();
         setWasteOptions(wastes)
         const mix = await (await fetch(`${baseUrl}materials/`)).json();
         setMixOptions(mix);
