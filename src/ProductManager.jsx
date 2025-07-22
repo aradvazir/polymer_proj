@@ -248,7 +248,7 @@ const ProductOperator = () => {
         </div>
 
         <div className="form__input-group-special">
-          <label htmlFor="amount">سیکل (دقیقه)</label>
+          <label htmlFor="amount">سیکل (ثانیه)</label>
           <input
             type="number"
             id="cycle_tobe"

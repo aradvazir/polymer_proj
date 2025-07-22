@@ -473,7 +473,7 @@ const handleSaveTimeEnd = () => {
         </div>
 
         <div className="form__input-group-special">
-          <label htmlFor="cycle_practical">سیکل (دقیقه)</label>
+          <label htmlFor="cycle_practical">سیکل (ثانیه)</label>
           <input
             type="number"
             id="cycle_practical"
