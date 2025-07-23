@@ -8,11 +8,14 @@ const Menu = () => {
   const [role, setRole] = useState();
   const [users_permission, setUsersPerm] = useState(false);
   const [mix_permission, setMixPerm] = useState(false);
+  const [order_permission, setOrderPerm] = useState(false);
+  const [table_permission, setTablePerm] = useState(false);
   useEffect(() => {
     setRole(getCookie("role"));
-    setUsersPerm(role === "admin" || role === "manager");
-    setMixPerm(role === "admin" || role === "manager" || role === "editor");
-    
+    setUsersPerm(role === "admin");
+    setMixPerm(role === "admin" || role === "editor");
+    setOrderPerm(role === 'admin' || role === 'editor');
+    setTablePerm(role === 'admin' || role === 'editor');
   }, [role]);
   return (
     <div className="menu__wrapper">
@@ -25,25 +28,26 @@ const Menu = () => {
               ورود اطلاعات میکس
             </a>
           </li>)}
-          {mix_permission && (
+          {order_permission && (
           <li>
             <a href="/#/productmanager" className="menu__option">
               دستور تولید
             </a>
           </li>)}
-          {mix_permission && (
+
           <li>
             <a href="/#/productoperator" className="menu__option">
               اجرای تولید
             </a>
-          </li>)}
-          {mix_permission && (
+          </li>
+
           <li>
             <a href="/#/stopsproduct" className="menu__option">
               توقف‌های تولید
             </a>
-          </li>)}
-          <li>
+          </li>
+
+          {table_permission && <li>
             <a
               href="/#/datatable"
               className="menu__option"
@@ -54,7 +58,8 @@ const Menu = () => {
             >
               مشاهده جدول ها
             </a>
-          </li>
+          </li>}
+          
           {users_permission && (
             <li>
               <a

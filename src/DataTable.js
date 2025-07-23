@@ -195,7 +195,7 @@ const DataTable = () => {
     });
     console.log(newItem);
     if (baseUrl !== "/") {
-      if (table !== "users" && table !== "allproducts") {
+      if (table !== "users" &&  table !== "allproducts") {
         try{
           setShowToast("لطفا صبر کنید");
           setToastType("");
@@ -246,7 +246,7 @@ const DataTable = () => {
             },
           });
 
-          console.log(signup_resp);
+          console.log('aaaaaaaaaaaaaa', signup_resp);
           console.log(await signup_resp.json());
           if(signup_resp.status === 403){
             throw ReferenceError("شما دسترسی لازم برای اضافه کردن را ندارید!")
@@ -892,7 +892,7 @@ const DataTable = () => {
           بازگشت به منو
         </a>
       </div>
-      {(table !== "users" && table !== "allproducts") && (
+      {(!(table === "users" && getCookie('role') !== "admin") && table !== "allproducts") && (
         <div className="parent-container">
           <div className="input-group-special">
             <label htmlFor="table_id">نام جدول</label>

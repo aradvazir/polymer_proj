@@ -17,7 +17,8 @@ export const translations = {
   finalproducts: "دستور تولید نهایی",
   finalproductoperators: "اجرای تولید نهایی",
   stopsfinalproducts: "توقف تولید نهایی",
-  wastes: 'علل ضایعات'
+  wastes: 'علل ضایعات',
+  molds: 'قالب‌ها'
   // Add more translations as needed
 };
 
@@ -39,6 +40,8 @@ export const translation_cols = {
   father: "پدر",
   name: "نام",
   company: "شرکت",
+  role: "نقش",
+  username: "نام کاربری",
   rawmaterial: "نام ماده اولیه",
   price: "قیمت",
   active: "فعال",
@@ -51,6 +54,7 @@ export const translation_cols = {
   export: "صادراتی",
   usage: "مصرف",
   unit: "واحد",
+  Password: "رمز",
   code: "کد",
   model: "مدل",
   entity: "محتوا",
@@ -59,6 +63,8 @@ export const translation_cols = {
   amount: "مقدار",
   category: "کتگوری",
   date: "تاریخ",
+  mold: "قالب",
+  mold_id: "کد قالب",
   time_start: "زمان شروع",
   time_end: "زمان پایان",
   recipe_code: "کد گروه محصولات",

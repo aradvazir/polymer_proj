@@ -57,6 +57,25 @@ const ProductOperator = () => {
     setToken(getCookie("token"));    
   }, []);
 
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try{
+        const molds = await (
+          await fetch(`${baseUrl}values/molds/0/1000000/id/true/`)
+        ).json();
+        setMolds(molds || []);
+      }catch(err){
+        console.log(err);
+        if(err instanceof TypeError){
+          setShowToast(connection_error);
+          setToastType("error")
+        }
+      }
+      
+    };
+    fetchOptions();   
+  }, []);
+
   // useEffect(() => {
   //   if(mixId !== null){
 
@@ -262,22 +281,20 @@ const ProductOperator = () => {
 
         <div className="form__input-group-special">
           <label htmlFor="mold_id">قالب</label>
-          <SearchableDropdown
-           items={
-            molds.reduce((acc, mold) => {
-              acc[mold.id] = mold.mold
-              return acc;
-            }, {})
-           }
-           onSelect={(mold_id) => {
-            setFormData({
-              ...formData,
-              mold_id: mold_id,
-            });
-            setCookie('mold_id', mold_id);
-           }}
-           id='mold_id'
-          />
+          <select
+            id="mold_id"
+            name="mold_id"
+            value={formData.mold_id}
+            onChange={handleChange}
+            required
+          >
+            <option value="">انتخاب کنید</option>
+            {molds && molds.length && molds.map((mold) => (
+              <option key={mold.id} value={mold.id}>
+                {mold.mold}
+              </option>
+            ))}
+          </select>
         </div>
 
 
@@ -299,20 +316,6 @@ const ProductOperator = () => {
            }}
            id='product_id'
           />
-          {/* <select
-            id="product_id"
-            name="product_id"
-            value={formData.product_id}
-            onChange={handleChange}
-            required
-          >
-            <option value="">انتخاب کنید</option>
-            {productOptions && productOptions.length && productOptions.map((product) => (
-              <option key={product.code} value={product.code}>
-                {product.name}
-              </option>
-            ))}
-          </select> */}
         </div>
 
         <button type="submit" className="form__submit-btn">
