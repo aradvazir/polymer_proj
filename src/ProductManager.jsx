@@ -11,7 +11,7 @@ const connection_error = "متاسفانه اتصال با سرور برقرار
 const ProductOperator = () => {
   const [formData, setFormData] = useState({
   line_id: getCookie("line_id") ? getCookie("line_id") : "",
-  mold: getCookie("mold") ? getCookie("mold") : "",
+  mold_id: getCookie("mold_id") ? getCookie("mold_id") : "",
   product_id: getCookie("product_id") ? getCookie("product_id") : "",
   type: getCookie("type") ? getCookie("type") : "اتصالات",
   // color: getCookie("color") ? getCookie("color") : "",
@@ -23,6 +23,7 @@ const ProductOperator = () => {
     getCookie("type") ? getCookie("type") : "اتصالات"
   );
   const [productOptions, setProductOptions] = useState([]);
+  const [molds, setMolds] = useState([]);
   const [token, setToken] = useState(
     getCookie("token") ? getCookie("token") : ""
   );
@@ -260,14 +261,22 @@ const ProductOperator = () => {
         </div>
 
         <div className="form__input-group-special">
-          <label htmlFor="amount">قالب</label>
-          <input
-            type="text"
-            id="mold"
-            name="mold"
-            value={formData.mold}
-            onChange={handleChange}
-            required
+          <label htmlFor="mold_id">قالب</label>
+          <SearchableDropdown
+           items={
+            molds.reduce((acc, mold) => {
+              acc[mold.id] = mold.mold
+              return acc;
+            }, {})
+           }
+           onSelect={(mold_id) => {
+            setFormData({
+              ...formData,
+              mold_id: mold_id,
+            });
+            setCookie('mold_id', mold_id);
+           }}
+           id='mold_id'
           />
         </div>
 
