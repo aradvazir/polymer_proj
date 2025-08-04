@@ -279,7 +279,7 @@ const ProductOperator = () => {
           />
         </div>
 
-        <div className="form__input-group-special">
+        {/* <div className="form__input-group-special">
           <label htmlFor="mold_id">قالب</label>
           <select
             id="mold_id"
@@ -295,10 +295,30 @@ const ProductOperator = () => {
               </option>
             ))}
           </select>
-        </div>
+        </div> */}
+
+        {molds && <div className="form__input-group-special">
+          <label htmlFor="mold_id">قالب</label>
+          <SearchableDropdown
+           items={
+            molds.reduce((acc, prod) => {
+              acc[prod.id] = prod.mold
+              return acc;
+            }, {})
+           }
+           onSelect={(mold_id) => {
+            setFormData({
+              ...formData,
+              mold_id: mold_id,
+            });
+            setCookie('mold_id', mold_id);
+           }}
+           id='mold_id'
+          />
+        </div>}
 
 
-        <div className="form__input-group-special">
+        {productOptions && <div className="form__input-group-special">
           <label htmlFor="product_id">محصول</label>
           <SearchableDropdown
            items={
@@ -316,7 +336,7 @@ const ProductOperator = () => {
            }}
            id='product_id'
           />
-        </div>
+        </div>}
 
         <button type="submit" className="form__submit-btn">
           ثبت

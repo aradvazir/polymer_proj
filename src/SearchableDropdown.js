@@ -1,56 +1,43 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import './SearchableDropdown.css';
-
-
 
 const SearchableDropdown = ({ items, placeholder, onSelect }) => {
   const [search, setSearch] = useState("");
   const [filteredItems, setFilteredItems] = useState(items);
+  const itemsRef = useRef(null);
 
   useEffect(() => {
     setFilteredItems(items);
-  }, [items])
+  }, [items]);
+
   const handleSearch = (e) => {
-    setSearch(e.target.value);
-    const toSearch = e.target.value.toLowerCase();
-    const filtered_keys = Object.keys(items).filter(
-      (item) => {
-        const searchable = items[item].toString().toLowerCase();
-        return searchable.includes(toSearch) ||
-          searchable.replace(/ي/g, 'ی').includes(toSearch);
-        
-      }
-    );
-    const ans = filtered_keys.reduce((agg, key) => {
-      agg[key] = items[key];
-      return agg;
-    }, {})
-    console.log('After: ', ans);
-    setFilteredItems(ans);
+    const val = e.target.value;
+    setSearch(val);
+    const toSearch = val.toLowerCase();
+    const filteredKeys = Object.keys(items).filter((key) => {
+      const text = items[key].toString().toLowerCase();
+      return text.includes(toSearch) || text.replace(/ي/g, 'ی').includes(toSearch);
+    });
+    const filtered = filteredKeys.reduce((acc, key) => {
+      acc[key] = items[key];
+      return acc;
+    }, {});
+    setFilteredItems(filtered);
   };
 
   const handleSelect = (value) => {
     setSearch(items[value].toString());
-    if(onSelect)
-      onSelect(value);
+    if (onSelect) onSelect(value);
   };
-  const showItems = useCallback(() => {
-    document.getElementsByClassName('searchable-dd')[0].getElementsByClassName('sdd-items')[0].classList.add('show');
-    // $('.searchable-dd .sdd-input')[0].style.borderBottomLeftRadius = 
-    //   Object.keys(filteredItems).length > 0 ? '0' : '15px';
-    // $('.searchable-dd .sdd-input')[0].style.borderBottomRightRadius = 
-    //   Object.keys(filteredItems).length > 0 ? '0' : '15px';
-    
-    if(Object.keys(filteredItems).length === 0){
-      console.log('Empty filter:', filteredItems);
-    }
-  }, []);
-  const hideItems = useCallback(() => {
-    document.getElementsByClassName('searchable-dd')[0].getElementsByClassName('sdd-items')[0].classList.remove('show');
-    // $('.searchable-dd .sdd-input')[0].style.borderBottomLeftRadius = '15px';
-    // $('.searchable-dd .sdd-input')[0].style.borderBottomRightRadius = '15px';
-  }, []);
-  
+
+  const showItems = () => {
+    if (itemsRef.current) itemsRef.current.classList.add('show');
+  };
+
+  const hideItems = () => {
+    if (itemsRef.current) itemsRef.current.classList.remove('show');
+  };
+
   return (
     <div className="searchable-dd">
       <input 
@@ -61,18 +48,20 @@ const SearchableDropdown = ({ items, placeholder, onSelect }) => {
         className="sdd-input"
         onFocus={showItems}
         onBlur={hideItems}
-        />
-      <ul className="sdd-items">
-        {Object.keys(filteredItems).map((item) => (
-          <li 
-            key={item}
-            onMouseDown={() => handleSelect(item)}
+      />
+      <ul className="sdd-items" ref={itemsRef}>
+        {Object.keys(filteredItems).map((key) => (
+          <li
+            key={key}
+            onMouseDown={() => handleSelect(key)}
             className="sdd-item"
-          >{items[item]}</li>
+          >
+            {filteredItems[key]}
+          </li>
         ))}
       </ul>
     </div>
   );
-}
+};
 
 export default SearchableDropdown;
