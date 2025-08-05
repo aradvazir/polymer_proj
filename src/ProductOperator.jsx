@@ -522,23 +522,25 @@ const handleSaveTimeEnd = () => {
           />
         </div>
 
-        <div className="form__input-group-special">
-          <label htmlFor="waste_id">علت ضایعات</label>
-          <select
-            id="waste_id"
-            name="waste_id"
-            value={formData.waste_id}
-            onChange={handleChange}
-            required
-          >
-            <option value="">انتخاب کنید</option>
-            {wasteOptions && wasteOptions.length && wasteOptions.map((waste) => (
-              <option key={waste.id} value={waste.id}>
-                {waste.waste_reason}
-              </option>
-            ))}
-          </select>
-        </div>
+        {wasteOptions && <div className="form__input-group-special">
+            <label htmlFor="waste_id">علت ضایعات</label>
+            <SearchableDropdown
+              items={
+                wasteOptions.reduce((acc, waste) => {
+                  acc[waste.id] = waste.waste_reason
+                  return acc;
+                }, {})
+              }
+              onSelect={(waste_id) => {
+              setFormData({
+                ...formData,
+                waste_id: waste_id,
+              });
+              setCookie('waste_id', waste_id);
+              }}
+              id='waste_id'
+            />
+          </div>}
 
         <div className="form__input-group-special desc">
           <label htmlFor="waste_description">توضیحات ضایعات</label>

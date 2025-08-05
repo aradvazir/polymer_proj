@@ -6,6 +6,7 @@ import moment from "moment-jalaali"
 import { baseUrl, getCookie, setCookie, sleep, convertFarsiDigitsToEnglish } from "./consts";
 import { Toast } from "react-bootstrap";
 import "./Form.css";
+import SearchableDropdown from "./SearchableDropdown";
 const connection_error = "متاسفانه اتصال با سرور برقرار نیست"
 
 const StopsProduct = () => {
@@ -478,24 +479,25 @@ const handleSaveTimeEnd = () => {
           </select>
         </div>
 
-        <div className="form__input-group-special">
+        {stops && <div className="form__input-group-special">
           <label htmlFor="stop_id">علت توقف</label>
-          <select
-            style={{backgroundColor: "white"}}
-            id="stop_id"
-            name="stop_id"
-            value={formData.stop_id}
-            onChange={handleChange}
-            required
-          >
-            <option value="">انتخاب کنید</option>
-            {(stops || []).map((stop) => (
-              <option key={stop.id} value={stop.id}>
-                {stop.stop_reason}
-              </option>
-            ))}
-          </select>
-        </div>
+          <SearchableDropdown
+            items={
+              stops.reduce((acc, stop) => {
+                acc[stop.id] = stop.stop_reason
+                return acc;
+              }, {})
+            }
+            onSelect={(stop_id) => {
+            setFormData({
+              ...formData,
+              stop_id: stop_id,
+            });
+            setCookie('stop_id', stop_id);
+            }}
+            id='stop_id'
+          />
+        </div>}
 
         <div className="form__input-group-special desc">
           <label htmlFor="description">توضیحات</label>
